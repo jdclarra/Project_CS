@@ -34,7 +34,7 @@ import streamlit as st
 import database as db
 from calculation import HOUSING_COLUMNS, LIFESTYLES, UNCERTAINTY, estimate_exchange_costs, months_between
 from currency import convert_from_chf, get_exchange_rates
-from external_data import get_monthly_climate, get_nearby_places, get_inflation_factor
+from external_data imzport get_monthly_climate, get_nearby_places, get_inflation_factor
 from ml_model import predict_monthly_cost, train_models
 
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
