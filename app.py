@@ -49,7 +49,7 @@ with left:
                 annotations=[dict(text=f"CHF {monthly_estimate:,}<br>per month",
                                   showarrow=False, font_size=18)],   # text in the middle
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")   # ausdrücklich hingeschrieben
 
         with legend_col:
             for category, amount in costs.items():   # one line per category
