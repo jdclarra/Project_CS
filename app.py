@@ -16,8 +16,15 @@ one_time_costs=300 #e.g. tuition, flights, visa-->to be coded differently once w
 monthly_estimate=sum(costs.values())
 total_estimate=monthly_estimate * months + one_time_costs
 
-col1, col2 = st.columns(2)
-col1.metric("Monthly estimate", f" CHF {monthly_estimate:}", border=True) #Border gibt eine Umrandung
-col2.metric("Total stay estimate", f"CHF {total_estimate:}", f"Includes CHF {one_time_costs} one-time costs", border=True)
-st.caption(f"Total includes CHF {one_time_costs} one-time costs")
 
+def info_box(title, amount, note):
+    """Shows a box with a title, a big amount and a small note."""
+    with st.container(border=True):
+        st.metric(title, f"CHF {amount:,}")
+        st.caption(note)
+
+col1, col2 = st.columns(2)
+with col1:
+    info_box("Monthly estimate", monthly_estimate, "Based on your city, housing and lifestyle")
+with col2:
+    info_box("Total stay estimate", total_estimate, f"Includes CHF {one_time_costs} one-time costs")
