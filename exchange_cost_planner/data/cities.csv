@@ -1,0 +1,117 @@
+city,country,currency,latitude,longitude,rent_shared_room,rent_dorm,rent_apartment,groceries_month,restaurant_meal,evening_out,transport_pass,flight_return,visa_fee,source,as_of_date
+Ahmedabad,India,INR,23.023,72.571,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Ann Arbor,USA,USD,42.281,-83.743,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Atlanta,USA,USD,33.749,-84.388,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Austin,USA,USD,30.267,-97.743,940,800,1500,350,16,35,40,1100,300,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (USD 1000-1250, n=2). All other prices not researched.",2026-11-16
+Bangalore,India,INR,12.972,77.595,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bangkok,Thailand,THB,13.756,100.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Barcelona,Spain,EUR,41.387,2.17,760,550,1200,270,13,25,13,180,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 800-850, n=1); transport_pass (T-jove EUR 40-44 per 3 months, n=2). All other prices not researched.",2026-11-16
+Beijing,China,CNY,39.904,116.407,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Beirut,Lebanon,LBP,33.894,35.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bergen,Norway,NOK,60.391,5.322,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Berlin,Germany,EUR,52.52,13.405,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bloomington (Indiana),USA,USD,39.165,-86.526,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bogotá,Colombia,COP,4.711,-74.072,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bologna,Italy,EUR,44.494,11.343,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bordeaux,France,EUR,44.838,-0.579,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Boston,USA,USD,42.36,-71.059,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Brisbane,Australia,AUD,-27.47,153.025,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Budapest,Hungary,HUF,47.498,19.04,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Buenos Aires,Argentina,ARS,-34.604,-58.382,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Chapel Hill,USA,USD,35.913,-79.056,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Charlottesville,USA,USD,38.029,-78.477,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Chicago,USA,USD,41.878,-87.63,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Claremont (California),USA,USD,34.097,-117.72,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Cologne,Germany,EUR,50.938,6.96,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Columbia (South Carolina),USA,USD,34.001,-81.035,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Copenhagen,Denmark,DKK,55.676,12.568,850,950,1500,330,20,35,70,250,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_dorm (CHF 950 CBS housing, n=1); transport_pass (CHF 70 per 30 days, n=1). All other prices not researched.",2026-11-16
+Coventry,United Kingdom,GBP,52.407,-1.51,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Dar es Salaam,Tanzania,TZS,-6.792,39.208,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Dubai,United Arab Emirates,AED,25.205,55.271,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Dublin,Ireland,EUR,53.35,-6.26,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Dunedin,New Zealand,NZD,-45.879,170.503,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Durham (North Carolina),USA,USD,35.994,-78.899,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Edinburgh,United Kingdom,GBP,55.953,-3.188,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Frankfurt am Main,Germany,EUR,50.11,8.682,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Geneva,Switzerland,CHF,46.204,6.143,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+George Town (Penang),Malaysia,MYR,5.414,100.329,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Gothenburg,Sweden,SEK,57.709,11.975,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Haifa,Israel,ILS,32.794,34.99,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Hamburg,Germany,EUR,53.551,9.994,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Hanover (New Hampshire),USA,USD,43.702,-72.29,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Helsinki,Finland,EUR,60.17,24.938,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Hong Kong,China (Hong Kong SAR),HKD,22.319,114.169,1500,450,2100,340,9,40,50,900,70,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (CHF 1500, n=1). All other prices not researched.",2026-11-16
+Hyderabad,India,INR,17.385,78.487,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Istanbul,Turkey,TRY,41.008,28.978,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Ithaca,USA,USD,42.444,-76.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Johannesburg,South Africa,ZAR,-26.204,28.047,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Jönköping,Sweden,SEK,57.783,14.162,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Kingston (Ontario),Canada,CAD,44.231,-76.486,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Kristiansand,Norway,NOK,58.146,7.996,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lancaster,United Kingdom,GBP,54.047,-2.801,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Las Palmas de Gran Canaria,Spain,EUR,28.124,-15.43,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lima,Peru,PEN,-12.046,-77.043,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lisbon,Portugal,EUR,38.722,-9.139,900,480,1100,250,11,20,37,220,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 950-1000, n=1 report with 2 rooms); transport_pass (EUR 40, n=1). All other prices not researched.",2026-11-16
+London,United Kingdom,GBP,51.507,-0.128,1550,900,2000,330,18,35,110,200,17,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (GBP 1400-1500, n=3); visa_fee (GBP 15 travel authorisation, n=1). All other prices not researched.",2026-11-16
+London (Ontario),Canada,CAD,42.984,-81.246,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Los Angeles,USA,USD,34.052,-118.244,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Louvain-la-Neuve,Belgium,EUR,50.668,4.612,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lund,Sweden,SEK,55.705,13.191,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lyon,France,EUR,45.764,4.836,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Maastricht,Netherlands,EUR,50.851,5.691,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Madrid,Spain,EUR,40.417,-3.704,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Manchester,United Kingdom,GBP,53.481,-2.243,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Manila,Philippines,PHP,14.555,121.024,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Mannheim,Germany,EUR,49.488,8.467,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Medellín,Colombia,COP,6.244,-75.581,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Melbourne,Australia,AUD,-37.814,144.963,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Mexico City,Mexico,MXN,19.433,-99.133,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Mikkeli,Finland,EUR,61.688,27.272,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Milan,Italy,EUR,45.451,9.189,950,1040,1300,300,15,25,20,200,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 1000-1050, n=2); rent_dorm (EUR 5600 per 5-month term, n=1); transport_pass (EUR 22 student pass, n=3). All other prices not researched.",2026-11-16
+Minamiuonuma,Japan,JPY,37.065,138.876,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Minneapolis,USA,USD,44.978,-93.265,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Monterrey,Mexico,MXN,25.686,-100.316,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Montevideo,Uruguay,UYU,-34.901,-56.165,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Montreal,Canada,CAD,45.502,-73.567,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Moscow,Russia,RUB,55.756,37.617,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Nagoya,Japan,JPY,35.181,136.906,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+New York,USA,USD,40.713,-74.006,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Nice,France,EUR,43.71,7.262,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Oslo,Norway,NOK,59.914,10.752,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Oviedo,Spain,EUR,43.361,-5.849,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Pamplona,Spain,EUR,42.813,-1.646,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Paris,France,EUR,48.857,2.352,850,560,1500,330,17,30,40,220,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_dorm (EUR 600 HEC campus residence, n=3). All other prices not researched.",2026-11-16
+Perth,Australia,AUD,-31.951,115.861,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Prague,Czech Republic,CZK,50.076,14.438,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Pullman,USA,USD,46.73,-117.18,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Quebec City,Canada,CAD,46.813,-71.208,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Reims,France,EUR,49.258,4.032,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Rio de Janeiro,Brazil,BRL,-22.907,-43.173,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Rome,Italy,EUR,41.903,12.496,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Rotterdam,Netherlands,EUR,51.924,4.478,720,600,1200,300,16,28,45,230,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 780, n=1); rent_apartment (EUR 1300 studio, n=1). All other prices not researched.",2026-11-16
+Salzburg,Austria,EUR,47.811,13.055,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Santa Clara (California),USA,USD,37.354,-121.955,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Santiago,Chile,CLP,-33.449,-70.669,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Seoul,South Korea,KRW,37.567,126.978,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Shanghai,China,CNY,31.23,121.474,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Shenzhen,China,CNY,22.543,114.058,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Singapore,Singapore,SGD,1.352,103.82,1070,550,2200,350,8,40,70,900,30,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (SGD 1650 co-living, n=1). All other prices not researched.",2026-11-16
+St. Petersburg,Russia,RUB,59.934,30.335,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Stockholm,Sweden,SEK,59.329,18.069,750,600,1350,310,16,30,55,260,0,"PLACEHOLDER except from HSG experience reports 2024-2026: transport_pass (SEK 650-680 student pass, n=2). All other prices not researched.",2026-11-16
+Sydney,Australia,AUD,-33.869,151.209,1040,800,1800,340,16,35,90,1500,1070,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (AUD 1900 / CHF 1000, n=2); visa_fee (student visa AUD 2000 / CHF 1000, n=2). All other prices not researched.",2026-11-16
+São Paulo,Brazil,BRL,-23.551,-46.633,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Taipei,Taiwan,TWD,25.033,121.565,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Tel Aviv,Israel,ILS,32.085,34.782,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Tokyo,Japan,JPY,35.677,139.65,650,390,1100,300,8,30,150,1000,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_dorm (JPY 75000 Keio dormitory, n=1); transport_pass (CHF 150 monthly train fares (no pass), n=1). All other prices not researched.",2026-11-16
+Toronto,Canada,CAD,43.653,-79.383,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Turin,Italy,EUR,45.07,7.687,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Vancouver,Canada,CAD,49.283,-123.121,900,750,1700,340,16,30,70,1100,150,PLACEHOLDER - all prices not researched.,2026-11-16
+Victoria (British Columbia),Canada,CAD,48.428,-123.366,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Vienna,Austria,EUR,48.208,16.373,600,690,1050,280,14,25,58,180,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 650, n=1); rent_dorm (EUR 745 studio in student residence, n=1); transport_pass (EUR 60-65.20, n=2). All other prices not researched.",2026-11-16
+Viña del Mar,Chile,CLP,-33.025,-71.552,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Warsaw,Poland,PLN,52.23,21.012,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Washington DC,USA,USD,38.907,-77.037,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Wellington,New Zealand,NZD,-41.287,174.776,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Wollongong,Australia,AUD,-34.425,150.893,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Yogyakarta,Indonesia,IDR,-7.796,110.369,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Zagreb,Croatia,EUR,45.815,15.982,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
