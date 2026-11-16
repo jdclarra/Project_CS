@@ -186,3 +186,18 @@ def get_nearby_places(latitude, longitude, radius_km):
     places = places.drop_duplicates(subset="name")
     places = places.sort_values("distance_km")
     return places
+
+python
+def get_inflation_factor(iso3):
+    """How much consumer prices rose from Dec 2022 to 2026 (IMF DataMapper API, no key).
+    Returns e.g. 1.12 for +12 %, or None if the API cannot be reached."""
+    try:
+        url = f"https://www.imf.org/external/datamapper/api/v1/PCPIPCH/{iso3}"
+        rates = requests.get(url, timeout=5).json()["values"]["PCPIPCH"][iso3]
+        factor = 1.0
+        for year in ["2023", "2024", "2025", "2026"]:
+            factor = factor * (1 + rates.get(year, 0) / 100)
+        return factor
+    except Exception:
+        return None
+
