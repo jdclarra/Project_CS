@@ -60,12 +60,16 @@ with right:
     with st.container(border=True):
         st.subheader("Your budget")
 
+        # The bigger value gets the full bar, the smaller one is shown in proportion
+        biggest = max(monthly_budget, monthly_estimate)
+
         st.write(f"Budget: CHF {monthly_budget:,}")
-        st.progress(1.0)                          # full bar = budget
+        if biggest > 0:                                   # avoid dividing by 0
+            st.progress(monthly_budget / biggest)
 
         st.write(f"Estimate: CHF {monthly_estimate:,}")
-        if monthly_budget > 0:                    # avoid dividing by 0
-            st.progress(min(monthly_estimate / monthly_budget, 1.0))
+        if biggest > 0:
+            st.progress(monthly_estimate / biggest)
 
         remaining = monthly_budget - monthly_estimate
         if remaining >= 0:
