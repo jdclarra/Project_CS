@@ -30,7 +30,7 @@ with col1:
 with col2:
     info_box("Total stay estimate", total_estimate, f"Includes CHF {one_time_costs} one-time costs")
 
-    left, right = st.columns([3, 2])   # left column wider than right
+left, right = st.columns([3, 2])   # left column wider than right
 
 # ---------- Cost breakdown (donut chart) ----------
 with left:
