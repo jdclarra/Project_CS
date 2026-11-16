@@ -1,15 +1,19 @@
-city,country,currency,latitude,longitude,rent_shared_room,rent_dorm,rent_apartment,groceries_month,restaurant_meal,evening_out,transport_pass,flight_return,visa_fee,source,as_of_date
+﻿city,country,currency,latitude,longitude,rent_shared_room,rent_dorm,rent_apartment,groceries_month,restaurant_meal,evening_out,transport_pass,flight_return,visa_fee,source,as_of_date
 Ahmedabad,India,INR,23.023,72.571,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Alajuela,Costa Rica,CRC,10.01723319,-84.21274527,,,,,,,,,,NEW CITY - coordinates: https://www.geonames.org/search.html?country=CR&q=Alajuela; expense fields unresearched,2026-11-16
 Ann Arbor,USA,USD,42.281,-83.743,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Atlanta,USA,USD,33.749,-84.388,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Austin,USA,USD,30.267,-97.743,940,800,1500,350,16,35,40,1100,300,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (USD 1000-1250, n=2). All other prices not researched.",2026-11-16
 Bangalore,India,INR,12.972,77.595,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Bangkok,Thailand,THB,13.756,100.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Barcelona,Spain,EUR,41.387,2.17,760,550,1200,270,13,25,13,180,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 800-850, n=1); transport_pass (T-jove EUR 40-44 per 3 months, n=2). All other prices not researched.",2026-11-16
+Basel,Switzerland,CHF,47.5606,7.5906,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
 Beijing,China,CNY,39.904,116.407,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Beirut,Lebanon,LBP,33.894,35.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Berekuso,Ghana,GHS,5.75936,-0.22504,,,,,,,,,,NEW CITY - coordinates: https://mapcarta.com/16951926; expense fields unresearched,2026-11-16
 Bergen,Norway,NOK,60.391,5.322,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Berlin,Germany,EUR,52.52,13.405,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Bern,Switzerland,CHF,46.948,7.4474,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
 Bloomington (Indiana),USA,USD,39.165,-86.526,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Bogotá,Colombia,COP,4.711,-74.072,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Bologna,Italy,EUR,44.494,11.343,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -18,6 +22,9 @@ Boston,USA,USD,42.36,-71.059,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Brisbane,Australia,AUD,-27.47,153.025,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Budapest,Hungary,HUF,47.498,19.04,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Buenos Aires,Argentina,ARS,-34.604,-58.382,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Cairo,Egypt,EGP,30.0444,31.2358,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/eg-cities; expense fields unresearched,2026-11-16
+Cape Town,South Africa,ZAR,-33.92888,18.41722,,,,,,,,,,NEW CITY - coordinates: https://ungegn.un.org/dashboard/cities/details?id=2699; expense fields unresearched,2026-11-16
+Caracas,Venezuela,VES,10.48801,-66.87919,,,,,,,,,,NEW CITY - coordinates: https://www.geonames.org/3646738/caracas.html; expense fields unresearched,2026-11-16
 Chapel Hill,USA,USD,35.913,-79.056,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Charlottesville,USA,USD,38.029,-78.477,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Chicago,USA,USD,41.878,-87.63,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -33,6 +40,7 @@ Dunedin,New Zealand,NZD,-45.879,170.503,,,,,,,,,,PLACEHOLDER - no prices yet,202
 Durham (North Carolina),USA,USD,35.994,-78.899,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Edinburgh,United Kingdom,GBP,55.953,-3.188,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Frankfurt am Main,Germany,EUR,50.11,8.682,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Fribourg,Switzerland,CHF,46.80237,7.15128,,,,,,,,,,NEW CITY - coordinates: https://www.geonames.org/2660718/fribourg.html; expense fields unresearched,2026-11-16
 Geneva,Switzerland,CHF,46.204,6.143,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 George Town (Penang),Malaysia,MYR,5.414,100.329,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Gothenburg,Sweden,SEK,57.709,11.975,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -47,15 +55,20 @@ Ithaca,USA,USD,42.444,-76.502,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Johannesburg,South Africa,ZAR,-26.204,28.047,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Jönköping,Sweden,SEK,57.783,14.162,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Kingston (Ontario),Canada,CAD,44.231,-76.486,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Kolkata,India,INR,22.56263,88.36304,,,,,,,,,,NEW CITY - coordinates: https://digital.library.unt.edu/explore/locations/p07988/; expense fields unresearched,2026-11-16
 Kristiansand,Norway,NOK,58.146,7.996,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Lancaster,United Kingdom,GBP,54.047,-2.801,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Las Palmas de Gran Canaria,Spain,EUR,28.124,-15.43,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lausanne,Switzerland,CHF,46.516,6.63282,,,,,,,,,,NEW CITY - coordinates: https://digital.library.unt.edu/explore/locations/p13523/; expense fields unresearched,2026-11-16
+Liberec,Czech Republic,CZK,50.76711,15.05619,,,,,,,,,,NEW CITY - coordinates: https://www.geonames.org/3071961/liberec.html; expense fields unresearched,2026-11-16
 Lima,Peru,PEN,-12.046,-77.043,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Lisbon,Portugal,EUR,38.722,-9.139,900,480,1100,250,11,20,37,220,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 950-1000, n=1 report with 2 rooms); transport_pass (EUR 40, n=1). All other prices not researched.",2026-11-16
 London,United Kingdom,GBP,51.507,-0.128,1550,900,2000,330,18,35,110,200,17,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (GBP 1400-1500, n=3); visa_fee (GBP 15 travel authorisation, n=1). All other prices not researched.",2026-11-16
 London (Ontario),Canada,CAD,42.984,-81.246,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Los Angeles,USA,USD,34.052,-118.244,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Louvain-la-Neuve,Belgium,EUR,50.668,4.612,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Lucerne,Switzerland,CHF,47.0523,8.3059,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
+Lugano,Switzerland,CHF,46.0103,8.9625,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
 Lund,Sweden,SEK,55.705,13.191,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Lyon,France,EUR,45.764,4.836,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Maastricht,Netherlands,EUR,50.851,5.691,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -64,6 +77,7 @@ Manchester,United Kingdom,GBP,53.481,-2.243,,,,,,,,,,PLACEHOLDER - no prices yet
 Manila,Philippines,PHP,14.555,121.024,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Mannheim,Germany,EUR,49.488,8.467,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Medellín,Colombia,COP,6.244,-75.581,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Medford,USA,USD,42.41843,-71.10616,,,,,,,,,,NEW CITY - coordinates: https://digital.library.unt.edu/explore/locations/p19594/; expense fields unresearched,2026-11-16
 Melbourne,Australia,AUD,-37.814,144.963,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Mexico City,Mexico,MXN,19.433,-99.133,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Mikkeli,Finland,EUR,61.688,27.272,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -75,6 +89,7 @@ Montevideo,Uruguay,UYU,-34.901,-56.165,,,,,,,,,,PLACEHOLDER - no prices yet,2026
 Montreal,Canada,CAD,45.502,-73.567,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Moscow,Russia,RUB,55.756,37.617,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Nagoya,Japan,JPY,35.181,136.906,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Neuchâtel,Switzerland,CHF,46.9903,6.9306,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
 New York,USA,USD,40.713,-74.006,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Nice,France,EUR,43.71,7.262,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Oslo,Norway,NOK,59.914,10.752,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -89,6 +104,7 @@ Reims,France,EUR,49.258,4.032,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Rio de Janeiro,Brazil,BRL,-22.907,-43.173,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Rome,Italy,EUR,41.903,12.496,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Rotterdam,Netherlands,EUR,51.924,4.478,720,600,1200,300,16,28,45,230,0,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (EUR 780, n=1); rent_apartment (EUR 1300 studio, n=1). All other prices not researched.",2026-11-16
+Safat,Kuwait,KWD,29.37136,47.97298,,,,,,,,,,NEW CITY - coordinates: https://www.geonames.org/10173853/safat.html; expense fields unresearched,2026-11-16
 Salzburg,Austria,EUR,47.811,13.055,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Santa Clara (California),USA,USD,37.354,-121.955,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Santiago,Chile,CLP,-33.449,-70.669,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -97,6 +113,7 @@ Shanghai,China,CNY,31.23,121.474,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Shenzhen,China,CNY,22.543,114.058,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Singapore,Singapore,SGD,1.352,103.82,1070,550,2200,350,8,40,70,900,30,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (SGD 1650 co-living, n=1). All other prices not researched.",2026-11-16
 St. Petersburg,Russia,RUB,59.934,30.335,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Stellenbosch,South Africa,ZAR,-33.93444,18.86916,,,,,,,,,,NEW CITY - coordinates: https://ungegn.un.org/dashboard/cities/details?id=2786; expense fields unresearched,2026-11-16
 Stockholm,Sweden,SEK,59.329,18.069,750,600,1350,310,16,30,55,260,0,"PLACEHOLDER except from HSG experience reports 2024-2026: transport_pass (SEK 650-680 student pass, n=2). All other prices not researched.",2026-11-16
 Sydney,Australia,AUD,-33.869,151.209,1040,800,1800,340,16,35,90,1500,1070,"PLACEHOLDER except from HSG experience reports 2024-2026: rent_shared_room (AUD 1900 / CHF 1000, n=2); visa_fee (student visa AUD 2000 / CHF 1000, n=2). All other prices not researched.",2026-11-16
 São Paulo,Brazil,BRL,-23.551,-46.633,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
@@ -115,3 +132,4 @@ Wellington,New Zealand,NZD,-41.287,174.776,,,,,,,,,,PLACEHOLDER - no prices yet,
 Wollongong,Australia,AUD,-34.425,150.893,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Yogyakarta,Indonesia,IDR,-7.796,110.369,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
 Zagreb,Croatia,EUR,45.815,15.982,,,,,,,,,,PLACEHOLDER - no prices yet,2026-11-16
+Zurich,Switzerland,CHF,47.3744,8.5411,,,,,,,,,,NEW CITY - coordinates: https://simplemaps.com/data/ch-cities; expense fields unresearched,2026-11-16
