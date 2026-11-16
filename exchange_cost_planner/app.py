@@ -34,7 +34,7 @@ import streamlit as st
 import database as db
 from calculation import HOUSING_COLUMNS, LIFESTYLES, UNCERTAINTY, estimate_exchange_costs, months_between
 from currency import convert_from_chf, get_exchange_rates
-from external_data import get_monthly_climate, get_nearby_places
+from external_data import get_monthly_climate, get_nearby_places, get_inflation_factor
 from ml_model import predict_monthly_cost, train_models
 
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
@@ -71,6 +71,38 @@ def get_climate_cached(city):
         st.session_state[key] = climate
     return climate
 
+⁠ python
+def get_inflation_cached(iso3):
+    key = "inflation_" + str(iso3)
+    if key in st.session_state:
+        return st.session_state[key]
+    factor = get_inflation_factor(iso3)
+    if factor is not None:
+        st.session_state[key] = factor
+    return factor
+
+
+PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_month",
+                 "restaurant_meal", "evening_out", "transport_pass",
+                 "leisure_month", "utilities_month"]
+
+
+def load_city_current(city_name):
+    """Loads a city and adjusts Kaggle prices from 2022 to today with IMF inflation."""
+    city = db.load_city(city_name)
+    if city is None:
+        return None
+    city = dict(city)
+    city["inflation_factor"] = 1.0
+    if city.get("price_base_year") == 2022:
+        factor = get_inflation_cached(city.get("iso3"))
+        if factor is not None:
+            city["inflation_factor"] = factor
+            for column in PRICE_COLUMNS:
+                if column in city and pd.notna(city[column]):
+                    city[column] = round(city[column] * factor)
+    return city
+
 
 def months_of_stay(start_date, end_date):
     """List of the month numbers of the stay in the right order, e.g. [2, 3, 4, 5, 6]."""
@@ -91,6 +123,7 @@ def is_placeholder(city):
     return str(city["source"]).startswith("PLACEHOLDER")
 
 
+python
 def show_placeholder_warning(city):
     if is_placeholder(city):
         st.warning(
@@ -98,6 +131,12 @@ def show_placeholder_warning(city):
             "The result only shows how the app works. "
             f"Status: {city['source']}"
         )
+    elif city.get("price_base_year") == 2022:
+        st.info(
+            f"Prices for **{city['city']}** come from the Kaggle 'Global Cost of Living' dataset (2022) "
+            f"and were adjusted by **+{city['inflation_factor'] - 1:.0%}** for inflation (IMF data)."
+        )
+
 
 
 # ---------------------------------------------------------------------------
