@@ -187,7 +187,6 @@ def get_nearby_places(latitude, longitude, radius_km):
     places = places.sort_values("distance_km")
     return places
 
-python
 def get_inflation_factor(iso3):
     """How much consumer prices rose from Dec 2022 to 2026 (IMF DataMapper API, no key).
     Returns e.g. 1.12 for +12 %, or None if the API cannot be reached."""
