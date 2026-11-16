@@ -2,8 +2,6 @@ streamlit
 pandas
 plotly.express
 requests
-calculation
-currency
-external_data
-ml_model
+scikit-learn
+numpy
 
