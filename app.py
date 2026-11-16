@@ -71,7 +71,6 @@ def get_climate_cached(city):
         st.session_state[key] = climate
     return climate
 
-⁠ python
 def get_inflation_cached(iso3):
     key = "inflation_" + str(iso3)
     if key in st.session_state:
@@ -89,7 +88,7 @@ PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_m
 
 def load_city_current(city_name):
     """Loads a city and adjusts Kaggle prices from 2022 to today with IMF inflation."""
-    city = load_city_current(city_name) 
+    city = db.load_city(city_name)
     if city is None:
         return None
     city = dict(city)
@@ -123,7 +122,6 @@ def is_placeholder(city):
     return str(city["source"]).startswith("PLACEHOLDER")
 
 
-python
 def show_placeholder_warning(city):
     if is_placeholder(city):
         st.warning(
@@ -437,7 +435,7 @@ elif page == "City comparison":
     category_tables = []
     placeholder_cities = []
     for name in chosen_cities:
-        city = load_city_current(name) ⁠
+        city = load_city_current(name)
         if is_placeholder(city):
             placeholder_cities.append(name)
         result = estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_month=trips_per_month)
