@@ -88,7 +88,7 @@ PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_m
 
 def load_city_current(city_name):
     """Loads a city and adjusts Kaggle prices from 2022 to today with IMF inflation."""
-    city = db.load_city(city_name)
+    city = load_city_current(city_name) 
     if city is None:
         return None
     city = dict(city)
@@ -435,7 +435,7 @@ elif page == "City comparison":
     category_tables = []
     placeholder_cities = []
     for name in chosen_cities:
-        city = db.load_city(name)
+        city = load_city_current(name) ⁠
         if is_placeholder(city):
             placeholder_cities.append(name)
         result = estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_month=trips_per_month)
