@@ -1,11 +1,4 @@
-import streamlit as st
+import streamlit as st  #load Streamlit, st is the short name
 
-st.write('hooray, we connected everything')
-st.write('hello this is a test')
-
-
-st.write(' a test')
-st.write(' test')
-
-st.write(' a test')
-st.write(' test')
+st.title("Exchange Cost Planner")  #App Title
+st.write("Estimate the cost of your exchange semester")
