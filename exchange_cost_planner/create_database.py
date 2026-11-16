@@ -175,12 +175,20 @@ def none_if_missing(value):
     return value
 
 
+
 def insert_cities(cursor, cities):
     for index, row in cities.iterrows():
         values = []
-        for column in cities.columns:
+        for column in [
+            "city", "country", "currency", "latitude", "longitude",
+            "rent_shared_room", "rent_dorm", "rent_apartment",
+            "groceries_month", "restaurant_meal", "evening_out",
+            "transport_pass", "flight_return", "visa_fee",
+            "source", "as_of_date"
+        ]:
             values.append(none_if_missing(row[column]))
-        # Parameterized INSERT: one ? per column, the values are passed separately
+
+        # Insert cities into database
         cursor.execute(
             """INSERT INTO cities (city, country, currency, latitude, longitude,
                                    rent_shared_room, rent_dorm, rent_apartment, groceries_month,
@@ -191,6 +199,7 @@ def insert_cities(cursor, cities):
         )
 
 
+
 def insert_universities(cursor, universities):
     for index, row in universities.iterrows():
         cursor.execute(
@@ -198,7 +207,7 @@ def insert_universities(cursor, universities):
                                          reports_in_portal, last_report_year)
                VALUES (?, ?, ?, ?, ?, ?)""",
             (row["university"], row["city"], row["country"], none_if_missing(row["portal_location"]),
-             int(row["reports_in_portal"]), row["last_report_year"]),
+             int(none_if_missing(row["reports_in_portal"]) or 0), row["last_report_year"]),
         )
 
 
