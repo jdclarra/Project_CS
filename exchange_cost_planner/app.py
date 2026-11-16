@@ -17,8 +17,7 @@ Pages (chosen in the sidebar):
 2. Cost calculator
 3. City comparison
 4. Weather & excursions
-5. Share your experience
-6. About the model
+5. About the model
 """
 
 # AI assistance:
@@ -141,8 +140,7 @@ number_of_placeholder_cities = int(all_cities["source"].str.startswith("PLACEHOL
 st.sidebar.title("Exchange Cost Planner")
 page = st.sidebar.radio(
     "Go to",
-    ["Home / Problem", "Cost calculator", "City comparison", "Weather & excursions",
-     "Share your experience", "About the model"],
+    ["Home / Problem", "Cost calculator", "City comparison", "Weather & excursions", "About the model"],
 )
 
 if number_of_placeholder_cities > 0 or number_of_simulated_rows > 0:
@@ -174,8 +172,7 @@ if page == "Home / Problem":
            month and for the whole stay, by category, in CHF and in the local currency.
         2. **City comparison** - put two or three cities side by side.
         3. **Weather & excursions** - the typical weather during your months abroad and places to visit nearby.
-        4. **Share your experience** - former exchange students enter their real costs. This improves our model.
-        5. **About the model** - how our machine-learning model works and how good it is.
+        4. **About the model** - how our machine-learning model works and how good it is.
         """
     )
 
@@ -267,8 +264,7 @@ elif page == "Cost calculator":
         if city_name not in city_names_with_prices:
             st.error(
                 f"We have **no prices for {city_name}** yet, so a cost estimate is not possible. "
-                "You can still look at the weather and excursions for this city, or help us on the page "
-                "'Share your experience'."
+                "You can still look at the weather and excursions for this city. "
             )
             st.stop()
 
@@ -551,47 +547,6 @@ elif page == "Weather & excursions":
                 st.plotly_chart(fig_map)
                 st.dataframe(shown_places[["name", "category", "distance_km"]], hide_index=True)
             st.caption("Map data: OpenStreetMap contributors.")
-
-
-# ===========================================================================
-# PAGE 5: Share your experience
-# ===========================================================================
-elif page == "Share your experience":
-    st.title("Share your experience")
-    st.write(
-        "Have you already been on exchange? Enter what you really spent. Your answer is stored "
-        "**anonymously** in our database and is used to train our model."
-    )
-
-    # st.form: nothing is sent until the user clicks the submit button
-    with st.form("experience_form"):
-        col1, col2 = st.columns(2)
-        with col1:
-            form_city = st.selectbox("City of your exchange", city_names)
-            form_housing = st.selectbox("Housing", HOUSING_TYPES)
-            form_lifestyle = st.selectbox("Lifestyle", LIFESTYLE_NAMES, index=1)
-        with col2:
-            form_trips = st.slider("Weekend trips per month", 0, 4, 1)
-            # The widget limits prevent impossible values such as negative costs
-            form_cost = st.number_input("Your real total cost per month in CHF (without flights)",
-                                        min_value=200, max_value=10000, value=1500, step=50)
-        confirmed = st.checkbox("These are my real costs and they may be stored anonymously.")
-        submitted = st.form_submit_button("Submit")
-
-    if submitted:
-        if not confirmed:
-            st.error("Please tick the confirmation box before submitting.")
-        else:
-            db.save_submission(form_city, form_housing, form_lifestyle, form_trips, form_cost)
-            st.success("Thank you! Your answer was saved and is used the next time the model is trained.")
-
-    st.subheader("Submissions so far")
-    submissions = db.count_submissions_per_city()  # SQL GROUP BY
-    if submissions.empty:
-        st.info("Nobody has submitted an experience in the app yet.")
-    else:
-        st.dataframe(submissions, hide_index=True)
-
 
 # ===========================================================================
 # PAGE 6: About the model
