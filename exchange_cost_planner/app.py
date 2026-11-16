@@ -71,7 +71,6 @@ def get_climate_cached(city):
         st.session_state[key] = climate
     return climate
 
-⁠ python
 def get_inflation_cached(iso3):
     key = "inflation_" + str(iso3)
     if key in st.session_state:
@@ -123,7 +122,6 @@ def is_placeholder(city):
     return str(city["source"]).startswith("PLACEHOLDER")
 
 
-python
 def show_placeholder_warning(city):
     if is_placeholder(city):
         st.warning(
