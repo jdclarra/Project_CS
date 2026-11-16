@@ -18,6 +18,6 @@ total_estimate=monthly_estimate * months + one_time_costs
 
 col1, col2 = st.columns(2)
 col1.metric("Monthly estimate", f" CHF {monthly_estimate:}", border=True) #Border gibt eine Umrandung
-col2.metric("Total stay estimate", f"CHF {total_estimate:}", border=True)
+col2.metric("Total stay estimate", f"CHF {total_estimate:}", f"Includes CHF {one_time_costs} one-time costs", border=True)
 st.caption(f"Total includes CHF {one_time_costs} one-time costs")
 
