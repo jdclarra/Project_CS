@@ -798,25 +798,82 @@ elif page == "About the model":
         f"The average reported cost is CHF {training_data['monthly_cost_chf'].mean():,.0f} per month."
     )
 
-    chart_left, chart_right = st.columns(2)
+    
+    chart_left, chart_right = st.columns(2, gap="medium")
+
     with chart_left:
-        st.subheader("Predicted vs. real cost (test data)")
-        st.caption("Purpose: dots close to the dashed diagonal are good predictions.")
-        test_results = trained["test_results"]
-        fig_test = px.scatter(test_results, x="actual_cost", y="predicted_cost",
-                              labels={"actual_cost": "Reported cost (CHF)", "predicted_cost": "Predicted cost (CHF)"})
-        highest = test_results["actual_cost"].max()
-        fig_test.add_shape(type="line", x0=0, y0=0, x1=highest, y1=highest, line={"dash": "dash", "color": "gray"})
-        st.plotly_chart(fig_test)
+        with st.container(border=True):
+            st.markdown("#### Predicted vs. actual costs")
+            st.caption(
+                "Points closer to the diagonal indicate better predictions."
+            )
+
+            test_results = trained["test_results"]
+
+            fig_test = px.scatter(
+                test_results,
+                x="actual_cost",
+                y="predicted_cost",
+                labels={
+                    "actual_cost": "Reported cost (CHF)",
+                    "predicted_cost": "Predicted cost (CHF)"
+                },
+                color_discrete_sequence=["#176B53"]
+            )
+
+            highest = test_results["actual_cost"].max()
+
+            fig_test.add_shape(
+                type="line",
+                x0=0,
+                y0=0,
+                x1=highest,
+                y1=highest,
+                line={
+                    "dash": "dash",
+                    "color": "#8FA99B"
+                }
+            )
+
+            fig_test.update_layout(
+                margin=dict(t=20, b=10, l=10, r=10),
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+
+            st.plotly_chart(fig_test, width="stretch")
+
     with chart_right:
-        st.subheader("Reported cost per city")
-        st.caption("Purpose: see what the training data looks like (average of all reports per city).")
-        reported = db.average_reported_cost_per_city()  # SQL GROUP BY
-        fig_reported = px.bar(reported.sort_values("average_monthly_cost_chf"),
-                              x="average_monthly_cost_chf", y="city", orientation="h",
-                              hover_data=["number_of_reports"],
-                              labels={"average_monthly_cost_chf": "Average reported cost (CHF per month)", "city": ""})
-        st.plotly_chart(fig_reported)
+        with st.container(border=True):
+            st.markdown("#### Reported costs by city")
+            st.caption(
+                "Average monthly costs based on training data."
+            )
+
+            reported = db.average_reported_cost_per_city()
+
+            fig_reported = px.bar(
+                reported.sort_values(
+                    "average_monthly_cost_chf"
+                ),
+                x="average_monthly_cost_chf",
+                y="city",
+                orientation="h",
+                hover_data=["number_of_reports"],
+                color_discrete_sequence=["#4F9679"],
+                labels={
+                    "average_monthly_cost_chf":
+                        "Average reported cost (CHF per month)",
+                    "city": ""
+                }
+            )
+
+            fig_reported.update_layout(
+                margin=dict(t=20, b=10, l=10, r=10),
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+
+            st.plotly_chart(fig_reported, width="stretch")
+
 
     if trained["model_name"] == "Linear regression":
         st.subheader("What the model learned")
