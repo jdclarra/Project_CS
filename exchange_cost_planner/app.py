@@ -520,7 +520,10 @@ elif page == "City comparison":
     st.subheader("Total cost of the stay")
     st.caption("Purpose: see at a glance which city is cheaper overall.")
     fig_total = px.bar(summary_table, x="city", y="total_chf", text="total_chf",
+                       color="city", color_discrete_sequence=CITY_COLORS,
                        labels={"city": "", "total_chf": "Total (CHF)"})
+    fig_total.update_traces(texttemplate="CHF %{text:,}", textposition="outside")
+    fig_total.update_layout(showlegend=False)
     st.plotly_chart(fig_total)
 
     st.subheader("Costs per category")
