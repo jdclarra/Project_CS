@@ -398,7 +398,6 @@ elif page == "Cost calculator":
             shown_labels = [label for label in university_labels if city_of_label[label] in city_names_with_prices]
         else:
             shown_labels = university_labels
-        university_label = st.selectbox(f"Partner university ({len(shown_labels)})", shown_labels)
         if study_level != "All":
             filtered_labels = []
             for label in shown_labels:
@@ -409,6 +408,7 @@ elif page == "Cost calculator":
         if len(shown_labels) == 0:
             st.warning("No partner university matches these filters.")
             st.stop()
+        university_label = st.selectbox(f"Partner university ({len(shown_labels)})", shown_labels)
         city_name = city_of_label[university_label]
         start_date = st.date_input("Start of stay", value=DEFAULT_START, format=DATE_FORMAT)
         end_date = st.date_input("End of stay", value=DEFAULT_END, format=DATE_FORMAT)
