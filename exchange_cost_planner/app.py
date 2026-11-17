@@ -421,7 +421,7 @@ elif page == "Cost calculator":
             labels={"chf_total": "CHF for the whole stay", "category": "", "type": "Type of cost"},
         )
         st.plotly_chart(fig_bar)
-            st.subheader("How your money develops over the stay")
+    st.subheader("How your money develops over the stay")
     st.caption("Purpose: see when you would run out of budget.")
     month_steps = list(range(0, math.ceil(months))) + [months]
     timeline = pd.DataFrame({
