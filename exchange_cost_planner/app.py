@@ -130,6 +130,12 @@ def show_placeholder_warning(city):
             f"Status: {city['source']}"
         )
     elif city.get("price_base_year") == 2022:
+    if city["inflation_factor"] == 1.0:
+        st.warning(
+            f"Prices for **{city['city']}** are from 2022 (Kaggle). The inflation adjustment "
+            "failed because the IMF API could not be reached, so the costs are probably too low."
+        )
+    else:
         st.info(
             f"Prices for **{city['city']}** come from the Kaggle 'Global Cost of Living' dataset (2022) "
             f"and were adjusted by **+{city['inflation_factor'] - 1:.0%}** for inflation (IMF data)."
