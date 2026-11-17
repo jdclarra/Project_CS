@@ -6,7 +6,7 @@ secondaryBackgroundColor = "#F0F5F1"
 textColor = "#20362B"
 font = "sans-serif"
 
-baseRadius = "0.925rem"
-buttonRadius = "0.875rem"
+baseRadius = "0.5rem"
+buttonRadius = "0.5rem"
 borderColor = "#DCE6DD"
 showWidgetBorder = true
