@@ -60,9 +60,8 @@ DEFAULT_START = date(2027, 2, 15)
 DEFAULT_END = date(2027, 6, 30)
 DATE_FORMAT = "DD/MM/YYYY"
 
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
+# Helper functions:
+
 # Streamlit runs this whole script again after every click. To avoid asking
 # an API every time, we remember successful answers in st.session_state.
 # Failed requests are NOT remembered, so the app tries again next time.
@@ -152,9 +151,8 @@ def show_placeholder_warning(city):
             )
 
 
-# ---------------------------------------------------------------------------
-# App setup: check database, load data, train the model
-# ---------------------------------------------------------------------------
+# App setup: check database, load data, train the model:
+
 st.set_page_config(page_title="Exchange Cost Planner", layout="wide")
 
 if not db.database_exists():
@@ -196,9 +194,8 @@ for index, row in all_cities.iterrows():
     if row["city"] in city_names_with_prices and is_placeholder(row):
         number_of_placeholder_cities_with_prices = number_of_placeholder_cities_with_prices + 1
 
-# ---------------------------------------------------------------------------
-# Sidebar navigation
-# ---------------------------------------------------------------------------
+# Sidebar navigation:
+
 st.sidebar.title("Exchange Cost Planner")
 page = st.sidebar.radio(
     "Go to",
@@ -212,9 +209,9 @@ if number_of_placeholder_cities > 0 or number_of_simulated_rows > 0:
     )
 
 
-# ===========================================================================
-# PAGE 1: Home / Problem
-# ===========================================================================
+
+# PAGE 1: Home / Problem:
+
 if page == "Home / Problem":
     st.title("Exchange Cost Planner")
     st.subheader("How much money do I really need for my exchange semester?")
@@ -339,9 +336,8 @@ if page == "Home / Problem":
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
 
 
-# ===========================================================================
-# PAGE 2: Cost calculator
-# ===========================================================================
+# PAGE 2: Cost calculator:
+
 elif page == "Cost calculator":
     st.title("Cost calculator")
 
@@ -537,9 +533,8 @@ elif page == "Cost calculator":
         )
 
 
-# ===========================================================================
-# PAGE 3: City comparison
-# ===========================================================================
+# PAGE 3: City comparison:
+
 elif page == "City comparison":
     st.title("City comparison")
     st.write("Compare two or three cities with the same personal plan.")
@@ -636,9 +631,8 @@ elif page == "City comparison":
     st.dataframe(summary_table, hide_index=True)
 
 
-# ===========================================================================
-# PAGE 4: Weather
-# ===========================================================================
+# PAGE 4: Weather:
+
 elif page == "Weather":
     st.title("Weather")
 
@@ -707,9 +701,8 @@ elif page == "Weather":
             st.plotly_chart(fig_climate, width="stretch")
 
 
-# ===========================================================================
-# PAGE 5: About the model
-# ===========================================================================
+# PAGE 5: About the model:
+
 elif page == "About the model":
     st.title("About the model")
 
