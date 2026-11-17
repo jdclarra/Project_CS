@@ -104,7 +104,7 @@ def load_universities():
     """
     return run_query("""
         SELECT universities.university, universities.city, universities.country,
-               cities.currency, universities.reports_in_portal, universities.last_report_year, universities.studylevel
+               cities.currency, universities.reports_in_portal, universities.last_report_year, universities.study_level
         FROM universities
         JOIN cities ON universities.city = cities.city
         ORDER BY universities.country, universities.city, universities.university
