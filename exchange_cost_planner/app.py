@@ -45,7 +45,6 @@ px.defaults.template = "plotly_white"
 CATEGORY_COLORS = {
     "Rent": "#00802F", "Groceries": "#4CA36B", "Restaurants / going out": "#F2A541",
     "Public transport": "#3A7CA5", "Leisure / travel": "#9B5DE5",
-    "Flights": "#555555", "Visa": "#888888", "Deposit": "#BBBBBB", "Insurance": "#DDDDDD",
 }
 CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
 
@@ -239,7 +238,7 @@ if page == "Home / Problem":
             **SQLite database** (`database/exchange_costs.db`)
             - **Universities**: {len(all_universities)} HSG partner universities and their city
             - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
-              (rent, groceries, restaurants, transport, flights, visa)
+              (rent, groceries, restaurants, transport)
             - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
             - **User Submissions**: costs entered in this app
             """
@@ -314,7 +313,6 @@ elif page == "Cost calculator":
         housing_type = st.selectbox("Housing", HOUSING_TYPES)
         lifestyle = st.radio("Lifestyle", LIFESTYLE_NAMES, index=1, horizontal=True)
         trips_per_month = st.slider("Weekend trips per month", 0, 4, 1)
-        flights_home = st.number_input("Extra flights home", min_value=0, max_value=5, value=0)
         budget = st.number_input("My budget in CHF (optional)", min_value=0, max_value=100000, value=0, step=500)
 
     city = load_city_current(city_name)
@@ -341,7 +339,7 @@ elif page == "Cost calculator":
         # --- Rule-based estimate (calculation.py) ---
         result = estimate_exchange_costs(
             city, housing_type, lifestyle, months,
-            trips_per_month=trips_per_month, flights_home=flights_home, budget=budget,
+            trips_per_month=trips_per_month, budget=budget,
         )
 
         if len(result["missing_values"]) > 0:
@@ -350,10 +348,9 @@ elif page == "Cost calculator":
 
         st.subheader(f"Estimate for {months} months in {city_name}")
         st.caption("Partner universities in this city: " + "; ".join(db.load_universities_in_city(city_name)))
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         col1.metric("Per month", f"CHF {result['monthly_total']:,}")
-        col2.metric("One-time costs", f"CHF {result['one_time_total']:,}")
-        col3.metric("Total for the stay", f"CHF {result['total']:,}")
+        col2.metric("Total for the stay", f"CHF {result['total']:,}")
         st.write(
             f"Realistic range: **CHF {result['total_min']:,} - {result['total_max']:,}** "
             f"(monthly costs plus or minus {UNCERTAINTY:.0%}, because this is an estimate)."
@@ -400,7 +397,7 @@ elif page == "Cost calculator":
     # --- Breakdown below ---
     st.subheader("Cost breakdown")
     table = result["table"]
-    chart_table = table[table["chf_total"] > 0]  # hide categories with CHF 0 (e.g. no visa needed)
+    chart_table = table[table["chf_total"] > 0]  # hide categories with CHF 0
 
     chart_left, chart_right = st.columns(2)
     with chart_left:
@@ -414,19 +411,21 @@ elif page == "Cost calculator":
         )
         st.plotly_chart(fig_donut)
     with chart_right:
-        st.caption("Purpose: compare monthly costs (added up over the stay) with one-time costs.")
+        st.caption("Purpose: see how many francs each category costs over the whole stay.")
         fig_bar = px.bar(
             chart_table.sort_values("chf_total"),
-            x="chf_total", y="category", color="type", orientation="h",
-            labels={"chf_total": "CHF for the whole stay", "category": "", "type": "Type of cost"},
+            x="chf_total", y="category", color="category", orientation="h",
+            color_discrete_map=CATEGORY_COLORS,
+            labels={"chf_total": "CHF for the whole stay", "category": ""},
         )
+        fig_bar.update_layout(showlegend=False)
         st.plotly_chart(fig_bar)
     st.subheader("How your money develops over the stay")
     st.caption("Purpose: see when you would run out of budget.")
     month_steps = list(range(0, math.ceil(months))) + [months]
     timeline = pd.DataFrame({
         "month": month_steps,
-        "spent": [result["one_time_total"] + result["monthly_total"] * m for m in month_steps],
+        "spent": [result["monthly_total"] * m for m in month_steps],
     })
     fig_timeline = px.area(timeline, x="month", y="spent", color_discrete_sequence=["#00802F"],
                            labels={"month": "Month of stay", "spent": "Spent so far (CHF)"})
@@ -447,8 +446,6 @@ elif page == "Cost calculator":
               {habits['evenings_out_per_month']} evenings out per month x the local price.
             - **Public transport:** monthly pass.
             - **Leisure / travel:** {trips_per_month} weekend trips per month x CHF 150.
-            - **One-time costs:** {1 + flights_home} return flight(s), visa fee and one month of rent as deposit
-              (the deposit is usually paid back at the end).
             - **Range:** monthly costs plus or minus {UNCERTAINTY:.0%}.
             - Price source for this city: {city['source']} (as of {city['as_of_date']}).
             """
@@ -493,7 +490,6 @@ elif page == "City comparison":
         summary = {
             "city": name,
             "per_month_chf": result["monthly_total"],
-            "one_time_chf": result["one_time_total"],
             "total_chf": result["total"],
         }
         if trained is not None:
@@ -524,7 +520,7 @@ elif page == "City comparison":
     st.plotly_chart(fig_total)
 
     st.subheader("Costs per category")
-    st.caption("Purpose: see WHERE the difference comes from (e.g. rent or flights).")
+    st.caption("Purpose: see WHERE the difference comes from (e.g. rent or groceries).")
     fig_categories = px.bar(
         all_categories[all_categories["chf_total"] > 0],
         x="category", y="chf_total", color="city", barmode="group",
@@ -671,7 +667,5 @@ elif page == "About the model":
         - The model can only be as good as its data. With simulated or very few reports it is not reliable.
         - It knows nothing about things that are not in the data, e.g. the exact neighbourhood, inflation,
           exchange-rate changes or personal habits.
-        - Flights, visa and deposit are not predicted by the model - they come from the calculator.
-        - All numbers are estimates and no financial advice.
         """
     )
