@@ -271,7 +271,20 @@ if page == "Home / Problem":
     figure = px.bar(per_country, x="country", y="number_of_universities",
                     title="Partner universities per country (top 15)",
                     labels={"country": "Country", "number_of_universities": "Number of universities"})
-    st.plotly_chart(figure, use_container_width=True)
+    st.plotly_chart(figure, width="stretch")
+
+    st.subheader("Where you can go")
+    uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city", how="left")
+    per_city = (uni_map.dropna(subset=["latitude", "longitude"])
+                .groupby(["city", "country", "latitude", "longitude"], as_index=False)
+                .agg(universities=("university", "count")))
+    fig_world = px.scatter_map(
+        per_city, lat="latitude", lon="longitude", size="universities", size_max=25,
+        hover_name="city", hover_data={"country": True, "universities": True, "latitude": False, "longitude": False},
+        color_discrete_sequence=["#00802F"], zoom=0.6, height=450, map_style="carto-positron",
+    )
+    fig_world.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+    st.plotly_chart(fig_world, width="stretch")
 
     st.subheader("Cities and the status of their prices")
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
