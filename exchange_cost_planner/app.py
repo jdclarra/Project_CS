@@ -300,7 +300,7 @@ if page == "Home / Problem":
         # Style the hover box
         fig_world.update_layout(
             hoverlabel=dict(
-                bgcolor="#FFFFFF",
+                bgcolor="white",
                 font_size=12,
                 font_color="#20362B",
                 align="left"
