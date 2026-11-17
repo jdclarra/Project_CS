@@ -260,7 +260,7 @@ if page == "Home / Problem":
                 university_list=(
                     "university",
                     lambda names: "<br>".join(
-                        "🟢 " + str(name)
+                        "• " + str(name)
                         for name in sorted(names.dropna().unique())
                     )
                 )
