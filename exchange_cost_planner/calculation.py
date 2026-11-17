@@ -75,7 +75,7 @@ REQUIRED_CITY_COLUMNS = [
     "restaurant_meal",        # one meal in an inexpensive restaurant
     "evening_out",            # one evening out (drinks, cinema, ...)
     "transport_pass",         # monthly public transport pass
-
+]
 
 # ---------------------------------------------------------------------------
 # Helper functions

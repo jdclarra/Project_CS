@@ -29,6 +29,8 @@ from datetime import date
 
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import streamlit as st
 
 import database as db
@@ -516,16 +518,21 @@ elif page == "City comparison":
     st.subheader("Total cost of the stay")
     st.caption("Purpose: see at a glance which city is cheaper overall.")
     fig_total = px.bar(summary_table, x="city", y="total_chf", text="total_chf",
+                       color="city", color_discrete_sequence=CITY_COLORS,
                        labels={"city": "", "total_chf": "Total (CHF)"})
+    fig_total.update_traces(texttemplate="CHF %{text:,}", textposition="outside")
+    fig_total.update_layout(showlegend=False)
     st.plotly_chart(fig_total)
 
     st.subheader("Costs per category")
     st.caption("Purpose: see WHERE the difference comes from (e.g. rent or groceries).")
     fig_categories = px.bar(
         all_categories[all_categories["chf_total"] > 0],
-        x="category", y="chf_total", color="city", barmode="group",
-        labels={"category": "", "chf_total": "CHF for the whole stay", "city": "City"},
+        x="chf_total", y="city", color="category", orientation="h",
+        color_discrete_map=CATEGORY_COLORS,
+        labels={"chf_total": "CHF for the whole stay", "city": "", "category": ""},
     )
+    fig_categories.update_layout(barmode="stack", height=150 + 80 * len(chosen_cities))
     st.plotly_chart(fig_categories)
 
     st.dataframe(summary_table, hide_index=True)
@@ -574,17 +581,17 @@ elif page == "Weather":
         col1.metric("Average temperature", f"{stay_climate['temperature_c'].mean():.1f} °C")
         col2.metric("Rain per month", f"{stay_climate['rain_mm'].mean():.0f} mm")
 
-        chart_left, chart_right = st.columns(2)
-        with chart_left:
-            st.caption("Purpose: know what clothes to pack.")
-            fig_temp = px.line(stay_climate, x="month_name", y="temperature_c", markers=True,
-                               labels={"month_name": "Month", "temperature_c": "Mean temperature (°C)"})
-            st.plotly_chart(fig_temp)
-        with chart_right:
-            st.caption("Purpose: see whether your stay falls into a rainy season.")
-            fig_rain = px.bar(stay_climate, x="month_name", y="rain_mm",
-                              labels={"month_name": "Month", "rain_mm": "Rain (mm per month)"})
-            st.plotly_chart(fig_rain)
+        st.caption("Purpose: know what clothes to pack and whether your stay falls into a rainy season.")
+        fig_climate = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_climate.add_trace(go.Bar(x=stay_climate["month_name"], y=stay_climate["rain_mm"],
+                                     name="Rain (mm)", marker_color="#9CC5E0"), secondary_y=False)
+        fig_climate.add_trace(go.Scatter(x=stay_climate["month_name"], y=stay_climate["temperature_c"],
+                                         name="Temperature (°C)", mode="lines+markers",
+                                         line={"color": "#E76F51", "width": 3}), secondary_y=True)
+        fig_climate.update_yaxes(title_text="Rain (mm per month)", secondary_y=False)
+        fig_climate.update_yaxes(title_text="Mean temperature (°C)", secondary_y=True)
+        fig_climate.update_layout(template="plotly_white", legend={"orientation": "h", "y": 1.15})
+        st.plotly_chart(fig_climate, width="stretch")
 
 
 # ===========================================================================
