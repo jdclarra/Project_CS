@@ -37,6 +37,18 @@ from currency import convert_from_chf, get_exchange_rates
 from external_data import get_monthly_climate, get_inflation_factor
 from ml_model import predict_monthly_cost, train_models
 
+import math
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+px.defaults.template = "plotly_white"
+CATEGORY_COLORS = {
+    "Rent": "#00802F", "Groceries": "#4CA36B", "Restaurants / going out": "#F2A541",
+    "Public transport": "#3A7CA5", "Leisure / travel": "#9B5DE5",
+    "Flights": "#555555", "Visa": "#888888", "Deposit": "#BBBBBB", "Insurance": "#DDDDDD",
+}
+CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
+
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
 LIFESTYLE_NAMES = list(LIFESTYLES.keys())
 
@@ -225,11 +237,11 @@ if page == "Home / Problem":
         st.markdown(
             f"""
             **SQLite database** (`database/exchange_costs.db`)
-            - `universities`: {len(all_universities)} HSG partner universities and their city
-            - `cities`: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
+            - **Universities**: {len(all_universities)} HSG partner universities and their city
+            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
               (rent, groceries, restaurants, transport, flights, visa)
-            - `experiences`: {len(training_data)} reported monthly costs - the training data of our model
-            - `user_submissions`: costs entered in this app
+            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
+            - **User Submissions**: costs entered in this app
             """
         )
     with col2:
@@ -238,6 +250,7 @@ if page == "Home / Problem":
             **Online APIs** (free, no API key)
             - **Frankfurter** - current exchange rates (European Central Bank)
             - **Open-Meteo** - weather of the last three years for the climate chart
+            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
             """
         )
 
@@ -259,7 +272,20 @@ if page == "Home / Problem":
     figure = px.bar(per_country, x="country", y="number_of_universities",
                     title="Partner universities per country (top 15)",
                     labels={"country": "Country", "number_of_universities": "Number of universities"})
-    st.plotly_chart(figure, use_container_width=True)
+    st.plotly_chart(figure, width="stretch")
+
+    st.subheader("Where you can go")
+    uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city", how="left")
+    per_city = (uni_map.dropna(subset=["latitude", "longitude"])
+                .groupby(["city", "country", "latitude", "longitude"], as_index=False)
+                .agg(universities=("university", "count")))
+    fig_world = px.scatter_map(
+        per_city, lat="latitude", lon="longitude", size="universities", size_max=25,
+        hover_name="city", hover_data={"country": True, "universities": True, "latitude": False, "longitude": False},
+        color_discrete_sequence=["#00802F"], zoom=0.6, height=450, map_style="carto-positron",
+    )
+    fig_world.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
+    st.plotly_chart(fig_world, width="stretch")
 
     st.subheader("Cities and the status of their prices")
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
@@ -379,7 +405,13 @@ elif page == "Cost calculator":
     chart_left, chart_right = st.columns(2)
     with chart_left:
         st.caption("Purpose: see which categories make up most of your budget.")
-        fig_donut = px.pie(chart_table, names="category", values="chf_total", hole=0.4)
+        fig_donut = px.pie(chart_table, names="category", values="chf_total", hole=0.55,
+                           color="category", color_discrete_map=CATEGORY_COLORS)
+        fig_donut.update_traces(textposition="inside", textinfo="percent")
+        fig_donut.update_layout(
+            annotations=[{"text": f"<b>CHF {result['total']:,}</b><br>total", "showarrow": False, "font": {"size": 18}}],
+            margin={"t": 10, "b": 10},
+        )
         st.plotly_chart(fig_donut)
     with chart_right:
         st.caption("Purpose: compare monthly costs (added up over the stay) with one-time costs.")
@@ -389,6 +421,19 @@ elif page == "Cost calculator":
             labels={"chf_total": "CHF for the whole stay", "category": "", "type": "Type of cost"},
         )
         st.plotly_chart(fig_bar)
+    st.subheader("How your money develops over the stay")
+    st.caption("Purpose: see when you would run out of budget.")
+    month_steps = list(range(0, math.ceil(months))) + [months]
+    timeline = pd.DataFrame({
+        "month": month_steps,
+        "spent": [result["one_time_total"] + result["monthly_total"] * m for m in month_steps],
+    })
+    fig_timeline = px.area(timeline, x="month", y="spent", color_discrete_sequence=["#00802F"],
+                           labels={"month": "Month of stay", "spent": "Spent so far (CHF)"})
+    if budget > 0:
+        fig_timeline.add_hline(y=budget, line_dash="dash", line_color="#D62828",
+                               annotation_text=f"Your budget: CHF {budget:,}")
+    st.plotly_chart(fig_timeline, width="stretch")
 
     st.dataframe(table, hide_index=True)
 
