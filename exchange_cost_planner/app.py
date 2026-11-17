@@ -53,6 +53,17 @@ CATEGORY_COLORS = {
 CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
 CHART_MARGIN = {"t": 10, "b": 10, "l": 10, "r": 10}
 
+# Readable names for the price columns of a city
+PRICE_LABELS = {
+    "rent_shared_room": "Rent shared flat room (per month)",
+    "rent_dorm": "Rent student dormitory (per month)",
+    "rent_apartment": "Rent own apartment (per month)",
+    "groceries_month": "Groceries (per month)",
+    "restaurant_meal": "One restaurant meal",
+    "evening_out": "One evening out",
+    "transport_pass": "Public transport pass (per month)",
+}
+
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
 LIFESTYLE_NAMES = list(LIFESTYLES.keys())
 
@@ -98,15 +109,55 @@ def get_inflation_cached(iso3):
     return factor
 
 
+def number_of_reports(city):
+    """Number of HSG experience reports behind the prices of a city, 0 if none.
+
+    The number is part of the source text, e.g.
+    "HSG experience reports 2023-2026 (n=13 reports, median, CHF; ...)" -> 13
+    """
+    source = str(city["source"])
+    if "(n=" not in source:
+        return 0
+    text_after = source.split("(n=")[1]     # "13 reports, median, CHF; ..."
+    return int(text_after.split(" ")[0])    # "13" -> 13
+
+
+def kaggle_gap_columns(city):
+    """Price columns of a report city that were filled with Kaggle prices from 2022.
+
+    The source text ends with e.g.
+    "Gaps filled from Kaggle (..., NOT inflation-adjusted): rent_apartment, groceries_month."
+    Only the columns that the calculation uses are returned.
+    """
+    source = str(city["source"])
+    if "NOT inflation-adjusted): " not in source:
+        return []
+    names = source.split("NOT inflation-adjusted): ")[1].rstrip(".").split(", ")
+    columns = []
+    for name in names:
+        if name in PRICE_COLUMNS:
+            columns.append(name)
+    return columns
+
+
 def load_city_current(city_name):
-    """Load a city and adjust Kaggle prices from 2022 to today with IMF inflation."""
+    """Load a city and adjust prices from 2022 (Kaggle) to today with IMF inflation.
+
+    Kaggle city: all prices are from 2022.
+    Report city: the prices from the reports are recent, only the gaps filled from Kaggle are from 2022.
+    """
     city = dict(db.load_city(city_name))
     city["inflation_factor"] = 1.0
     if city["price_base_year"] == 2022:
+        old_columns = PRICE_COLUMNS
+    else:
+        old_columns = kaggle_gap_columns(city)
+
+    if len(old_columns) > 0:
         factor = get_inflation_cached(city["iso3"])
         if factor is not None:
             city["inflation_factor"] = factor
-            for column in PRICE_COLUMNS:
+            for column in old_columns:
                 if pd.notna(city[column]):
                     city[column] = round(city[column] * factor)
     return city
@@ -126,19 +177,32 @@ def months_of_stay(start_date, end_date):
     return months
 
 
-def is_placeholder(city):
-    """True if the prices of this city have not been researched yet."""
-    return str(city["source"]).startswith("PLACEHOLDER")
-
-
-def show_placeholder_warning(city):
-    if is_placeholder(city):
-        st.warning(
-            f"Most prices for **{city['city']}** are still **placeholders**, not researched values. "
-            "The result only shows how the app works. "
-            f"Status: {city['source']}"
+def show_price_source(city):
+    """Show where the prices of this city come from and how reliable they are."""
+    reports = number_of_reports(city)
+    if reports > 0:
+        st.success(
+            f"Prices for **{city['city']}** come from **{reports} HSG experience reports** (2023 to 2026). "
+            "For every price we use the median of the values that former exchange students stated."
         )
-    elif city.get("price_base_year") == 2022:
+        if reports < 3:
+            st.warning(f"There are only {reports} report(s) for this city, so the prices are not very reliable.")
+
+        # Prices that no report mentions were filled with Kaggle prices from 2022
+        gap_names = []
+        for column in kaggle_gap_columns(city):
+            gap_names.append(PRICE_LABELS[column])
+        if len(gap_names) > 0:
+            if city["inflation_factor"] == 1.0:
+                inflation_text = "not adjusted for inflation, because the IMF API could not be reached"
+            else:
+                inflation_text = f"adjusted by +{city['inflation_factor'] - 1:.0%} for inflation"
+            st.info(
+                "No report mentions these prices, so they come from the Kaggle dataset (2022, "
+                + inflation_text + "): " + ", ".join(gap_names) + "."
+            )
+
+    elif city["price_base_year"] == 2022:
         if city["inflation_factor"] == 1.0:
             st.warning(
                 f"Prices for **{city['city']}** are from 2022 (Kaggle). The inflation adjustment "
@@ -149,6 +213,8 @@ def show_placeholder_warning(city):
                 f"Prices for **{city['city']}** come from the Kaggle 'Global Cost of Living' dataset (2022) "
                 f"and were adjusted by **+{city['inflation_factor'] - 1:.0%}** for inflation (IMF data)."
             )
+        if "Gaps filled from HSG experience reports" in str(city["source"]):
+            st.caption("Prices that were missing in the Kaggle dataset were filled with values from HSG experience reports.")
 
 
 # App setup: check database, load data, train the model:
@@ -186,13 +252,14 @@ training_data = db.load_training_data()
 trained = train_models(training_data)  # None if there is not enough data
 
 number_of_simulated_rows = int((training_data["source"] == "simulated").sum())
-number_of_placeholder_cities = int(all_cities["source"].str.startswith("PLACEHOLDER").sum())
+number_of_cities_without_prices = len(all_cities) - len(city_names_with_prices)
 
-# Cities that have prices, but only placeholder prices
-number_of_placeholder_cities_with_prices = 0
+# Cities with prices from HSG experience reports (for the chart on the home page)
+report_rows = []
 for index, row in all_cities.iterrows():
-    if row["city"] in city_names_with_prices and is_placeholder(row):
-        number_of_placeholder_cities_with_prices = number_of_placeholder_cities_with_prices + 1
+    if number_of_reports(row) > 0:
+        report_rows.append({"city": row["city"], "reports": number_of_reports(row)})
+report_table = pd.DataFrame(report_rows)
 
 # Sidebar navigation:
 
@@ -202,9 +269,9 @@ page = st.sidebar.radio(
     ["Home / Problem", "Cost calculator", "City comparison", "Weather", "About the model"],
 )
 
-if number_of_placeholder_cities > 0 or number_of_simulated_rows > 0:
+if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
     st.sidebar.warning(
-        f"**Data status:** {number_of_placeholder_cities} of {len(all_cities)} cities have placeholder prices. "
+        f"**Data status:** {number_of_cities_without_prices} of {len(all_cities)} cities have no complete prices. "
         f"{number_of_simulated_rows} of {len(training_data)} training rows are simulated."
     )
 
@@ -305,13 +372,37 @@ if page == "Home / Problem":
             """
         )
 
+    st.subheader("Prices from HSG experience reports")
+    st.write(
+        "For these cities we read the experience reports of former HSG exchange students (2023 to 2026) "
+        "and took the prices they stated (rent, groceries, restaurant, transport ...). "
+        "For every price we use the median, so a single very high or low value does not change much. "
+        "Prices that no report mentions come from the Kaggle dataset."
+    )
+    col1, col2 = st.columns(2)
+    col1.metric("Cities with prices from reports", len(report_table))
+    col2.metric("Experience reports used", int(report_table["reports"].sum()))
+    with st.container(border=True):
+        st.markdown("#### Experience reports per city")
+        st.caption("Chart purpose: see which cities have prices from many reports and which from only a few.")
+        fig_reports = px.bar(
+            report_table.sort_values("reports"),
+            x="reports",
+            y="city",
+            orientation="h",
+            color_discrete_sequence=["#176B53"],
+            labels={"reports": "Number of HSG experience reports", "city": ""},
+            height=150 + 22 * len(report_table),
+        )
+        fig_reports.update_layout(margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_reports, width="stretch")
+
     st.warning(
         f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
-        f"{len(all_cities) - len(city_names_with_prices)} of {len(all_cities)} cities have **no prices yet**. "
-        f"Most prices come from the Kaggle dataset (2022) and are adjusted for inflation, but "
-        f"{number_of_placeholder_cities_with_prices} cities still have **placeholder prices**, and "
-        f"{number_of_simulated_rows} of {len(training_data)} training rows are **simulated**. "
-        "They will be replaced by researched prices and by real answers of former exchange students. "
+        f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
+        f"The prices of {len(report_table)} cities come from HSG experience reports, all others from the "
+        f"Kaggle dataset (2022, adjusted for inflation). {number_of_simulated_rows} of {len(training_data)} "
+        "training rows are **simulated** and will be replaced by real answers of former exchange students. "
         "All results are estimates, not guarantees."
     )
 
@@ -381,12 +472,21 @@ elif page == "Cost calculator":
 
         if city_name not in city_names_with_prices:
             st.error(
-                f"We have **no prices for {city_name}** yet, so a cost estimate is not possible. "
-                "You can still look at the weather for this city. "
+                f"We do not have **all prices for {city_name}** yet, so a cost estimate is not possible. "
+                "You can still look at the weather for this city."
             )
+            # Show at least the prices we already know from experience reports
+            reports = number_of_reports(city)
+            if reports > 0:
+                st.subheader(f"What {reports} HSG experience report(s) say about {city_name}")
+                known_prices = []
+                for column in PRICE_COLUMNS:
+                    if pd.notna(city[column]):
+                        known_prices.append({"price": PRICE_LABELS[column], "chf": round(city[column])})
+                st.dataframe(pd.DataFrame(known_prices), hide_index=True)
             st.stop()
 
-        show_placeholder_warning(city)
+        show_price_source(city)
 
         # --- Rule-based estimate (calculation.py) ---
         result = estimate_exchange_costs(
@@ -560,17 +660,15 @@ elif page == "City comparison":
     # Calculate the estimate for every chosen city
     summary_rows = []
     category_tables = []
-    placeholder_cities = []
     for name in chosen_cities:
         city = load_city_current(name)
-        if is_placeholder(city):
-            placeholder_cities.append(name)
         result = estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_month=trips_per_month)
 
         summary = {
             "city": name,
             "per_month_chf": result["monthly_total"],
             "total_chf": result["total"],
+            "hsg_reports": number_of_reports(city),
         }
         if trained is not None:
             summary["ml_model_per_month_chf"] = predict_monthly_cost(trained, city, housing_type, lifestyle, trips_per_month)
@@ -579,9 +677,6 @@ elif page == "City comparison":
         city_table = result["table"].copy()
         city_table["city"] = name
         category_tables.append(city_table)
-
-    if len(placeholder_cities) > 0:
-        st.warning("Placeholder prices (not researched yet) for: " + ", ".join(placeholder_cities) + ".")
 
     summary_table = pd.DataFrame(summary_rows).sort_values("total_chf")
     all_categories = pd.concat(category_tables)  # stack the tables of all cities
