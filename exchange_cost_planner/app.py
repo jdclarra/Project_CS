@@ -372,31 +372,6 @@ if page == "Home / Problem":
             """
         )
 
-    st.subheader("Prices from HSG experience reports")
-    st.write(
-        "For these cities we read the experience reports of former HSG exchange students (2023 to 2026) "
-        "and took the prices they stated (rent, groceries, restaurant, transport ...). "
-        "For every price we use the median, so a single very high or low value does not change much. "
-        "Prices that no report mentions come from the Kaggle dataset."
-    )
-    col1, col2 = st.columns(2)
-    col1.metric("Cities with prices from reports", len(report_table))
-    col2.metric("Experience reports used", int(report_table["reports"].sum()))
-    with st.container(border=True):
-        st.markdown("#### Experience reports per city")
-        st.caption("Chart purpose: see which cities have prices from many reports and which from only a few.")
-        fig_reports = px.bar(
-            report_table.sort_values("reports"),
-            x="reports",
-            y="city",
-            orientation="h",
-            color_discrete_sequence=["#176B53"],
-            labels={"reports": "Number of HSG experience reports", "city": ""},
-            height=150 + 22 * len(report_table),
-        )
-        fig_reports.update_layout(margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_reports, width="stretch")
-
     st.warning(
         f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
         f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
