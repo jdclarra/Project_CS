@@ -530,9 +530,11 @@ elif page == "City comparison":
     st.caption("Purpose: see WHERE the difference comes from (e.g. rent or flights).")
     fig_categories = px.bar(
         all_categories[all_categories["chf_total"] > 0],
-        x="category", y="chf_total", color="city", barmode="group",
-        labels={"category": "", "chf_total": "CHF for the whole stay", "city": "City"},
+        x="chf_total", y="city", color="category", orientation="h",
+        color_discrete_map=CATEGORY_COLORS,
+        labels={"chf_total": "CHF for the whole stay", "city": "", "category": ""},
     )
+    fig_categories.update_layout(barmode="stack", height=150 + 80 * len(chosen_cities))
     st.plotly_chart(fig_categories)
 
     st.dataframe(summary_table, hide_index=True)
