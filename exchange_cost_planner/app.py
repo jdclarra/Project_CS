@@ -355,21 +355,21 @@ elif page == "Cost calculator":
         st.subheader(f"Estimate for {months} months in {city_name}")
         st.caption("Partner universities in this city: " + "; ".join(db.load_universities_in_city(city_name)))
         
-col1, col2 = st.columns(2, gap="medium")
+        col1, col2 = st.columns(2, gap="medium")
 
-with col1:
-    with st.container(border=True):
-        st.metric(
-            label="Monthly estimate",
-            value=f"CHF {result['monthly_total']:,}"
-        )
+        with col1:
+            with st.container(border=True):
+                st.metric(
+                    label="Monthly estimate",
+                    value=f"CHF {result['monthly_total']:,}"
+                )
 
-with col2:
-    with st.container(border=True):
-        st.metric(
-            label="Total for your stay",
-            value=f"CHF {result['total']:,}"
-        )
+        with col2:
+            with st.container(border=True):
+                st.metric(
+                    label="Total for your stay",
+                    value=f"CHF {result['total']:,}"
+                )
 
         st.write(
             f"Realistic range: **CHF {result['total_min']:,} - {result['total_max']:,}** "
