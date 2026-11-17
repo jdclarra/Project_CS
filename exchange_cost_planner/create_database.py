@@ -135,6 +135,8 @@ def create_tables(cursor):
             restaurant_meal REAL,
             evening_out REAL,
             transport_pass REAL,
+            flight_return REAL,
+            visa_fee REAL,
             leisure_month REAL,           -- gym + 2 cinema tickets per month
             utilities_month REAL,         -- electricity/heating/water + internet, shared by 3
             price_base_year INTEGER,      -- 2022 = Kaggle prices (adjusted for inflation in the app)
