@@ -44,14 +44,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 px.defaults.template = "plotly_white"
-px.defaults.template = "plotly_white"
 
 CATEGORY_COLORS = {
-    "Rent": "#268365",
-    "Groceries": "#91BE76",
-    "Restaurants / going out": "#D0809B",
-    "Public transport": "#5799C4",
-    "Leisure / travel": "#9577CD",
+    "Rent": "#075E45",
+    "Groceries": "#57A580",
+    "Restaurants / going out": "#A2B874",
+    "Public transport": "#217F91",
+    "Leisure / travel": "#557B9D",
 }
 CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
 
