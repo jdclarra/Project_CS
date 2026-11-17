@@ -236,24 +236,38 @@ if page == "Home / Problem":
         """
     )
 
+
     st.subheader("Where you can go")
 
     with st.container(border=True):
+
+        # Merge universities with city coordinates
         uni_map = all_universities.merge(
             all_cities[["city", "latitude", "longitude"]],
             on="city",
             how="left"
         )
 
+        # Build a list of partner universities for each city
         per_city = (
             uni_map.dropna(subset=["latitude", "longitude"])
             .groupby(
                 ["city", "country", "latitude", "longitude"],
                 as_index=False
             )
-            .agg(universities=("university", "count"))
+            .agg(
+                universities=("university", "nunique"),
+                university_list=(
+                    "university",
+                    lambda names: "<br>".join(
+                        "🟢 " + str(name)
+                        for name in sorted(names.dropna().unique())
+                    )
+                )
+            )
         )
 
+        # Create interactive world map
         fig_world = px.scatter_map(
             per_city,
             lat="latitude",
@@ -261,23 +275,44 @@ if page == "Home / Problem":
             size="universities",
             size_max=25,
             hover_name="city",
-            hover_data={
-                "country": True,
-                "universities": True,
-                "latitude": False,
-                "longitude": False
-            },
+            custom_data=[
+                "country",
+                "universities",
+                "university_list"
+            ],
             color_discrete_sequence=["#176B53"],
             zoom=0.6,
             height=450,
             map_style="carto-positron"
         )
 
+        # Custom hover box
+        fig_world.update_traces(
+            hovertemplate=(
+                "<b>%{hovertext}</b><br>"
+                "%{customdata[0]}<br><br>"
+                "<b>Partner universities (%{customdata[1]}):</b>"
+                "<br>%{customdata[2]}"
+                "<extra></extra>"
+            )
+        )
+
+        # Style the hover box
         fig_world.update_layout(
+            hoverlabel=dict(
+                bgcolor="#FFFFFF",
+                font_size=12,
+                font_color="#20362B",
+                align="left"
+            ),
             margin=dict(l=0, r=0, t=0, b=0)
         )
 
-        st.plotly_chart(fig_world, width="stretch")
+        st.plotly_chart(
+            fig_world,
+            width="stretch"
+        )
+
 
     st.header("Where does the data come from?")
     col1, col2 = st.columns(2)
