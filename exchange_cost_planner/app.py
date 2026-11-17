@@ -4,11 +4,11 @@ app.py - Exchange Cost Planner (Streamlit web application)
 Role: "App & Design" - this file builds everything the user sees and
 connects the modules of the other roles:
 
-    database.py       SQL queries (cities, experiences, submissions)
+    database.py       SQL queries (cities, universities, experiences)
     calculation.py    rule-based cost estimate
     currency.py       exchange rates (Frankfurter API)
     ml_model.py       our own machine-learning model
-    external_data.py  climate (Open-Meteo API)
+    external_data.py  climate (Open-Meteo API) and inflation (IMF API)
 
 Start with:   streamlit run app.py
 
@@ -25,6 +25,7 @@ Pages (chosen in the sidebar):
 # Students reviewed, tested, adapted and must document the exact use
 # according to HSG course requirements.
 
+import math
 from datetime import date
 
 import pandas as pd
@@ -34,14 +35,11 @@ from plotly.subplots import make_subplots
 import streamlit as st
 
 import database as db
-from calculation import HOUSING_COLUMNS, LIFESTYLES, UNCERTAINTY, estimate_exchange_costs, months_between
+from calculation import (COST_PER_TRIP, HOUSING_COLUMNS, LIFESTYLES, PRICE_COLUMNS, UNCERTAINTY,
+                         estimate_exchange_costs, months_between)
 from currency import convert_from_chf, get_exchange_rates
-from external_data import get_monthly_climate, get_inflation_factor
+from external_data import get_inflation_factor, get_monthly_climate
 from ml_model import predict_monthly_cost, train_models
-
-import math
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 px.defaults.template = "plotly_white"
 
@@ -53,6 +51,7 @@ CATEGORY_COLORS = {
     "Leisure / travel": "#557B9D",
 }
 CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
+CHART_MARGIN = {"t": 10, "b": 10, "l": 10, "r": 10}
 
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
 LIFESTYLE_NAMES = list(LIFESTYLES.keys())
@@ -88,34 +87,28 @@ def get_climate_cached(city):
         st.session_state[key] = climate
     return climate
 
+
 def get_inflation_cached(iso3):
     key = "inflation_" + str(iso3)
     if key in st.session_state:
         return st.session_state[key]
+
     factor = get_inflation_factor(iso3)
     if factor is not None:
         st.session_state[key] = factor
     return factor
 
 
-PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_month",
-                 "restaurant_meal", "evening_out", "transport_pass",
-                 "leisure_month", "utilities_month"]
-
-
 def load_city_current(city_name):
-    """Loads a city and adjusts Kaggle prices from 2022 to today with IMF inflation."""
-    city = db.load_city(city_name)
-    if city is None:
-        return None
-    city = dict(city)
+    """Load a city and adjust Kaggle prices from 2022 to today with IMF inflation."""
+    city = dict(db.load_city(city_name))
     city["inflation_factor"] = 1.0
-    if city.get("price_base_year") == 2022:
-        factor = get_inflation_cached(city.get("iso3"))
+    if city["price_base_year"] == 2022:
+        factor = get_inflation_cached(city["iso3"])
         if factor is not None:
             city["inflation_factor"] = factor
             for column in PRICE_COLUMNS:
-                if column in city and pd.notna(city[column]):
+                if pd.notna(city[column]):
                     city[column] = round(city[column] * factor)
     return city
 
@@ -159,7 +152,6 @@ def show_placeholder_warning(city):
             )
 
 
-
 # ---------------------------------------------------------------------------
 # App setup: check database, load data, train the model
 # ---------------------------------------------------------------------------
@@ -177,7 +169,9 @@ city_names_with_prices = db.load_city_names_with_prices()
 all_cities = db.load_all_cities()
 all_universities = db.load_universities()
 
-# Text for the university dropdown, e.g. "Keio University - Tokyo, Japan"
+# Text for the university dropdown, e.g. "Keio University - Tokyo, Japan".
+# For every label we also remember the city and the study level
+# ("Bachelor", "Master", "Both" or empty if unknown).
 university_labels = []
 city_of_label = {}
 level_of_label = {}
@@ -189,12 +183,18 @@ for index, row in all_universities.iterrows():
 university_labels.sort()
 
 # Train our own ML model on the reported costs every time the app runs.
-# This takes well under a second and means new submissions are used immediately.
+# This takes well under a second.
 training_data = db.load_training_data()
 trained = train_models(training_data)  # None if there is not enough data
 
 number_of_simulated_rows = int((training_data["source"] == "simulated").sum())
 number_of_placeholder_cities = int(all_cities["source"].str.startswith("PLACEHOLDER").sum())
+
+# Cities that have prices, but only placeholder prices
+number_of_placeholder_cities_with_prices = 0
+for index, row in all_cities.iterrows():
+    if row["city"] in city_names_with_prices and is_placeholder(row):
+        number_of_placeholder_cities_with_prices = number_of_placeholder_cities_with_prices + 1
 
 # ---------------------------------------------------------------------------
 # Sidebar navigation
@@ -238,38 +238,26 @@ if page == "Home / Problem":
         """
     )
 
-
     st.subheader("Where you can go")
-
     with st.container(border=True):
+        # Add the coordinates of the city to every university
+        uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
 
-        # Merge universities with city coordinates
-        uni_map = all_universities.merge(
-            all_cities[["city", "latitude", "longitude"]],
-            on="city",
-            how="left"
+        # One row per city with the number of partner universities
+        per_city = uni_map.groupby(["city", "country", "latitude", "longitude"], as_index=False).agg(
+            universities=("university", "count")
         )
 
-        # Build a list of partner universities for each city
-        per_city = (
-            uni_map.dropna(subset=["latitude", "longitude"])
-            .groupby(
-                ["city", "country", "latitude", "longitude"],
-                as_index=False
-            )
-            .agg(
-                universities=("university", "nunique"),
-                university_list=(
-                    "university",
-                    lambda names: "<br>".join(
-                        "• " + str(name)
-                        for name in sorted(names.dropna().unique())
-                    )
-                )
-            )
-        )
+        # Text for the hover box: all partner universities of the city, one per line
+        university_lists = []
+        for city_name in per_city["city"]:
+            names = sorted(uni_map[uni_map["city"] == city_name]["university"])
+            text = ""
+            for name in names:
+                text = text + "<br>• " + name
+            university_lists.append(text)
+        per_city["university_list"] = university_lists
 
-        # Create interactive world map
         fig_world = px.scatter_map(
             per_city,
             lat="latitude",
@@ -277,44 +265,26 @@ if page == "Home / Problem":
             size="universities",
             size_max=25,
             hover_name="city",
-            custom_data=[
-                "country",
-                "universities",
-                "university_list"
-            ],
+            custom_data=["country", "universities", "university_list"],
             color_discrete_sequence=["#176B53"],
             zoom=0.6,
             height=450,
-            map_style="carto-positron"
+            map_style="carto-positron",
         )
-
-        # Custom hover box
         fig_world.update_traces(
             hovertemplate=(
                 "<b>%{hovertext}</b><br>"
                 "%{customdata[0]}<br><br>"
                 "<b>Partner universities (%{customdata[1]}):</b>"
-                "<br>%{customdata[2]}"
+                "%{customdata[2]}"
                 "<extra></extra>"
             )
         )
-
-        # Style the hover box
         fig_world.update_layout(
-            hoverlabel=dict(
-                bgcolor="white",
-                font_size=12,
-                font_color="#20362B",
-                align="left"
-            ),
-            margin=dict(l=0, r=0, t=0, b=0)
+            hoverlabel={"bgcolor": "white", "font_size": 12, "font_color": "#20362B", "align": "left"},
+            margin={"l": 0, "r": 0, "t": 0, "b": 0},
         )
-
-        st.plotly_chart(
-            fig_world,
-            width="stretch"
-        )
-
+        st.plotly_chart(fig_world, width="stretch")
 
     st.header("Where does the data come from?")
     col1, col2 = st.columns(2)
@@ -326,7 +296,6 @@ if page == "Home / Problem":
             - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
               (rent, groceries, restaurants, transport)
             - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
-            - **User Submissions**: costs entered in this app
             """
         )
     with col2:
@@ -341,10 +310,12 @@ if page == "Home / Problem":
 
     st.warning(
         f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
-        f"{len(all_cities) - len(city_names_with_prices)} of {len(all_cities)} cities have **no prices yet**, "
-        f"the other {len(city_names_with_prices)} mostly have **placeholder prices**, and {number_of_simulated_rows} of {len(training_data)} training rows are "
-        "**simulated**. They will be replaced by researched prices and by real answers of former exchange "
-        "students. All results are estimates, not guarantees."
+        f"{len(all_cities) - len(city_names_with_prices)} of {len(all_cities)} cities have **no prices yet**. "
+        f"Most prices come from the Kaggle dataset (2022) and are adjusted for inflation, but "
+        f"{number_of_placeholder_cities_with_prices} cities still have **placeholder prices**, and "
+        f"{number_of_simulated_rows} of {len(training_data)} training rows are **simulated**. "
+        "They will be replaced by researched prices and by real answers of former exchange students. "
+        "All results are estimates, not guarantees."
     )
 
     st.subheader("Partner universities in the database")
@@ -352,31 +323,18 @@ if page == "Home / Problem":
                "The last columns show how many experience reports the portal lists and from which year the newest is.")
     st.dataframe(all_universities, hide_index=True)
 
-    
     with st.container(border=True):
         # Chart purpose: see where most partner universities are
         per_country = db.count_universities_per_country().head(15)
-
         figure = px.bar(
             per_country,
             x="country",
             y="number_of_universities",
             title="Partner universities per country (top 15)",
-            labels={
-                "country": "Country",
-                "number_of_universities": "Number of universities"
-            }
+            labels={"country": "Country", "number_of_universities": "Number of universities"},
         )
-
         st.plotly_chart(figure, width="stretch")
 
-    st.subheader("Cities and the status of their prices")
-    st.dataframe(
-        all_cities[["city", "country", "currency", "source", "as_of_date"]],
-        hide_index=True
-    )
-
-    
     st.subheader("Cities and the status of their prices")
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
 
@@ -418,10 +376,6 @@ elif page == "Cost calculator":
         budget = st.number_input("My budget in CHF (optional)", min_value=0, max_value=100000, value=0, step=500)
 
     city = load_city_current(city_name)
-    if city is None:
-        st.info("No data was found for this city.")
-        st.stop()
-
     months = months_between(start_date, end_date)
 
     with right:
@@ -450,22 +404,14 @@ elif page == "Cost calculator":
 
         st.subheader(f"Estimate for {months} months in {city_name}")
         st.caption("Partner universities in this city: " + "; ".join(db.load_universities_in_city(city_name)))
-        
-        col1, col2 = st.columns(2, gap="medium")
 
+        col1, col2 = st.columns(2, gap="medium")
         with col1:
             with st.container(border=True):
-                st.metric(
-                    label="Monthly estimate",
-                    value=f"CHF {result['monthly_total']:,}"
-                )
-
+                st.metric("Monthly estimate", f"CHF {result['monthly_total']:,}")
         with col2:
             with st.container(border=True):
-                st.metric(
-                    label="Total for your stay",
-                    value=f"CHF {result['total']:,}"
-                )
+                st.metric("Total for your stay", f"CHF {result['total']:,}")
 
         st.write(
             f"Realistic range: **CHF {result['total_min']:,} - {result['total_max']:,}** "
@@ -510,7 +456,6 @@ elif page == "Cost calculator":
                 f"{number_of_simulated_rows} of these reports are simulated. See 'About the model'."
             )
 
-
     # --- Breakdown below ---
     st.subheader("Cost breakdown")
 
@@ -519,53 +464,34 @@ elif page == "Cost calculator":
 
     chart_left, chart_right = st.columns(2, gap="medium")
 
-    # Donut Chart
+    # Donut chart
     with chart_left:
         with st.container(border=True):
             st.markdown("#### Cost distribution")
-            st.caption(
-                "See which categories make up most of your budget."
-            )
-
+            st.caption("See which categories make up most of your budget.")
             fig_donut = px.pie(
                 chart_table,
                 names="category",
                 values="chf_total",
                 hole=0.55,
                 color="category",
-                color_discrete_map=CATEGORY_COLORS
+                color_discrete_map=CATEGORY_COLORS,
             )
-
-            fig_donut.update_traces(
-                textposition="inside",
-                textinfo="percent",
-                marker=dict(
-                    line=dict(color="white", width=2)
-                )
-            )
-
+            fig_donut.update_traces(textposition="inside", textinfo="percent",
+                                    marker={"line": {"color": "white", "width": 2}})
             fig_donut.update_layout(
-                annotations=[
-                    {
-                        "text": f"<b>CHF {result['total']:,}</b><br>total",
-                        "showarrow": False,
-                        "font": {"size": 18}
-                    }
-                ],
-                margin=dict(t=10, b=10, l=10, r=10),
-                paper_bgcolor="rgba(0,0,0,0)"
+                annotations=[{"text": f"<b>CHF {result['total']:,}</b><br>total",
+                              "showarrow": False, "font": {"size": 18}}],
+                margin=CHART_MARGIN,
+                paper_bgcolor="rgba(0,0,0,0)",
             )
-
             st.plotly_chart(fig_donut, width="stretch")
 
-    # Bar Chart
+    # Bar chart
     with chart_right:
         with st.container(border=True):
             st.markdown("#### Costs by category")
-            st.caption(
-                "See how much each category costs over your stay."
-            )
-
+            st.caption("See how much each category costs over your stay.")
             fig_bar = px.bar(
                 chart_table.sort_values("chf_total"),
                 x="chf_total",
@@ -573,27 +499,19 @@ elif page == "Cost calculator":
                 color="category",
                 orientation="h",
                 color_discrete_map=CATEGORY_COLORS,
-                labels={
-                    "chf_total": "CHF for the whole stay",
-                    "category": ""
-                }
+                labels={"chf_total": "CHF for the whole stay", "category": ""},
             )
-
-            fig_bar.update_layout(
-                showlegend=False,
-                margin=dict(t=10, b=10, l=10, r=10),
-                paper_bgcolor="rgba(0,0,0,0)"
-            )
-
+            fig_bar.update_layout(showlegend=False, margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_bar, width="stretch")
 
     st.subheader("How your money develops over the stay")
     st.caption("Purpose: see when you would run out of budget.")
+    # Months 0, 1, 2, ... and the exact end of the stay (e.g. 4.4)
     month_steps = list(range(0, math.ceil(months))) + [months]
-    timeline = pd.DataFrame({
-        "month": month_steps,
-        "spent": [result["monthly_total"] * m for m in month_steps],
-    })
+    spent = []
+    for month in month_steps:
+        spent.append(result["monthly_total"] * month)
+    timeline = pd.DataFrame({"month": month_steps, "spent": spent})
     fig_timeline = px.area(timeline, x="month", y="spent", color_discrete_sequence=["#00802F"],
                            labels={"month": "Month of stay", "spent": "Spent so far (CHF)"})
     if budget > 0:
@@ -612,7 +530,7 @@ elif page == "Cost calculator":
             - **Restaurants / going out:** {habits['restaurant_meals_per_week']} restaurant meals per week and
               {habits['evenings_out_per_month']} evenings out per month x the local price.
             - **Public transport:** monthly pass.
-            - **Leisure / travel:** {trips_per_month} weekend trips per month x CHF 150.
+            - **Leisure / travel:** {trips_per_month} weekend trips per month x CHF {COST_PER_TRIP}.
             - **Range:** monthly costs plus or minus {UNCERTAINTY:.0%}.
             - Price source for this city: {city['source']} (as of {city['as_of_date']}).
             """
@@ -680,15 +598,10 @@ elif page == "City comparison":
         f"CHF {most_expensive['total_chf'] - cheapest['total_chf']:,} less than {most_expensive['city']}."
     )
 
-    
     st.subheader("Total cost of the stay")
-
     with st.container(border=True):
         st.markdown("#### Total cost comparison")
-        st.caption(
-            "Compare your estimated total costs across cities."
-        )
-
+        st.caption("Compare your estimated total costs across cities.")
         fig_total = px.bar(
             summary_table,
             x="city",
@@ -696,33 +609,17 @@ elif page == "City comparison":
             text="total_chf",
             color="city",
             color_discrete_sequence=CITY_COLORS,
-            labels={
-                "city": "",
-                "total_chf": "Total (CHF)"
-            }
+            labels={"city": "", "total_chf": "Total (CHF)"},
         )
-
-        fig_total.update_traces(
-            texttemplate="CHF %{text:,}",
-            textposition="outside"
-        )
-
-        fig_total.update_layout(
-            showlegend=False,
-            margin=dict(t=30, b=10, l=10, r=10),
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-
+        fig_total.update_traces(texttemplate="CHF %{text:,}", textposition="outside")
+        fig_total.update_layout(showlegend=False, margin={"t": 30, "b": 10, "l": 10, "r": 10},
+                                paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig_total, width="stretch")
 
     st.subheader("Costs per category")
-
     with st.container(border=True):
         st.markdown("#### Cost structure by city")
-        st.caption(
-            "See where the differences between cities come from."
-        )
-
+        st.caption("See where the differences between cities come from.")
         fig_categories = px.bar(
             all_categories[all_categories["chf_total"] > 0],
             x="chf_total",
@@ -730,22 +627,11 @@ elif page == "City comparison":
             color="category",
             orientation="h",
             color_discrete_map=CATEGORY_COLORS,
-            labels={
-                "chf_total": "CHF for the whole stay",
-                "city": "",
-                "category": ""
-            }
+            labels={"chf_total": "CHF for the whole stay", "city": "", "category": ""},
         )
-
-        fig_categories.update_layout(
-            barmode="stack",
-            height=150 + 80 * len(chosen_cities),
-            margin=dict(t=20, b=10, l=10, r=10),
-            paper_bgcolor="rgba(0,0,0,0)"
-        )
-
+        fig_categories.update_layout(barmode="stack", height=150 + 80 * len(chosen_cities),
+                                     margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig_categories, width="stretch")
-
 
     st.dataframe(summary_table, hide_index=True)
 
@@ -793,67 +679,36 @@ elif page == "Weather":
         col1.metric("Average temperature", f"{stay_climate['temperature_c'].mean():.1f} °C")
         col2.metric("Rain per month", f"{stay_climate['rain_mm'].mean():.0f} mm")
 
-        
         with st.container(border=True):
             st.markdown("#### Temperature & rainfall")
-            st.caption(
-                "Explore the typical weather during your stay."
-            )
+            st.caption("Explore the typical weather during your stay.")
 
-            fig_climate = make_subplots(
-                specs=[[{"secondary_y": True}]]
-            )
-
+            # One chart with two y-axes: rain as bars (left), temperature as a line (right)
+            fig_climate = make_subplots(specs=[[{"secondary_y": True}]])
             fig_climate.add_trace(
-                go.Bar(
-                    x=stay_climate["month_name"],
-                    y=stay_climate["rain_mm"],
-                    name="Rain (mm)",
-                    marker_color="#83B7C3"
-                ),
-                secondary_y=False
+                go.Bar(x=stay_climate["month_name"], y=stay_climate["rain_mm"],
+                       name="Rain (mm)", marker_color="#83B7C3"),
+                secondary_y=False,
             )
-
             fig_climate.add_trace(
-                go.Scatter(
-                    x=stay_climate["month_name"],
-                    y=stay_climate["temperature_c"],
-                    name="Temperature (°C)",
-                    mode="lines+markers",
-                    line={
-                        "color": "#176B53",
-                        "width": 3
-                    }
-                ),
-                secondary_y=True
+                go.Scatter(x=stay_climate["month_name"], y=stay_climate["temperature_c"],
+                           name="Temperature (°C)", mode="lines+markers",
+                           line={"color": "#176B53", "width": 3}),
+                secondary_y=True,
             )
-
-            fig_climate.update_yaxes(
-                title_text="Rain (mm per month)",
-                secondary_y=False
-            )
-
-            fig_climate.update_yaxes(
-                title_text="Mean temperature (°C)",
-                secondary_y=True
-            )
-
+            fig_climate.update_yaxes(title_text="Rain (mm per month)", secondary_y=False)
+            fig_climate.update_yaxes(title_text="Mean temperature (°C)", secondary_y=True)
             fig_climate.update_layout(
                 template="plotly_white",
-                legend={
-                    "orientation": "h",
-                    "y": 1.15
-                },
-                margin=dict(t=55, b=10, l=10, r=10),
-                paper_bgcolor="rgba(0,0,0,0)"
+                legend={"orientation": "h", "y": 1.15},
+                margin={"t": 55, "b": 10, "l": 10, "r": 10},
+                paper_bgcolor="rgba(0,0,0,0)",
             )
-
             st.plotly_chart(fig_climate, width="stretch")
 
 
-
 # ===========================================================================
-# PAGE 6: About the model
+# PAGE 5: About the model
 # ===========================================================================
 elif page == "About the model":
     st.title("About the model")
@@ -894,82 +749,43 @@ elif page == "About the model":
         f"The average reported cost is CHF {training_data['monthly_cost_chf'].mean():,.0f} per month."
     )
 
-    
     chart_left, chart_right = st.columns(2, gap="medium")
 
     with chart_left:
         with st.container(border=True):
             st.markdown("#### Predicted vs. actual costs")
-            st.caption(
-                "Points closer to the diagonal indicate better predictions."
-            )
-
+            st.caption("Points closer to the diagonal indicate better predictions.")
             test_results = trained["test_results"]
-
             fig_test = px.scatter(
                 test_results,
                 x="actual_cost",
                 y="predicted_cost",
-                labels={
-                    "actual_cost": "Reported cost (CHF)",
-                    "predicted_cost": "Predicted cost (CHF)"
-                },
-                color_discrete_sequence=["#176B53"]
+                labels={"actual_cost": "Reported cost (CHF)", "predicted_cost": "Predicted cost (CHF)"},
+                color_discrete_sequence=["#176B53"],
             )
-
+            # Diagonal line: on this line the prediction is exactly right
             highest = test_results["actual_cost"].max()
-
-            fig_test.add_shape(
-                type="line",
-                x0=0,
-                y0=0,
-                x1=highest,
-                y1=highest,
-                line={
-                    "dash": "dash",
-                    "color": "#8FA99B"
-                }
-            )
-
-            fig_test.update_layout(
-                margin=dict(t=20, b=10, l=10, r=10),
-                paper_bgcolor="rgba(0,0,0,0)"
-            )
-
+            fig_test.add_shape(type="line", x0=0, y0=0, x1=highest, y1=highest,
+                               line={"dash": "dash", "color": "#8FA99B"})
+            fig_test.update_layout(margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_test, width="stretch")
 
     with chart_right:
         with st.container(border=True):
             st.markdown("#### Reported costs by city")
-            st.caption(
-                "Average monthly costs based on training data."
-            )
-
+            st.caption("Average monthly costs based on training data.")
             reported = db.average_reported_cost_per_city()
-
             fig_reported = px.bar(
-                reported.sort_values(
-                    "average_monthly_cost_chf"
-                ),
+                reported.sort_values("average_monthly_cost_chf"),
                 x="average_monthly_cost_chf",
                 y="city",
                 orientation="h",
                 hover_data=["number_of_reports"],
                 color_discrete_sequence=["#4F9679"],
-                labels={
-                    "average_monthly_cost_chf":
-                        "Average reported cost (CHF per month)",
-                    "city": ""
-                }
+                labels={"average_monthly_cost_chf": "Average reported cost (CHF per month)", "city": ""},
             )
-
-            fig_reported.update_layout(
-                margin=dict(t=20, b=10, l=10, r=10),
-                paper_bgcolor="rgba(0,0,0,0)"
-            )
-
+            fig_reported.update_layout(margin=CHART_MARGIN, paper_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_reported, width="stretch")
-
 
     if trained["model_name"] == "Linear regression":
         st.subheader("What the model learned")

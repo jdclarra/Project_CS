@@ -8,10 +8,10 @@ weil sonst der Code der anderen nicht mehr passt.
 
 | Datei | Inhalt |
 |-------|--------|
-| `calculation.py` | Kostenberechnung: monatliche und einmalige Kosten, Total, Bandbreite, Budgetvergleich |
+| `calculation.py` | Kostenberechnung: monatliche Kosten, Total, Bandbreite, Budgetvergleich |
 | `currency.py` | Wechselkurse (Frankfurter-API), Umrechnung CHF → Landeswährung, gespeicherte Kurse als Notlösung |
-| `app.py` | Die ganze Streamlit-App. Sie verwendet die beiden Module (früher gab es dafür `demo_app.py`) |
-| `check_calculation.py` | 30 Prüfungen mit von Hand gerechneten Ergebnissen (`python check_calculation.py`) |
+| `app.py` | Die ganze Streamlit-App. Sie verwendet die beiden Module |
+| `check_calculation.py` | 26 Prüfungen mit von Hand gerechneten Ergebnissen (`python check_calculation.py`) |
 
 Ausprobieren:
 
@@ -20,7 +20,7 @@ cd exchange_cost_planner
 pip install -r requirements.txt
 python check_calculation.py      # alle Prüfungen müssen "OK" zeigen
 streamlit run app.py             # die App im Browser
-python currency.py               # prüft, welche unserer Währungen die API kennt (braucht Internet)
+python currency.py               # holt Beispielkurse von der API (braucht Internet)
 ```
 
 ---
@@ -44,8 +44,9 @@ Datum dokumentieren. So hängt die Berechnung nie von der Internetverbindung ab.
 | `restaurant_meal` | 1 Essen in einem günstigen Restaurant | CHF pro Besuch |
 | `evening_out` | 1 Abend im Ausgang (Getränke, Kino …) | CHF pro Abend |
 | `transport_pass` | ÖV-Monatsabo (Studierendentarif, falls vorhanden) | CHF pro Monat |
-| `flight_return` | 1 Hin- und Rückflug ab der Schweiz | CHF |
-| `visa_fee` | Visumgebühr für CH-Bürger, `0` falls keines nötig | CHF |
+
+Diese sieben Preisspalten stehen in `calculation.py` in der Liste `PRICE_COLUMNS`. Die anderen Module
+(`create_database.py`, `database.py`, `app.py`) verwenden dieselbe Liste.
 
 **Fehlende Werte:** einfach leer lassen (`NULL` / `None`). Die Berechnung zählt sie als 0, und
 `result["missing_values"]` listet sie auf, damit die App eine Warnung zeigen kann.
@@ -75,11 +76,7 @@ result = estimate_exchange_costs(
     housing_type,         # "Shared flat room" | "Student dormitory" | "Own apartment"
     lifestyle,            # "frugal" | "moderate" | "comfortable"
     months,
-    trips_per_month=1,    # optional
-    cost_per_trip=150,    # optional, CHF pro Ausflug
-    flights_home=0,       # optional, zusätzliche Heimflüge
-    deposit_months=1,     # optional, Mietkaution in Monatsmieten
-    insurance=0,          # optional, CHF für den ganzen Aufenthalt
+    trips_per_month=1,    # optional, Wochenendausflüge pro Monat (je CHF 150, Konstante COST_PER_TRIP)
     budget=None,          # optional, eigenes Budget in CHF
 )
 ```
@@ -91,13 +88,11 @@ Für die Auswahlfelder: `list(HOUSING_COLUMNS.keys())` und `list(LIFESTYLES.keys
 | Schlüssel | Typ | Beispiel |
 |-----------|-----|----------|
 | `monthly_costs` | dict | `{"Rent": 800, "Groceries": 300, "Restaurants / going out": 250, "Public transport": 50, "Leisure / travel": 150}` |
-| `one_time_costs` | dict | `{"Flights": 250, "Visa": 0, "Deposit": 800, "Insurance": 0}` |
 | `monthly_total` | int (CHF) | `1550` |
-| `one_time_total` | int (CHF) | `1050` |
-| `total` | int (CHF) | `7870` |
-| `total_min`, `total_max` | int (CHF) | `6847`, `8893` (monatlicher Teil ± 15 %) |
+| `total` | int (CHF) | `6820` |
+| `total_min`, `total_max` | int (CHF) | `5797`, `7843` (Total ± 15 %) |
 | `months` | float | `4.4` |
-| `table` | DataFrame | Spalten `category`, `type` („monthly“/„one-time“), `chf_per_month`, `chf_total` → **für die Diagramme** |
+| `table` | DataFrame | Spalten `category`, `chf_per_month`, `chf_total` → **für die Diagramme** |
 | `missing_values` | list | `["transport_pass"]`, leer = alles da |
 | `budget_check` | dict oder None | `{"budget": 8000, "difference": 130, "status": "tight", "months_covered": 4.5}` |
 
@@ -126,7 +121,7 @@ else:
 - `source` ist ein Text für die App, z. B. `"live (ECB, 2026-10-30)"` oder
   `"saved rates from 2026-10-28 (API not reachable)"`.
 - Wenn die API nicht erreichbar ist, werden die **zuletzt gespeicherten Kurse** aus
-  `data/last_rates.json` verwendet. Diese Datei ist in `.gitignore` und wird automatisch erstellt.
+  `data/last_rates.json` verwendet. Diese Datei wird bei jeder erfolgreichen Abfrage neu geschrieben.
 - **Tipp:** Streamlit führt das Skript bei jedem Klick neu aus. Damit nicht jedes Mal die API gefragt
   wird, merkt sich `app.py` erfolgreiche Antworten in `st.session_state` (Funktion
   `get_rate_cached`). 
@@ -144,8 +139,6 @@ Diese Werte stehen oben in `calculation.py` und lassen sich an **einer Stelle** 
 | Lifestyle „comfortable“ | Lebensmittel × 1.15, 4 Restaurants/Woche, 8 Abende/Monat | passt das? |
 | Kosten pro Ausflug | CHF 150 | aus Erfahrungsberichten ableiten? |
 | Bandbreite | ± 15 % auf die monatlichen Kosten | später durch den MAE des ML-Modells ersetzen |
-| Kaution | 1 Monatsmiete (wird meist zurückbezahlt!) | in der App erwähnen? |
-| Flüge | 1 Hin- und Rückflug + Heimflüge | ok |
 
 ---
 
@@ -154,8 +147,7 @@ Diese Werte stehen oben in `calculation.py` und lassen sich an **einer Stelle** 
 Die Berechnung ist **regelbasiert** (Preise × Mengen). Laut Kursanforderung braucht es zusätzlich ein
 selbst trainiertes Modell. Zwei Möglichkeiten, die zu diesem Modul passen:
 
-- Das ML-Modell sagt die **Monatskosten** aus Umfragedaten voraus, und die App zeigt beides: „Rechner: CHF X,
-  Modell (aus echten Erfahrungen): CHF Y“.
-- Der **MAE** des Modells ersetzt die fixe Bandbreite von ± 15 % (Konstante `UNCERTAINTY`).
-
-Das bitte mit der ML-Person und dem Tutor abstimmen.
+- Das ML-Modell sagt die **Monatskosten** aus den Erfahrungsberichten voraus, und die App zeigt beides:
+  „Calculator: CHF X, Model: CHF Y“. **So ist es umgesetzt** (`ml_model.py`, Seiten „Cost calculator“ und
+  „City comparison“).
+- Möglich wäre zusätzlich: Der **MAE** des Modells ersetzt die fixe Bandbreite von ± 15 % (Konstante `UNCERTAINTY`).

@@ -12,11 +12,11 @@ estimate for the exchange semester:
 All amounts are in CHF. Conversion into the local currency is done
 separately in currency.py.
 
-How to use it in the Streamlit app (see demo_app.py):
+Example:
 
     from calculation import estimate_exchange_costs
     result = estimate_exchange_costs(city, "Shared flat room", "moderate", months=5)
-    st.metric("Total", f"CHF {result['total']:,.0f}")
+    print(result["total"])
 """
 
 # AI assistance:
@@ -63,11 +63,13 @@ WEEKS_PER_MONTH = 4.33       # 52 weeks / 12 months
 DAYS_PER_MONTH = 30.44       # 365.25 days / 12 months
 
 # Our estimate is not exact. We show a range of +/- 15 % around it.
-# (Later the MAE of the ML model could replace this fixed value.)
 UNCERTAINTY = 0.15
 
-# All columns the city data must contain (amounts in CHF)
-REQUIRED_CITY_COLUMNS = [
+COST_PER_TRIP = 150          # average cost of one weekend trip in CHF (travel + hostel)
+
+# The price columns of a city that the calculation needs (amounts in CHF).
+# A city without all of them cannot be calculated.
+PRICE_COLUMNS = [
     "rent_shared_room",       # per month
     "rent_dorm",              # per month
     "rent_apartment",         # per month
@@ -95,7 +97,7 @@ def find_missing_values(city):
     estimate is then too low.
     """
     missing = []
-    for column in REQUIRED_CITY_COLUMNS:
+    for column in PRICE_COLUMNS:
         value = city.get(column)
         if value is None or pd.isna(value):
             missing.append(column)
@@ -116,14 +118,13 @@ def months_between(start_date, end_date):
 # ---------------------------------------------------------------------------
 # Step 1: monthly costs
 # ---------------------------------------------------------------------------
-def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0, cost_per_trip=150):
+def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0):
     """Monthly costs in CHF, per category. Returns a dictionary.
 
     city            - one row of city data (dict or pandas Series)
     housing_type    - a key of HOUSING_COLUMNS, e.g. "Shared flat room"
     lifestyle       - a key of LIFESTYLES, e.g. "moderate"
     trips_per_month - planned weekend trips per month
-    cost_per_trip   - average cost of one trip in CHF (travel + hostel)
     """
     if housing_type not in HOUSING_COLUMNS:
         raise ValueError(f"Unknown housing type: {housing_type}")
@@ -140,7 +141,7 @@ def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0, co
     going_out = habits["evenings_out_per_month"] * value_or_zero(city, "evening_out")
 
     transport = value_or_zero(city, "transport_pass")
-    travel = trips_per_month * cost_per_trip
+    travel = trips_per_month * COST_PER_TRIP
 
     monthly_costs = {
         "Rent": rent,
@@ -155,8 +156,9 @@ def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0, co
         monthly_costs[category] = round(monthly_costs[category])
     return monthly_costs
 
+
 # ---------------------------------------------------------------------------
-# Step 3: totals and range
+# Step 2: totals and range
 # ---------------------------------------------------------------------------
 def calculate_totals(monthly_costs, months):
     """Add everything up. Returns a dictionary with the key numbers."""
@@ -173,7 +175,7 @@ def calculate_totals(monthly_costs, months):
 
 
 # ---------------------------------------------------------------------------
-# Step 4: compare with the user's budget
+# Step 3: compare with the user's budget
 # ---------------------------------------------------------------------------
 def compare_with_budget(totals, budget):
     """Compare the estimate with the money the user has (CHF).
@@ -205,29 +207,27 @@ def compare_with_budget(totals, budget):
 
 
 # ---------------------------------------------------------------------------
-# Table for the charts (used by "App & Design")
+# Table for the charts in the app
 # ---------------------------------------------------------------------------
 def costs_to_table(monthly_costs, months):
     """Put all costs into one DataFrame - this is the format for the charts.
 
-    Columns: category, type ("monthly"), chf_per_month, chf_total
-    Example for a donut chart:  px.pie(table, names="category", values="chf_total", hole=0.4)
+    Columns: category, chf_per_month, chf_total
     """
     rows = []
     for category, amount in monthly_costs.items():
         rows.append({
             "category": category,
-            "type": "monthly",
             "chf_per_month": amount,
             "chf_total": round(amount * months),
         })
     return pd.DataFrame(rows)
 
+
 # ---------------------------------------------------------------------------
 # Everything in one call - the main function for the app
 # ---------------------------------------------------------------------------
-def estimate_exchange_costs(city, housing_type, lifestyle, months,
-                            trips_per_month=0, cost_per_trip=150, budget=None):
+def estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_month=0, budget=None):
     """Run steps 1-3 and return all results in one dictionary.
 
     Keys of the result:
@@ -237,7 +237,7 @@ def estimate_exchange_costs(city, housing_type, lifestyle, months,
       missing_values                 - list of missing city columns (show a warning if not empty)
       budget_check                   - only if a budget was given, otherwise None
     """
-    monthly_costs = calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month, cost_per_trip)
+    monthly_costs = calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month)
     totals = calculate_totals(monthly_costs, months)
 
     result = {
@@ -252,6 +252,7 @@ def estimate_exchange_costs(city, housing_type, lifestyle, months,
         result["budget_check"] = compare_with_budget(totals, budget)
 
     return result
+
 
 # Run "python calculation.py" to see a quick example in the terminal
 if __name__ == "__main__":

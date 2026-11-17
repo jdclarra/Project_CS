@@ -13,11 +13,10 @@ documents how GenAI was used. **The team must check every statement and adapt it
 |------|-----|
 | Concept | Helped to compare project ideas, to refine the concept and to prepare questions for the coaching |
 | Source code | **Generated the initial implementation of all Python files**: `app.py`, `database.py`, `create_database.py`, `calculation.py`, `currency.py`, `check_calculation.py`, `ml_model.py`, `external_data.py` |
-| Data | Proposed the 15 cities and entered the **placeholder** prices; wrote the rules for the **simulated** training data |
+| Data | Entered the **placeholder** prices; wrote the rules for the **simulated** training data |
 | Documentation | Drafted README, DATA_SOURCES, SCHNITTSTELLEN, CONTRIBUTIONS, VIDEO_PLAN, TEST_CHECKLIST, REQUIREMENTS_AUDIT and this file |
 | Testing | Ran automated tests of every page during development, including API failures |
-
-The prompt that was given to the AI to build the app is stored in `PROMPT_FUER_FABLE.md`.
+| Clean-up | Removed the code and documentation of features the team had deleted (one-time costs, "Share your experience", excursion search) and simplified the code |
 
 ## Citation in the source code
 
@@ -52,6 +51,6 @@ When you change or rewrite a part yourselves, add a line such as
 ## Other aids
 
 - Streamlit, pandas, scikit-learn and Plotly documentation
-- API documentation of Frankfurter, Open-Meteo and the OpenStreetMap Overpass API
+- API documentation of Frankfurter, Open-Meteo and the IMF DataMapper
 - Lecture slides and exercises of the course
 - _add further aids_

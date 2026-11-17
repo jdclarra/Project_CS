@@ -5,7 +5,7 @@ Role: "Machine Learning"
 
 We train our OWN model that predicts the monthly cost (CHF) of an exchange
 student. The training data are the reported monthly costs of former
-exchange students (tables experiences + user_submissions), combined with
+exchange students (table experiences), combined with
 the price data of their city.
 
 Functions:

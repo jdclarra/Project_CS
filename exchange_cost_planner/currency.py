@@ -11,12 +11,12 @@ If the API cannot be reached, we use the last rates that were saved in
 data/last_rates.json, so the app keeps working (with a note that the
 rates are not live).
 
-How to use it in the Streamlit app (see demo_app.py):
+Example:
 
     from currency import get_exchange_rates, convert_from_chf
-    rates, source = get_exchange_rates(["EUR", "USD"])
+    rates, source = get_exchange_rates(["EUR"])
     if rates is not None:
-        st.write(convert_from_chf(1000, rates["EUR"]), "EUR")
+        print(convert_from_chf(1000, rates["EUR"]), "EUR")
 """
 
 # AI assistance:
@@ -112,37 +112,6 @@ def get_exchange_rates(currencies):
         return saved_rates, f"saved rates from {saved_date} (API not reachable)"
 
 
-def get_supported_currencies():
-    """Ask the API which currencies it knows.
-
-    Returns a dictionary like {"EUR": "Euro", "USD": "United States Dollar", ...}
-    or None if the request fails. Useful to check our city list once.
-    """
-    try:
-        response = requests.get(API_URL + "/currencies", timeout=5)
-        response.raise_for_status()
-        return response.json()
-    except Exception:
-        return None
-
-
-def find_unsupported_currencies(currencies):
-    """Return the currencies from our list that the API does NOT offer.
-
-    For these cities the app can only show CHF. Returns None if the
-    API cannot be reached.
-    """
-    supported = get_supported_currencies()
-    if supported is None:
-        return None
-
-    unsupported = []
-    for currency in currencies:
-        if currency != "CHF" and currency not in supported:
-            unsupported.append(currency)
-    return unsupported
-
-
 # ---------------------------------------------------------------------------
 # Conversion
 # ---------------------------------------------------------------------------
@@ -155,26 +124,7 @@ def convert_from_chf(amount_chf, rate):
     return round(amount_chf * rate)
 
 
-def convert_table_from_chf(table, rate, currency):
-    """Add local-currency columns to the cost table from calculation.costs_to_table()."""
-    converted = table.copy()
-    converted[currency.lower() + "_total"] = (converted["chf_total"] * rate).round(0)
-    return converted
-
-
-# Run "python currency.py" to check which of our currencies the API supports
+# Run "python currency.py" to test the API in the terminal
 if __name__ == "__main__":
-    # Put the currencies of all cities in our database here
-    our_currencies = ["EUR", "USD", "GBP", "SGD", "AUD", "CAD", "JPY", "KRW", "DKK", "SEK", "NOK", "HKD",
-                      "CNY", "MXN", "BRL", "ARS", "CLP", "TWD", "AED"]
-
-    unsupported = find_unsupported_currencies(our_currencies)
-    if unsupported is None:
-        print("The API could not be reached. Check your internet connection.")
-    elif len(unsupported) == 0:
-        print("All currencies are supported.")
-    else:
-        print("NOT supported (show only CHF for these cities):", unsupported)
-
     rates, source = get_exchange_rates(["EUR", "USD"])
     print("Example rates:", rates, "-", source)

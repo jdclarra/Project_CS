@@ -14,9 +14,7 @@ It reads three CSV files and stores them in database/exchange_costs.db:
 3. data/experiences.csv   -> table "experiences"   (monthly costs of former exchange students,
                                                     the training data for our ML model)
 
-It also creates the empty table "user_submissions" for the page
-"Share your experience". This table is NOT deleted when the script runs
-again, so answers entered in the app are kept.
+The old database file is deleted first, so every run starts from scratch.
 
 IMPORTANT - data honesty:
 - Most prices in data/cities.csv come from the Kaggle "Global Cost of Living"
@@ -31,8 +29,7 @@ IMPORTANT - data honesty:
 
 # AI assistance:
 # Initial implementation developed with assistance from Claude.
-# 17.11.2026: new columns (iso3, leisure_month, utilities_month, price_base_year,
-# kaggle_data_quality) added with assistance from Claude.
+# 17.11.2026: new columns (iso3, price_base_year) added with assistance from Claude.
 # Students reviewed, tested, adapted and must document the exact use
 # according to HSG course requirements.
 
@@ -42,7 +39,7 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
-from calculation import HOUSING_COLUMNS, LIFESTYLES, calculate_monthly_costs
+from calculation import HOUSING_COLUMNS, LIFESTYLES, PRICE_COLUMNS, calculate_monthly_costs
 
 # Build paths relative to THIS file, so the script works from any folder
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -53,18 +50,15 @@ EXPERIENCES_CSV = os.path.join(PROJECT_FOLDER, "data", "experiences.csv")
 
 NUMBER_OF_SIMULATED_ROWS = 300
 
-PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_month",
-                 "restaurant_meal", "evening_out", "transport_pass"]
-
 # All columns of the table "cities", in the same order as in CREATE TABLE below.
 # If you add a column, add it here AND in CREATE TABLE.
+# (cities.csv has a few more columns, e.g. leisure_month. The app does not use them,
+# so they are not copied into the database.)
 CITY_COLUMNS = [
     "city", "country", "iso3", "currency", "latitude", "longitude",
     "rent_shared_room", "rent_dorm", "rent_apartment",
-    "groceries_month", "restaurant_meal", "evening_out",
-    "transport_pass", "flight_return", "visa_fee",
-    "leisure_month", "utilities_month", "price_base_year", "kaggle_data_quality",
-    "source", "as_of_date",
+    "groceries_month", "restaurant_meal", "evening_out", "transport_pass",
+    "price_base_year", "source", "as_of_date",
 ]
 
 
@@ -115,11 +109,6 @@ def simulate_experiences(cities):
 # Building the database
 # ---------------------------------------------------------------------------
 def create_tables(cursor):
-    # cities, universities and experiences are rebuilt from the CSV files every time
-    cursor.execute("DROP TABLE IF EXISTS cities")
-    cursor.execute("DROP TABLE IF EXISTS universities")
-    cursor.execute("DROP TABLE IF EXISTS experiences")
-
     cursor.execute("""
         CREATE TABLE cities (
             city TEXT PRIMARY KEY,
@@ -135,12 +124,7 @@ def create_tables(cursor):
             restaurant_meal REAL,
             evening_out REAL,
             transport_pass REAL,
-            flight_return REAL,
-            visa_fee REAL,
-            leisure_month REAL,           -- gym + 2 cinema tickets per month
-            utilities_month REAL,         -- electricity/heating/water + internet, shared by 3
             price_base_year INTEGER,      -- 2022 = Kaggle prices (adjusted for inflation in the app)
-            kaggle_data_quality INTEGER,  -- 1 = enough Numbeo entries, 0 = few entries
             source TEXT,
             as_of_date TEXT
         )
@@ -174,20 +158,6 @@ def create_tables(cursor):
         )
     """)
 
-    # IF NOT EXISTS: answers entered in the app survive a rebuild of the database
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS user_submissions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            city TEXT,
-            housing_type TEXT,
-            lifestyle TEXT,
-            trips_per_month INTEGER,
-            monthly_cost_chf REAL,
-            submitted_on TEXT,
-            FOREIGN KEY (city) REFERENCES cities(city)
-        )
-    """)
-
 
 def none_if_missing(value):
     """Empty CSV cells are NaN in pandas. SQLite should store them as NULL (None)."""
@@ -199,11 +169,6 @@ def none_if_missing(value):
 
 
 def insert_cities(cursor, cities):
-    # Columns that are missing in an older cities.csv are filled with empty values
-    for column in CITY_COLUMNS:
-        if column not in cities.columns:
-            cities[column] = None
-
     placeholders = ", ".join(["?"] * len(CITY_COLUMNS))  # "?, ?, ?, ..." - one per column
     for index, row in cities.iterrows():
         values = [none_if_missing(row[column]) for column in CITY_COLUMNS]
@@ -246,8 +211,8 @@ if __name__ == "__main__":
         print("WARNING:", number_of_placeholders, "cities still have PLACEHOLDER prices.")
     number_without_prices = int(cities[PRICE_COLUMNS].isna().any(axis=1).sum())
     print(number_without_prices, "of these cities have no prices at all yet.")
-    if "price_base_year" in cities.columns:
-        print(int((cities["price_base_year"] == 2022).sum()), "cities have Kaggle prices (2022, inflation-adjusted in the app).")
+    number_of_kaggle_cities = int((cities["price_base_year"] == 2022).sum())
+    print(number_of_kaggle_cities, "cities have Kaggle prices (2022, inflation-adjusted in the app).")
 
     # --- Load the partner universities ---
     universities = pd.read_csv(UNIVERSITIES_CSV)
@@ -270,7 +235,10 @@ if __name__ == "__main__":
     experiences = experiences[experiences["monthly_cost_chf"] > 0]
 
     # --- Write everything into SQLite ---
+    # Delete the old database file, so all tables are built again from the CSV files
     os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+    if os.path.exists(DATABASE_PATH):
+        os.remove(DATABASE_PATH)
     connection = sqlite3.connect(DATABASE_PATH)
     cursor = connection.cursor()
 

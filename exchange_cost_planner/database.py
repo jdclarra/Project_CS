@@ -7,9 +7,9 @@ All SQL queries of the app are in this file. The other modules never talk
 to SQLite directly - they call these functions and get pandas objects back.
 
 Tables (created by create_database.py):
-- cities            one row per city, cost data in CHF
-- experiences       monthly costs of former exchange students (ML training data)
-- user_submissions  answers entered on the page "Share your experience"
+- cities         one row per city, cost data in CHF
+- universities   HSG partner universities and their city
+- experiences    monthly costs of former exchange students (ML training data)
 """
 
 # AI assistance:
@@ -19,9 +19,10 @@ Tables (created by create_database.py):
 
 import os
 import sqlite3
-from datetime import date
 
 import pandas as pd
+
+from calculation import PRICE_COLUMNS
 
 # Build the path relative to THIS file, so it works from any folder
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -41,15 +42,6 @@ def run_query(sql, parameters=()):
     result = pd.read_sql_query(sql, connection, params=parameters)
     connection.close()
     return result
-
-
-def run_change(sql, parameters=()):
-    """Run an INSERT statement and save (commit) the change."""
-    connection = sqlite3.connect(DATABASE_PATH)
-    cursor = connection.cursor()
-    cursor.execute(sql, parameters)
-    connection.commit()
-    connection.close()
 
 
 # ---------------------------------------------------------------------------
@@ -104,7 +96,8 @@ def load_universities():
     """
     return run_query("""
         SELECT universities.university, universities.city, universities.country,
-               cities.currency, universities.reports_in_portal, universities.last_report_year, universities.study_level
+               cities.currency, universities.reports_in_portal, universities.last_report_year,
+               universities.study_level
         FROM universities
         JOIN cities ON universities.city = cities.city
         ORDER BY universities.country, universities.city, universities.university
@@ -138,11 +131,8 @@ def load_training_data():
     JOIN: each experience row only stores the city name. The prices of that
     city (rent, groceries, ...) are in the table cities, so we combine the
     two tables on the city name.
-
-    Answers from the app (user_submissions) are added to the experiences,
-    so the model also learns from them.
     """
-    experiences = run_query("""
+    training_data = run_query("""
         SELECT experiences.city, experiences.housing_type, experiences.lifestyle,
                experiences.trips_per_month, experiences.monthly_cost_chf, experiences.source,
                cities.rent_shared_room, cities.rent_dorm, cities.rent_apartment,
@@ -152,28 +142,9 @@ def load_training_data():
         JOIN cities ON experiences.city = cities.city
     """)
 
-    submissions = run_query("""
-        SELECT user_submissions.city, user_submissions.housing_type, user_submissions.lifestyle,
-               user_submissions.trips_per_month, user_submissions.monthly_cost_chf,
-               'app submission' AS source,
-               cities.rent_shared_room, cities.rent_dorm, cities.rent_apartment,
-               cities.groceries_month, cities.restaurant_meal, cities.evening_out,
-               cities.transport_pass
-        FROM user_submissions
-        JOIN cities ON user_submissions.city = cities.city
-    """)
-
-    if submissions.empty:
-        training_data = experiences
-    else:
-        # Stack the two tables on top of each other
-        training_data = pd.concat([experiences, submissions], ignore_index=True)
-
     # Data cleaning: a report from a city without prices cannot be used for
     # training, because the model needs the prices as inputs
-    price_columns = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_month",
-                     "restaurant_meal", "evening_out", "transport_pass"]
-    training_data = training_data.dropna(subset=price_columns).reset_index(drop=True)
+    training_data = training_data.dropna(subset=PRICE_COLUMNS).reset_index(drop=True)
     return training_data
 
 
@@ -196,29 +167,4 @@ def average_reported_cost_per_city():
         FROM experiences
         GROUP BY city
         ORDER BY average_monthly_cost_chf DESC
-    """)
-
-
-# ---------------------------------------------------------------------------
-# "Share your experience"
-# ---------------------------------------------------------------------------
-def save_submission(city, housing_type, lifestyle, trips_per_month, monthly_cost_chf):
-    """Store one answer from the form in the table user_submissions."""
-    run_change(
-        """INSERT INTO user_submissions (city, housing_type, lifestyle, trips_per_month,
-                                         monthly_cost_chf, submitted_on)
-           VALUES (?, ?, ?, ?, ?, ?)""",
-        (city, housing_type, lifestyle, int(trips_per_month), float(monthly_cost_chf), str(date.today())),
-    )
-
-
-def count_submissions_per_city():
-    """GROUP BY: number of app submissions and their average cost, per city."""
-    return run_query("""
-        SELECT city,
-               COUNT(*) AS number_of_submissions,
-               ROUND(AVG(monthly_cost_chf), 0) AS average_monthly_cost_chf
-        FROM user_submissions
-        GROUP BY city
-        ORDER BY number_of_submissions DESC, city
     """)

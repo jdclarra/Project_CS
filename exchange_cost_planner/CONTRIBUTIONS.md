@@ -31,7 +31,7 @@ Legend: **Main** = main contributor · **Support** = supporting role · **-** = 
 | Charts | Main | - | - | Support | - |
 | Survey and training data | - | Support | - | Main | - |
 | Machine-learning model | - | - | - | Main | - |
-| Weather and excursions | Support | - | - | - | Main |
+| Weather and inflation APIs | Support | - | - | - | Main |
 | Testing | Support | Support | Support | Support | Main |
 | Documentation | Support | Main | Support | Support | Support |
 | Video | Main | Main | Main | Main | Main |
