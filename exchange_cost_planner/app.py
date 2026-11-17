@@ -350,7 +350,7 @@ if page == "Home / Problem":
                "The last columns show how many experience reports the portal lists and from which year the newest is.")
     st.dataframe(all_universities, hide_index=True)
 
-with st.container(border=True):
+    with st.container(border=True):
     # Chart purpose: see at a glance where most partner universities are
     per_country = db.count_universities_per_country().head(15)  # SQL GROUP BY
     figure = px.bar(per_country, x="country", y="number_of_universities",
