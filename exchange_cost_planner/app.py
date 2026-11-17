@@ -42,7 +42,7 @@ LIFESTYLE_NAMES = list(LIFESTYLES.keys())
 
 DEFAULT_START = date(2027, 2, 15)
 DEFAULT_END = date(2027, 6, 30)
-
+DATE_FORMAT = "DD/MM/YYYY"
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -278,8 +278,8 @@ elif page == "Cost calculator":
             shown_labels = university_labels
         university_label = st.selectbox(f"Partner university ({len(shown_labels)})", shown_labels)
         city_name = city_of_label[university_label]
-        start_date = st.date_input("Start of stay", value=DEFAULT_START)
-        end_date = st.date_input("End of stay", value=DEFAULT_END)
+        start_date = st.date_input("Start of stay", value=DEFAULT_START, format=DATE_FORMAT)
+        end_date = st.date_input("End of stay", value=DEFAULT_END, format=DATE_FORMAT)
         housing_type = st.selectbox("Housing", HOUSING_TYPES)
         lifestyle = st.radio("Lifestyle", LIFESTYLE_NAMES, index=1, horizontal=True)
         trips_per_month = st.slider("Weekend trips per month", 0, 4, 1)
@@ -495,9 +495,9 @@ elif page == "Weather & excursions":
     with col1:
         city_name = st.selectbox("City", city_names)
     with col2:
-        start_date = st.date_input("Start of stay", value=DEFAULT_START)
+        start_date = st.date_input("Start of stay", value=DEFAULT_START, format=DATE_FORMAT)
     with col3:
-        end_date = st.date_input("End of stay", value=DEFAULT_END)
+        end_date = st.date_input("End of stay", value=DEFAULT_END, format=DATE_FORMAT)
 
     if end_date <= start_date:
         st.error("The end date must be after the start date.")
