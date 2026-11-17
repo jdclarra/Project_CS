@@ -354,9 +354,23 @@ elif page == "Cost calculator":
 
         st.subheader(f"Estimate for {months} months in {city_name}")
         st.caption("Partner universities in this city: " + "; ".join(db.load_universities_in_city(city_name)))
-        col1, col2 = st.columns(2)
-        col1.metric("Per month", f"CHF {result['monthly_total']:,}")
-        col2.metric("Total for the stay", f"CHF {result['total']:,}")
+        
+col1, col2 = st.columns(2, gap="medium")
+
+with col1:
+    with st.container(border=True):
+        st.metric(
+            label="Monthly estimate",
+            value=f"CHF {result['monthly_total']:,}"
+        )
+
+with col2:
+    with st.container(border=True):
+        st.metric(
+            label="Total for your stay",
+            value=f"CHF {result['total']:,}"
+        )
+
         st.write(
             f"Realistic range: **CHF {result['total_min']:,} - {result['total_max']:,}** "
             f"(monthly costs plus or minus {UNCERTAINTY:.0%}, because this is an estimate)."
@@ -400,32 +414,83 @@ elif page == "Cost calculator":
                 f"{number_of_simulated_rows} of these reports are simulated. See 'About the model'."
             )
 
+
     # --- Breakdown below ---
     st.subheader("Cost breakdown")
-    table = result["table"]
-    chart_table = table[table["chf_total"] > 0]  # hide categories with CHF 0
 
-    chart_left, chart_right = st.columns(2)
+    table = result["table"]
+    chart_table = table[table["chf_total"] > 0]
+
+    chart_left, chart_right = st.columns(2, gap="medium")
+
+    # Donut Chart
     with chart_left:
-        st.caption("Purpose: see which categories make up most of your budget.")
-        fig_donut = px.pie(chart_table, names="category", values="chf_total", hole=0.55,
-                           color="category", color_discrete_map=CATEGORY_COLORS)
-        fig_donut.update_traces(textposition="inside", textinfo="percent")
-        fig_donut.update_layout(
-            annotations=[{"text": f"<b>CHF {result['total']:,}</b><br>total", "showarrow": False, "font": {"size": 18}}],
-            margin={"t": 10, "b": 10},
-        )
-        st.plotly_chart(fig_donut)
+        with st.container(border=True):
+            st.markdown("#### Cost distribution")
+            st.caption(
+                "See which categories make up most of your budget."
+            )
+
+            fig_donut = px.pie(
+                chart_table,
+                names="category",
+                values="chf_total",
+                hole=0.55,
+                color="category",
+                color_discrete_map=CATEGORY_COLORS
+            )
+
+            fig_donut.update_traces(
+                textposition="inside",
+                textinfo="percent",
+                marker=dict(
+                    line=dict(color="white", width=2)
+                )
+            )
+
+            fig_donut.update_layout(
+                annotations=[
+                    {
+                        "text": f"<b>CHF {result['total']:,}</b><br>total",
+                        "showarrow": False,
+                        "font": {"size": 18}
+                    }
+                ],
+                margin=dict(t=10, b=10, l=10, r=10),
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+
+            st.plotly_chart(fig_donut, width="stretch")
+
+    # Bar Chart
     with chart_right:
-        st.caption("Purpose: see how many francs each category costs over the whole stay.")
-        fig_bar = px.bar(
-            chart_table.sort_values("chf_total"),
-            x="chf_total", y="category", color="category", orientation="h",
-            color_discrete_map=CATEGORY_COLORS,
-            labels={"chf_total": "CHF for the whole stay", "category": ""},
-        )
-        fig_bar.update_layout(showlegend=False)
-        st.plotly_chart(fig_bar)
+        with st.container(border=True):
+            st.markdown("#### Costs by category")
+            st.caption(
+                "See how much each category costs over your stay."
+            )
+
+            fig_bar = px.bar(
+                chart_table.sort_values("chf_total"),
+                x="chf_total",
+                y="category",
+                color="category",
+                orientation="h",
+                color_discrete_map=CATEGORY_COLORS,
+                labels={
+                    "chf_total": "CHF for the whole stay",
+                    "category": ""
+                }
+            )
+
+            fig_bar.update_layout(
+                showlegend=False,
+                margin=dict(t=10, b=10, l=10, r=10),
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+
+            st.plotly_chart(fig_bar, width="stretch")
+
     st.subheader("How your money develops over the stay")
     st.caption("Purpose: see when you would run out of budget.")
     month_steps = list(range(0, math.ceil(months))) + [months]
