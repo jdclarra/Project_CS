@@ -37,6 +37,18 @@ from currency import convert_from_chf, get_exchange_rates
 from external_data import get_monthly_climate, get_inflation_factor
 from ml_model import predict_monthly_cost, train_models
 
+import math
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+px.defaults.template = "plotly_white"
+CATEGORY_COLORS = {
+    "Rent": "#00802F", "Groceries": "#4CA36B", "Restaurants / going out": "#F2A541",
+    "Public transport": "#3A7CA5", "Leisure / travel": "#9B5DE5",
+    "Flights": "#555555", "Visa": "#888888", "Deposit": "#BBBBBB", "Insurance": "#DDDDDD",
+}
+CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
+
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
 LIFESTYLE_NAMES = list(LIFESTYLES.keys())
 
