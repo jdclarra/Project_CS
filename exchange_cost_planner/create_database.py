@@ -19,9 +19,11 @@ It also creates the empty table "user_submissions" for the page
 again, so answers entered in the app are kept.
 
 IMPORTANT - data honesty:
-- The prices in data/cities.csv are PLACEHOLDERS until the team replaces
-  them with researched values (see DATA_SOURCES.md). Many cities have no
-  prices at all yet (empty cells).
+- Most prices in data/cities.csv come from the Kaggle "Global Cost of Living"
+  dataset (Numbeo, Dec 2022, converted to CHF). These rows have
+  price_base_year = 2022 and are adjusted for inflation in the app (IMF API).
+  Rows with price_base_year = 2026 are team values / HSG experience reports;
+  some of them are still PLACEHOLDERS (see column "source").
 - If data/experiences.csv does not exist, this script creates a SIMULATED
   file, clearly labelled with source = "simulated". Replace it with real
   survey answers as soon as we have them.
@@ -29,6 +31,8 @@ IMPORTANT - data honesty:
 
 # AI assistance:
 # Initial implementation developed with assistance from Claude.
+# 17.11.2026: new columns (iso3, leisure_month, utilities_month, price_base_year,
+# kaggle_data_quality) added with assistance from Claude.
 # Students reviewed, tested, adapted and must document the exact use
 # according to HSG course requirements.
 
@@ -51,6 +55,17 @@ NUMBER_OF_SIMULATED_ROWS = 300
 
 PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_month",
                  "restaurant_meal", "evening_out", "transport_pass"]
+
+# All columns of the table "cities", in the same order as in CREATE TABLE below.
+# If you add a column, add it here AND in CREATE TABLE.
+CITY_COLUMNS = [
+    "city", "country", "iso3", "currency", "latitude", "longitude",
+    "rent_shared_room", "rent_dorm", "rent_apartment",
+    "groceries_month", "restaurant_meal", "evening_out",
+    "transport_pass", "flight_return", "visa_fee",
+    "leisure_month", "utilities_month", "price_base_year", "kaggle_data_quality",
+    "source", "as_of_date",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -109,6 +124,7 @@ def create_tables(cursor):
         CREATE TABLE cities (
             city TEXT PRIMARY KEY,
             country TEXT,
+            iso3 TEXT,                    -- country code for the IMF inflation API (e.g. ESP)
             currency TEXT,
             latitude REAL,
             longitude REAL,
@@ -121,6 +137,10 @@ def create_tables(cursor):
             transport_pass REAL,
             flight_return REAL,
             visa_fee REAL,
+            leisure_month REAL,           -- gym + 2 cinema tickets per month
+            utilities_month REAL,         -- electricity/heating/water + internet, shared by 3
+            price_base_year INTEGER,      -- 2022 = Kaggle prices (adjusted for inflation in the app)
+            kaggle_data_quality INTEGER,  -- 1 = enough Numbeo entries, 0 = few entries
             source TEXT,
             as_of_date TEXT
         )
@@ -172,32 +192,24 @@ def none_if_missing(value):
     """Empty CSV cells are NaN in pandas. SQLite should store them as NULL (None)."""
     if pd.isna(value):
         return None
+    if isinstance(value, np.generic):   # numpy numbers -> normal Python numbers for SQLite
+        return value.item()
     return value
 
 
-
 def insert_cities(cursor, cities):
-    for index, row in cities.iterrows():
-        values = []
-        for column in [
-            "city", "country", "currency", "latitude", "longitude",
-            "rent_shared_room", "rent_dorm", "rent_apartment",
-            "groceries_month", "restaurant_meal", "evening_out",
-            "transport_pass", "flight_return", "visa_fee",
-            "source", "as_of_date"
-        ]:
-            values.append(none_if_missing(row[column]))
+    # Columns that are missing in an older cities.csv are filled with empty values
+    for column in CITY_COLUMNS:
+        if column not in cities.columns:
+            cities[column] = None
 
-        # Insert cities into database
+    placeholders = ", ".join(["?"] * len(CITY_COLUMNS))  # "?, ?, ?, ..." - one per column
+    for index, row in cities.iterrows():
+        values = [none_if_missing(row[column]) for column in CITY_COLUMNS]
         cursor.execute(
-            """INSERT INTO cities (city, country, currency, latitude, longitude,
-                                   rent_shared_room, rent_dorm, rent_apartment, groceries_month,
-                                   restaurant_meal, evening_out, transport_pass, flight_return,
-                                   visa_fee, source, as_of_date)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            f"INSERT INTO cities ({', '.join(CITY_COLUMNS)}) VALUES ({placeholders})",
             values,
         )
-
 
 
 def insert_universities(cursor, universities):
@@ -232,6 +244,8 @@ if __name__ == "__main__":
         print("WARNING:", number_of_placeholders, "cities still have PLACEHOLDER prices.")
     number_without_prices = int(cities[PRICE_COLUMNS].isna().any(axis=1).sum())
     print(number_without_prices, "of these cities have no prices at all yet.")
+    if "price_base_year" in cities.columns:
+        print(int((cities["price_base_year"] == 2022).sum()), "cities have Kaggle prices (2022, inflation-adjusted in the app).")
 
     # --- Load the partner universities ---
     universities = pd.read_csv(UNIVERSITIES_CSV)
