@@ -208,7 +208,7 @@ if page == "Home / Problem":
         1. **Cost calculator** - choose a city, your dates, housing and lifestyle and get the costs per
            month and for the whole stay, by category, in CHF and in the local currency.
         2. **City comparison** - put two or three cities side by side.
-        3. **Weather** - the typical weather during your months abroad and places to visit nearby.
+        3. **Weather** - the typical weather during your months abroad.
         4. **About the model** - how our machine-learning model works and how good it is.
         """
     )
