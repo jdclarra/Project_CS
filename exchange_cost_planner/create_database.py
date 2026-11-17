@@ -215,10 +215,11 @@ def insert_universities(cursor, universities):
     for index, row in universities.iterrows():
         cursor.execute(
             """INSERT INTO universities (university, city, country, portal_location,
-                                         reports_in_portal, last_report_year)
-               VALUES (?, ?, ?, ?, ?, ?)""",
+                                         reports_in_portal, last_report_year, study_level)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (row["university"], row["city"], row["country"], none_if_missing(row["portal_location"]),
-             int(none_if_missing(row["reports_in_portal"]) or 0), row["last_report_year"]),
+             int(none_if_missing(row["reports_in_portal"]) or 0), row["last_report_year"],
+             none_if_missing(row["study_level"])),
         )
 
 
