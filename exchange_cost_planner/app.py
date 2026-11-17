@@ -421,6 +421,19 @@ elif page == "Cost calculator":
             labels={"chf_total": "CHF for the whole stay", "category": "", "type": "Type of cost"},
         )
         st.plotly_chart(fig_bar)
+            st.subheader("How your money develops over the stay")
+    st.caption("Purpose: see when you would run out of budget.")
+    month_steps = list(range(0, math.ceil(months))) + [months]
+    timeline = pd.DataFrame({
+        "month": month_steps,
+        "spent": [result["one_time_total"] + result["monthly_total"] * m for m in month_steps],
+    })
+    fig_timeline = px.area(timeline, x="month", y="spent", color_discrete_sequence=["#00802F"],
+                           labels={"month": "Month of stay", "spent": "Spent so far (CHF)"})
+    if budget > 0:
+        fig_timeline.add_hline(y=budget, line_dash="dash", line_color="#D62828",
+                               annotation_text=f"Your budget: CHF {budget:,}")
+    st.plotly_chart(fig_timeline, width="stretch")
 
     st.dataframe(table, hide_index=True)
 
