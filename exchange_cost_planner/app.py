@@ -180,10 +180,12 @@ all_universities = db.load_universities()
 # Text for the university dropdown, e.g. "Keio University - Tokyo, Japan"
 university_labels = []
 city_of_label = {}
+level_of_label = {}
 for index, row in all_universities.iterrows():
     label = f"{row['university']} - {row['city']}, {row['country']}"
     university_labels.append(label)
     city_of_label[label] = row["city"]
+    level_of_label[label] = row["study_level"]
 university_labels.sort()
 
 # Train our own ML model on the reported costs every time the app runs.
@@ -391,11 +393,22 @@ elif page == "Cost calculator":
     with left:
         st.subheader("Your plan")
         only_with_prices = st.checkbox("Only universities in cities with prices", value=True)
+        study_level = st.radio("Study level", ["All", "Bachelor", "Master"], horizontal=True)
         if only_with_prices:
             shown_labels = [label for label in university_labels if city_of_label[label] in city_names_with_prices]
         else:
             shown_labels = university_labels
         university_label = st.selectbox(f"Partner university ({len(shown_labels)})", shown_labels)
+        if study_level != "All":
+            filtered_labels = []
+            for label in shown_labels:
+                if level_of_label[label] == study_level or level_of_label[label] == "Both":
+                    filtered_labels.append(label)
+            shown_labels = filtered_labels
+
+        if len(shown_labels) == 0:
+            st.warning("No partner university matches these filters.")
+            st.stop()
         city_name = city_of_label[university_label]
         start_date = st.date_input("Start of stay", value=DEFAULT_START, format=DATE_FORMAT)
         end_date = st.date_input("End of stay", value=DEFAULT_END, format=DATE_FORMAT)
