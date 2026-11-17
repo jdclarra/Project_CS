@@ -583,17 +583,17 @@ elif page == "Weather":
         col1.metric("Average temperature", f"{stay_climate['temperature_c'].mean():.1f} °C")
         col2.metric("Rain per month", f"{stay_climate['rain_mm'].mean():.0f} mm")
 
-        chart_left, chart_right = st.columns(2)
-        with chart_left:
-            st.caption("Purpose: know what clothes to pack.")
-            fig_temp = px.line(stay_climate, x="month_name", y="temperature_c", markers=True,
-                               labels={"month_name": "Month", "temperature_c": "Mean temperature (°C)"})
-            st.plotly_chart(fig_temp)
-        with chart_right:
-            st.caption("Purpose: see whether your stay falls into a rainy season.")
-            fig_rain = px.bar(stay_climate, x="month_name", y="rain_mm",
-                              labels={"month_name": "Month", "rain_mm": "Rain (mm per month)"})
-            st.plotly_chart(fig_rain)
+        st.caption("Purpose: know what clothes to pack and whether your stay falls into a rainy season.")
+        fig_climate = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_climate.add_trace(go.Bar(x=stay_climate["month_name"], y=stay_climate["rain_mm"],
+                                     name="Rain (mm)", marker_color="#9CC5E0"), secondary_y=False)
+        fig_climate.add_trace(go.Scatter(x=stay_climate["month_name"], y=stay_climate["temperature_c"],
+                                         name="Temperature (°C)", mode="lines+markers",
+                                         line={"color": "#E76F51", "width": 3}), secondary_y=True)
+        fig_climate.update_yaxes(title_text="Rain (mm per month)", secondary_y=False)
+        fig_climate.update_yaxes(title_text="Mean temperature (°C)", secondary_y=True)
+        fig_climate.update_layout(template="plotly_white", legend={"orientation": "h", "y": 1.15})
+        st.plotly_chart(fig_climate, width="stretch")
 
 
 # ===========================================================================
