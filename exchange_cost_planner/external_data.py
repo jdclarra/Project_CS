@@ -4,7 +4,6 @@ external_data.py - Exchange Cost Planner
 Data that we load live from two free online APIs (no API key needed):
 
 1. Open-Meteo archive API  -> climate during the exchange semester
-2. OpenStreetMap Overpass API -> excursion destinations near the city
 
 Both functions return None if the request fails (no internet, server
 down, timeout). The app then shows a warning instead of crashing.
@@ -15,7 +14,6 @@ down, timeout). The app then shows a warning instead of crashing.
 # Students reviewed, tested, adapted and must document the exact use
 # according to HSG course requirements.
 
-import math
 from datetime import date
 
 import pandas as pd
@@ -24,7 +22,6 @@ import requests
 MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 NUMBER_OF_CLIMATE_YEARS = 3   # we average the weather of the last 3 complete years
-MAXIMUM_PLACES = 150          # do not load more excursion destinations than this
 
 
 # ---------------------------------------------------------------------------
