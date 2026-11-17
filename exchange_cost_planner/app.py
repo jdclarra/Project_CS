@@ -8,7 +8,7 @@ connects the modules of the other roles:
     calculation.py    rule-based cost estimate
     currency.py       exchange rates (Frankfurter API)
     ml_model.py       our own machine-learning model
-    external_data.py  climate (Open-Meteo API) and excursions (OpenStreetMap API)
+    external_data.py  climate (Open-Meteo API)
 
 Start with:   streamlit run app.py
 
@@ -16,7 +16,7 @@ Pages (chosen in the sidebar):
 1. Home / Problem
 2. Cost calculator
 3. City comparison
-4. Weather & excursions
+4. Weather
 5. About the model
 """
 
@@ -34,7 +34,7 @@ import streamlit as st
 import database as db
 from calculation import HOUSING_COLUMNS, LIFESTYLES, UNCERTAINTY, estimate_exchange_costs, months_between
 from currency import convert_from_chf, get_exchange_rates
-from external_data import get_monthly_climate, get_nearby_places, get_inflation_factor
+from external_data import get_monthly_climate, get_inflation_factor
 from ml_model import predict_monthly_cost, train_models
 
 HOUSING_TYPES = list(HOUSING_COLUMNS.keys())
@@ -177,7 +177,7 @@ number_of_placeholder_cities = int(all_cities["source"].str.startswith("PLACEHOL
 st.sidebar.title("Exchange Cost Planner")
 page = st.sidebar.radio(
     "Go to",
-    ["Home / Problem", "Cost calculator", "City comparison", "Weather & excursions", "About the model"],
+    ["Home / Problem", "Cost calculator", "City comparison", "Weather", "About the model"],
 )
 
 if number_of_placeholder_cities > 0 or number_of_simulated_rows > 0:
@@ -208,7 +208,7 @@ if page == "Home / Problem":
         1. **Cost calculator** - choose a city, your dates, housing and lifestyle and get the costs per
            month and for the whole stay, by category, in CHF and in the local currency.
         2. **City comparison** - put two or three cities side by side.
-        3. **Weather & excursions** - the typical weather during your months abroad and places to visit nearby.
+        3. **Weather** - the typical weather during your months abroad and places to visit nearby.
         4. **About the model** - how our machine-learning model works and how good it is.
         """
     )
@@ -232,7 +232,6 @@ if page == "Home / Problem":
             **Online APIs** (free, no API key)
             - **Frankfurter** - current exchange rates (European Central Bank)
             - **Open-Meteo** - weather of the last three years for the climate chart
-            - **OpenStreetMap (Overpass)** - excursion destinations around the city
             """
         )
 
@@ -301,7 +300,7 @@ elif page == "Cost calculator":
         if city_name not in city_names_with_prices:
             st.error(
                 f"We have **no prices for {city_name}** yet, so a cost estimate is not possible. "
-                "You can still look at the weather and excursions for this city. "
+                "You can still look at the weather for this city. "
             )
             st.stop()
 
@@ -486,10 +485,10 @@ elif page == "City comparison":
 
 
 # ===========================================================================
-# PAGE 4: Weather & excursions
+# PAGE 4: Weather
 # ===========================================================================
-elif page == "Weather & excursions":
-    st.title("Weather & excursions")
+elif page == "Weather":
+    st.title("Weather")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -540,50 +539,6 @@ elif page == "Weather & excursions":
                               labels={"month_name": "Month", "rain_mm": "Rain (mm per month)"})
             st.plotly_chart(fig_rain)
 
-    # --- Excursions (OpenStreetMap Overpass API) ---
-    st.header("Excursion destinations nearby")
-    radius_km = st.slider("Search radius (km)", 10, 100, 30, step=10)
-
-    if st.button("Search excursion destinations", type="primary"):
-        with st.spinner("Asking OpenStreetMap ..."):
-            places = get_nearby_places(city["latitude"], city["longitude"], radius_km)
-        if places is None:
-            st.warning("The excursion service could not be reached or was too slow. "
-                       "Try a smaller radius or try again later.")
-        else:
-            # Remember the result, so that changing the category filter does not search again
-            st.session_state["places"] = places
-            st.session_state["places_city"] = city_name
-
-    # Show the last search result if it belongs to the selected city
-    if st.session_state.get("places_city") == city_name:
-        places = st.session_state["places"]
-        if places.empty:
-            st.info("No excursion destinations were found within this radius.")
-        else:
-            categories = sorted(places["category"].unique())
-            chosen_categories = st.multiselect("Categories", categories, default=categories)
-            shown_places = places[places["category"].isin(chosen_categories)]
-
-            st.write(f"**{len(shown_places)} places** found around {city_name}.")
-            if not shown_places.empty:
-                st.caption("Purpose: see what you can visit on weekends and how far away it is.")
-                # A larger search radius needs a map that is zoomed out further
-                if radius_km <= 20:
-                    zoom = 9
-                elif radius_km <= 50:
-                    zoom = 8
-                else:
-                    zoom = 7
-                fig_map = px.scatter_map(
-                    shown_places, lat="latitude", lon="longitude", color="category",
-                    hover_name="name", hover_data=["distance_km"],
-                    zoom=zoom, map_style="open-street-map",
-                )
-                fig_map.update_layout(margin={"l": 0, "r": 0, "t": 0, "b": 0})
-                st.plotly_chart(fig_map)
-                st.dataframe(shown_places[["name", "category", "distance_km"]], hide_index=True)
-            st.caption("Map data: OpenStreetMap contributors.")
 
 # ===========================================================================
 # PAGE 6: About the model
