@@ -584,25 +584,72 @@ elif page == "City comparison":
         f"CHF {most_expensive['total_chf'] - cheapest['total_chf']:,} less than {most_expensive['city']}."
     )
 
+    
     st.subheader("Total cost of the stay")
-    st.caption("Purpose: see at a glance which city is cheaper overall.")
-    fig_total = px.bar(summary_table, x="city", y="total_chf", text="total_chf",
-                       color="city", color_discrete_sequence=CITY_COLORS,
-                       labels={"city": "", "total_chf": "Total (CHF)"})
-    fig_total.update_traces(texttemplate="CHF %{text:,}", textposition="outside")
-    fig_total.update_layout(showlegend=False)
-    st.plotly_chart(fig_total)
+
+    with st.container(border=True):
+        st.markdown("#### Total cost comparison")
+        st.caption(
+            "Compare your estimated total costs across cities."
+        )
+
+        fig_total = px.bar(
+            summary_table,
+            x="city",
+            y="total_chf",
+            text="total_chf",
+            color="city",
+            color_discrete_sequence=CITY_COLORS,
+            labels={
+                "city": "",
+                "total_chf": "Total (CHF)"
+            }
+        )
+
+        fig_total.update_traces(
+            texttemplate="CHF %{text:,}",
+            textposition="outside"
+        )
+
+        fig_total.update_layout(
+            showlegend=False,
+            margin=dict(t=30, b=10, l=10, r=10),
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(fig_total, width="stretch")
 
     st.subheader("Costs per category")
-    st.caption("Purpose: see WHERE the difference comes from (e.g. rent or groceries).")
-    fig_categories = px.bar(
-        all_categories[all_categories["chf_total"] > 0],
-        x="chf_total", y="city", color="category", orientation="h",
-        color_discrete_map=CATEGORY_COLORS,
-        labels={"chf_total": "CHF for the whole stay", "city": "", "category": ""},
-    )
-    fig_categories.update_layout(barmode="stack", height=150 + 80 * len(chosen_cities))
-    st.plotly_chart(fig_categories)
+
+    with st.container(border=True):
+        st.markdown("#### Cost structure by city")
+        st.caption(
+            "See where the differences between cities come from."
+        )
+
+        fig_categories = px.bar(
+            all_categories[all_categories["chf_total"] > 0],
+            x="chf_total",
+            y="city",
+            color="category",
+            orientation="h",
+            color_discrete_map=CATEGORY_COLORS,
+            labels={
+                "chf_total": "CHF for the whole stay",
+                "city": "",
+                "category": ""
+            }
+        )
+
+        fig_categories.update_layout(
+            barmode="stack",
+            height=150 + 80 * len(chosen_cities),
+            margin=dict(t=20, b=10, l=10, r=10),
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(fig_categories, width="stretch")
+
 
     st.dataframe(summary_table, hide_index=True)
 
