@@ -237,11 +237,11 @@ if page == "Home / Problem":
         st.markdown(
             f"""
             **SQLite database** (`database/exchange_costs.db`)
-            - `universities`: {len(all_universities)} HSG partner universities and their city
-            - `cities`: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
+            - **Universities**: {len(all_universities)} HSG partner universities and their city
+            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
               (rent, groceries, restaurants, transport, flights, visa)
-            - `experiences`: {len(training_data)} reported monthly costs - the training data of our model
-            - `user_submissions`: costs entered in this app
+            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
+            - **User Submissions**: costs entered in this app
             """
         )
     with col2:
