@@ -88,7 +88,7 @@ PRICE_COLUMNS = ["rent_shared_room", "rent_dorm", "rent_apartment", "groceries_m
 
 def load_city_current(city_name):
     """Loads a city and adjusts Kaggle prices from 2022 to today with IMF inflation."""
-    city = load_city_current(city_name)
+    city = db.load_city(city_name)
     if city is None:
         return None
     city = dict(city)
@@ -286,7 +286,7 @@ elif page == "Cost calculator":
         flights_home = st.number_input("Extra flights home", min_value=0, max_value=5, value=0)
         budget = st.number_input("My budget in CHF (optional)", min_value=0, max_value=100000, value=0, step=500)
 
-    city = db.load_city(city_name)
+    city = load_city_current(city_name)
     if city is None:
         st.info("No data was found for this city.")
         st.stop()
