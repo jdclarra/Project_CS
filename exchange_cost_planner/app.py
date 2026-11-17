@@ -236,49 +236,6 @@ if page == "Home / Problem":
         """
     )
 
-    st.header("Where does the data come from?")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(
-            f"""
-            **SQLite database** (`database/exchange_costs.db`)
-            - **Universities**: {len(all_universities)} HSG partner universities and their city
-            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
-              (rent, groceries, restaurants, transport)
-            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
-            - **User Submissions**: costs entered in this app
-            """
-        )
-    with col2:
-        st.markdown(
-            """
-            **Online APIs** (free, no API key)
-            - **Frankfurter** - current exchange rates (European Central Bank)
-            - **Open-Meteo** - weather of the last three years for the climate chart
-            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
-            """
-        )
-
-    st.warning(
-        f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
-        f"{len(all_cities) - len(city_names_with_prices)} of {len(all_cities)} cities have **no prices yet**, "
-        f"the other {len(city_names_with_prices)} mostly have **placeholder prices**, and {number_of_simulated_rows} of {len(training_data)} training rows are "
-        "**simulated**. They will be replaced by researched prices and by real answers of former exchange "
-        "students. All results are estimates, not guarantees."
-    )
-
-    st.subheader("Partner universities in the database")
-    st.caption("Source: public HSG exchange portal (programme 'Exchange partner university'). "
-               "The last columns show how many experience reports the portal lists and from which year the newest is.")
-    st.dataframe(all_universities, hide_index=True)
-
-    # Chart purpose: see at a glance where most partner universities are
-    per_country = db.count_universities_per_country().head(15)  # SQL GROUP BY
-    figure = px.bar(per_country, x="country", y="number_of_universities",
-                    title="Partner universities per country (top 15)",
-                    labels={"country": "Country", "number_of_universities": "Number of universities"})
-    st.plotly_chart(figure, width="stretch")
-
     st.subheader("Where you can go")
 
     with st.container(border=True):
@@ -321,6 +278,49 @@ if page == "Home / Problem":
         )
 
         st.plotly_chart(fig_world, width="stretch")
+
+    st.header("Where does the data come from?")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(
+            f"""
+            **SQLite database** (`database/exchange_costs.db`)
+            - **Universities**: {len(all_universities)} HSG partner universities and their city
+            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
+              (rent, groceries, restaurants, transport)
+            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
+            - **User Submissions**: costs entered in this app
+            """
+        )
+    with col2:
+        st.markdown(
+            """
+            **Online APIs** (free, no API key)
+            - **Frankfurter** - current exchange rates (European Central Bank)
+            - **Open-Meteo** - weather of the last three years for the climate chart
+            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
+            """
+        )
+
+    st.warning(
+        f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
+        f"{len(all_cities) - len(city_names_with_prices)} of {len(all_cities)} cities have **no prices yet**, "
+        f"the other {len(city_names_with_prices)} mostly have **placeholder prices**, and {number_of_simulated_rows} of {len(training_data)} training rows are "
+        "**simulated**. They will be replaced by researched prices and by real answers of former exchange "
+        "students. All results are estimates, not guarantees."
+    )
+
+    st.subheader("Partner universities in the database")
+    st.caption("Source: public HSG exchange portal (programme 'Exchange partner university'). "
+               "The last columns show how many experience reports the portal lists and from which year the newest is.")
+    st.dataframe(all_universities, hide_index=True)
+
+    # Chart purpose: see at a glance where most partner universities are
+    per_country = db.count_universities_per_country().head(15)  # SQL GROUP BY
+    figure = px.bar(per_country, x="country", y="number_of_universities",
+                    title="Partner universities per country (top 15)",
+                    labels={"country": "Country", "number_of_universities": "Number of universities"})
+    st.plotly_chart(figure, width="stretch")
 
     st.subheader("Cities and the status of their prices")
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
