@@ -10,7 +10,13 @@ a placeholder or simulated. **Keep it up to date whenever data is replaced.**
 | Partner universities | `data/universities.csv` → `universities` | **Real**: 222 entries in 134 cities (HSG Mobility-Online portal, 2026-11-16, later extended by the team) | Check once a year |
 | Study level of the partner universities | column `study_level` in `data/universities.csv` | **Real**: taken from the HSG list of partner universities (Bachelor / Master columns), 2026-11-17 | Check once a year |
 | Cities (country, currency, coordinates) | `data/cities.csv` → `cities` | **Real** for 134 cities; coordinates are approximate city centres | – |
-| City prices | `data/cities.csv` → `cities` | **102 cities** have prices from the Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, `price_base_year = 2022`). **15 cities** have **mostly placeholder** prices, some single values come from HSG experience reports (`PLACEHOLDER …`). **17 cities** have no complete prices | Research the missing prices |
+| City prices | `data/cities.csv` → `cities` | **23 cities** have prices from **226 HSG experience reports** 2023 to 2026 (`source` starts with `HSG experience reports`, `price_base_year = 2026`). **103 cities** have prices from the Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, `price_base_year = 2022`); 3 of them have gaps filled from the reports. **16 cities** have no complete prices | Research the missing prices |
+
+**Prices from HSG experience reports (2026-11-17):** for each price the team took the **median** of the
+values stated in the reports. The `source` text says how many reports were used in total (`n=… reports`)
+and per price, which prices are still estimates (`STILL PLACEHOLDER (estimate, not researched): …`) and
+whether there are fewer than 3 reports (`LOW DATA (n<3)`). The app reads the number of reports and the
+list of estimates from this text, so please keep this format when you add cities.
 | Reported monthly costs | `data/experiences.csv` → `experiences` | **300 simulated rows** (`source = "simulated"`) + **13 real rows** (`source = "experience report"`) | Add survey answers and more reports |
 | Exchange rates | Frankfurter API | Real, live | – |
 | Climate | Open-Meteo archive API | Real, live | – |
