@@ -3,7 +3,8 @@ external_data.py - Exchange Cost Planner
 
 Data that we load live from two free online APIs (no API key needed):
 
-1. Open-Meteo archive API  -> climate during the exchange semester
+1. Open-Meteo archive API   -> climate during the exchange semester
+2. IMF DataMapper API       -> inflation since 2022, to update the Kaggle prices
 
 Both functions return None if the request fails (no internet, server
 down, timeout). The app then shows a warning instead of crashing.
