@@ -279,7 +279,7 @@ if page == "Home / Problem":
                     labels={"country": "Country", "number_of_universities": "Number of universities"})
     st.plotly_chart(figure, width="stretch")
 
-        st.subheader("Where you can go")
+    st.subheader("Where you can go")
 
     with st.container(border=True):
         uni_map = all_universities.merge(
