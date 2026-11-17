@@ -250,6 +250,7 @@ if page == "Home / Problem":
             **Online APIs** (free, no API key)
             - **Frankfurter** - current exchange rates (European Central Bank)
             - **Open-Meteo** - weather of the last three years for the climate chart
+            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
             """
         )
 
