@@ -1,6 +1,39 @@
+
 [theme]
-primaryColor = "#00802F"
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F2F5F3"
-textColor = "#1A1A1A"
-font = "sans serif"
+base = "light"
+
+# Main colors
+primaryColor = "#176B53"
+backgroundColor = "#FAFCFA"
+secondaryBackgroundColor = "#F0F5F1"
+textColor = "#20362B"
+
+# Typography
+font = "sans-serif"
+headingFont = "sans-serif"
+
+# Rounded corners
+baseRadius = "0.875rem"
+buttonRadius = "0.75rem"
+
+# Borders
+borderColor = "#DCE6DD"
+showWidgetBorder = true
+showSidebarBorder = false
+
+# Chart palette
+chartCategoricalColors = [
+    "#145C43",
+    "#75A88C",
+    "#A8BA78",
+    "#2C8390",
+    "#608AA4"
+]
+
+[theme.sidebar]
+backgroundColor = "#EDF4EE"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#20362B"
+primaryColor = "#176B53"
+borderColor = "#DCE6DD"
+baseRadius = "0.875rem"
