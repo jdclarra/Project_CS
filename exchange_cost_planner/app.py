@@ -350,17 +350,30 @@ if page == "Home / Problem":
                "The last columns show how many experience reports the portal lists and from which year the newest is.")
     st.dataframe(all_universities, hide_index=True)
 
+    
     with st.container(border=True):
-    # Chart purpose: see at a glance where most partner universities are
-    per_country = db.count_universities_per_country().head(15)  # SQL GROUP BY
-    figure = px.bar(per_country, x="country", y="number_of_universities",
-                    title="Partner universities per country (top 15)",
-                    labels={"country": "Country", "number_of_universities": "Number of universities"})
-    st.plotly_chart(figure, width="stretch")
+        # Chart purpose: see where most partner universities are
+        per_country = db.count_universities_per_country().head(15)
 
-    fig = px.bar(data, x="city", y="cost")
+        figure = px.bar(
+            per_country,
+            x="country",
+            y="number_of_universities",
+            title="Partner universities per country (top 15)",
+            labels={
+                "country": "Country",
+                "number_of_universities": "Number of universities"
+            }
+        )
 
-    st.plotly_chart(fig, width="stretch")
+        st.plotly_chart(figure, width="stretch")
+
+    st.subheader("Cities and the status of their prices")
+    st.dataframe(
+        all_cities[["city", "country", "currency", "source", "as_of_date"]],
+        hide_index=True
+    )
+
     
     st.subheader("Cities and the status of their prices")
     st.dataframe(all_cities[["city", "country", "currency", "source", "as_of_date"]], hide_index=True)
