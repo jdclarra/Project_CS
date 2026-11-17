@@ -405,7 +405,13 @@ elif page == "Cost calculator":
     chart_left, chart_right = st.columns(2)
     with chart_left:
         st.caption("Purpose: see which categories make up most of your budget.")
-        fig_donut = px.pie(chart_table, names="category", values="chf_total", hole=0.4)
+        fig_donut = px.pie(chart_table, names="category", values="chf_total", hole=0.55,
+                           color="category", color_discrete_map=CATEGORY_COLORS)
+        fig_donut.update_traces(textposition="inside", textinfo="percent")
+        fig_donut.update_layout(
+            annotations=[{"text": f"<b>CHF {result['total']:,}</b><br>total", "showarrow": False, "font": {"size": 18}}],
+            margin={"t": 10, "b": 10},
+        )
         st.plotly_chart(fig_donut)
     with chart_right:
         st.caption("Purpose: compare monthly costs (added up over the stay) with one-time costs.")
