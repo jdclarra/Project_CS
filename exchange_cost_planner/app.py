@@ -36,10 +36,9 @@ from currency import convert_from_chf, get_exchange_rates
 from external_data import get_inflation_factor, get_monthly_climate
 from ml_model import predict_monthly_cost, train_models
 
-
-# Chart Colors:
 px.defaults.template = "plotly_white"
 
+# Chart Colors:
 CATEGORY_COLORS = {
     "Rent": "#075E45",
     "Groceries": "#57A580",
