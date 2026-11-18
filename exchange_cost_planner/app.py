@@ -46,7 +46,7 @@ CATEGORY_COLORS = {
     "Public transport": "#217F91",
     "Leisure / travel": "#557B9D",
 }
-CITY_COLORS = ["#00802F", "#F2A541", "#3A7CA5"]
+CITY_COLORS = ["#00802F", "#6aad7d", "#3A7CA5"]
 CHART_MARGIN = {"t": 10, "b": 10, "l": 10, "r": 10}
 
 # Readable names for the price columns of a city
