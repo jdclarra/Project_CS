@@ -285,8 +285,6 @@ if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
 
 if page == "Home / Problem":
     st.title("How much money do I really need for my exchange semester?")
-    st.subheader("How much money do I really need for my exchange semester?")
-
     st.markdown(
         """
         **The problem.** Students who plan an exchange semester often do not know how much money they
