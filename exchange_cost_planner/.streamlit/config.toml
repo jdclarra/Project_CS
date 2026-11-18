@@ -1,12 +1,15 @@
 [theme]
 base = "light"
-primaryColor = "#176B53"
-backgroundColor = "#FAFCFA"
-secondaryBackgroundColor = "#F0F5F1"
-textColor = "#20362B"
+
+primaryColor = "#206B50"
+backgroundColor = "#F1F4EF"
+secondaryBackgroundColor = "#E4ECE3"
+textColor = "#273D31"
+
 font = "sans-serif"
 
-baseRadius = "0.5rem"
-buttonRadius = "0.5rem"
-borderColor = "#DCE6DD"
+baseRadius = "0.75rem"
+buttonRadius = "0.75rem"
+
+borderColor = "#D4DED3"
 showWidgetBorder = true
