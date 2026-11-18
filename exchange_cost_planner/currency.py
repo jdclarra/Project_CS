@@ -1,5 +1,5 @@
 """
-currency.py - Exchange Cost Planner
+currency.py: Exchange Cost Planner
 
 Role: "Berechnung & Wechselkurse" (exchange rates)
 
@@ -35,9 +35,7 @@ PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 SAVED_RATES_PATH = os.path.join(PROJECT_FOLDER, "data", "last_rates.json")
 
 
-# ---------------------------------------------------------------------------
 # Saving and loading rates (file handling)
-# ---------------------------------------------------------------------------
 def save_rates(rates, rates_date):
     """Write the rates into a JSON file, so we can use them if the API is down."""
     os.makedirs(os.path.dirname(SAVED_RATES_PATH), exist_ok=True)
@@ -58,9 +56,7 @@ def load_saved_rates():
         return None, None
 
 
-# ---------------------------------------------------------------------------
 # API requests
-# ---------------------------------------------------------------------------
 def get_exchange_rates(currencies):
     """Get today's value of 1 CHF in each of the given currencies.
 
@@ -112,9 +108,7 @@ def get_exchange_rates(currencies):
         return saved_rates, f"saved rates from {saved_date} (API not reachable)"
 
 
-# ---------------------------------------------------------------------------
 # Conversion
-# ---------------------------------------------------------------------------
 def convert_from_chf(amount_chf, rate):
     """Convert an amount from CHF into the local currency.
 
