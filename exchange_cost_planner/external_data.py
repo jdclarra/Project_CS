@@ -10,11 +10,6 @@ Both functions return None if the request fails (no internet, server
 down, timeout). The app then shows a warning instead of crashing.
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
-
 from datetime import date
 
 import pandas as pd
@@ -24,10 +19,8 @@ MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "O
 
 NUMBER_OF_CLIMATE_YEARS = 3   # we average the weather of the last 3 complete years
 
-
-# ---------------------------------------------------------------------------
 # 1. Climate (Open-Meteo)
-# ---------------------------------------------------------------------------
+
 def get_monthly_climate(latitude, longitude):
     """Average temperature and rain per month for a place.
 
@@ -87,7 +80,7 @@ def get_monthly_climate(latitude, longitude):
     climate["month_name"] = [MONTH_NAMES[number - 1] for number in climate["month"]]
     return climate
 
-
+# 2. Inflation (IMF DataMapper) 
 def get_inflation_factor(iso3):
     """How much consumer prices rose from Dec 2022 to 2026 (IMF DataMapper API, no key).
     Returns e.g. 1.12 for +12 %, or None if the API cannot be reached."""
