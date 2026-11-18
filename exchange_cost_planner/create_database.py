@@ -17,21 +17,17 @@ It reads three CSV files and stores them in database/exchange_costs.db:
 The old database file is deleted first, so every run starts from scratch.
 
 IMPORTANT - data honesty:
-- Most prices in data/cities.csv come from the Kaggle "Global Cost of Living"
-  dataset (Numbeo, Dec 2022, converted to CHF). These rows have
-  price_base_year = 2022 and are adjusted for inflation in the app (IMF API).
-  Rows with price_base_year = 2026 are team values / HSG experience reports;
-  some of them are still PLACEHOLDERS (see column "source").
+- Prices in data/cities.csv come from two sources (all amounts in CHF):
+  * HSG experience reports 2023-2026 (price_base_year = 2026, median of all reports).
+    Gaps in these cities were filled with Kaggle prices where possible.
+  * The Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, price_base_year = 2022),
+    adjusted for inflation in the app (IMF API).
+- Where neither source has a price, the field is empty ("NO DATA" in the column "source").
 - If data/experiences.csv does not exist, this script creates a SIMULATED
   file, clearly labelled with source = "simulated". Replace it with real
   survey answers as soon as we have them.
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# 17.11.2026: new columns (iso3, price_base_year) added with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
 
 import os
 import sqlite3
@@ -202,13 +198,14 @@ if __name__ == "__main__":
     cities = pd.read_csv(CITIES_CSV)
     print("Loaded", len(cities), "cities from data/cities.csv")
 
-    number_of_placeholders = int(cities["source"].str.startswith("PLACEHOLDER").sum())
-    if number_of_placeholders > 0:
-        print("WARNING:", number_of_placeholders, "cities still have PLACEHOLDER prices.")
-    number_without_prices = int(cities[PRICE_COLUMNS].isna().any(axis=1).sum())
-    print(number_without_prices, "of these cities have no prices at all yet.")
+    no_prices = int(cities[PRICE_COLUMNS].isna().all(axis=1).sum())
+    incomplete = int(cities[PRICE_COLUMNS].isna().any(axis=1).sum()) - no_prices
+    print(no_prices, "cities have no prices at all (NO DATA).")
+    print(incomplete, "cities have some prices, but not all.")
     number_of_kaggle_cities = int((cities["price_base_year"] == 2022).sum())
     print(number_of_kaggle_cities, "cities have Kaggle prices (2022, inflation-adjusted in the app).")
+    number_of_report_cities = int((cities["price_base_year"] == 2026).sum())
+    print(number_of_report_cities, "cities have prices from HSG experience reports.")
 
     # Load the partner universities
     universities = pd.read_csv(UNIVERSITIES_CSV)
