@@ -67,11 +67,12 @@ DEFAULT_START = date(2027, 2, 15)
 DEFAULT_END = date(2027, 6, 30)
 DATE_FORMAT = "DD/MM/YYYY"
 
-# Helper functions:
 
-# Streamlit runs this whole script again after every click. To avoid asking
-# an API every time, we remember successful answers in st.session_state.
+# Helper functions:
+# Streamlit runs this whole script again after every click. 
+# AI-assisted Feature: To avoid asking an API every time, successful answers are remebered in in st.session_state. 
 # Failed requests are NOT remembered, so the app tries again next time.
+
 def get_rate_cached(currency_code):
     key = "rates_" + currency_code
     if key in st.session_state:
