@@ -19,10 +19,6 @@ Example:
         print(convert_from_chf(1000, rates["EUR"]), "EUR")
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
 
 import json
 import os
@@ -60,7 +56,7 @@ def load_saved_rates():
 def get_exchange_rates(currencies):
     """Get today's value of 1 CHF in each of the given currencies.
 
-    currencies - list of currency codes, e.g. ["EUR", "USD", "SGD"]
+    currencies: list of currency codes, e.g. ["EUR", "USD", "SGD"]
 
     How it works:
     1. Our app sends an HTTP GET request to the Frankfurter server.

@@ -1,5 +1,5 @@
 """
-database.py - Exchange Cost Planner
+database.py: Exchange Cost Planner
 
 Role: "Daten & Datenbank"
 
@@ -12,10 +12,6 @@ Tables (created by create_database.py):
 - experiences    monthly costs of former exchange students (ML training data)
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
 
 import os
 import sqlite3
@@ -29,9 +25,7 @@ PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(PROJECT_FOLDER, "database", "exchange_costs.db")
 
 
-# ---------------------------------------------------------------------------
 # Basic helpers
-# ---------------------------------------------------------------------------
 def database_exists():
     return os.path.exists(DATABASE_PATH)
 
@@ -44,9 +38,7 @@ def run_query(sql, parameters=()):
     return result
 
 
-# ---------------------------------------------------------------------------
 # Cities
-# ---------------------------------------------------------------------------
 def load_city_names():
     """Alphabetical list of all city names (for the dropdowns)."""
     cities = run_query("SELECT city FROM cities ORDER BY city")
@@ -85,9 +77,7 @@ def load_all_cities():
     return run_query("SELECT * FROM cities ORDER BY city")
 
 
-# ---------------------------------------------------------------------------
 # Partner universities
-# ---------------------------------------------------------------------------
 def load_universities():
     """All HSG partner universities with their city, sorted by country and city.
 
@@ -122,9 +112,7 @@ def count_universities_per_country():
     """)
 
 
-# ---------------------------------------------------------------------------
 # Training data for the ML model
-# ---------------------------------------------------------------------------
 def load_training_data():
     """All reported monthly costs together with the price data of their city.
 

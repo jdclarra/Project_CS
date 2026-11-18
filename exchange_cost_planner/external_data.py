@@ -1,5 +1,5 @@
 """
-external_data.py - Exchange Cost Planner
+external_data.py: Exchange Cost Planner
 
 Data that we load live from two free online APIs (no API key needed):
 

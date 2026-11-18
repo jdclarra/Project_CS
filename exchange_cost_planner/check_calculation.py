@@ -1,5 +1,5 @@
 """
-check_calculation.py - Exchange Cost Planner
+check_calculation.py: Exchange Cost Planner
 
 Simple checks for calculation.py and currency.py ("Berechnungen prüfen").
 Every expected number below was calculated BY HAND, so if a check fails,
@@ -9,10 +9,6 @@ Run:   python check_calculation.py
 Works without internet.
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
 
 from datetime import date
 
