@@ -70,7 +70,7 @@ DATE_FORMAT = "DD/MM/YYYY"
 
 # Helper functions:
 # Streamlit runs this whole script again after every click. 
-# AI-assisted Feature: To avoid asking an API every time, successful answers are remebered in in st.session_state. 
+# Declaration of AI Assistance: To avoid asking an API every time, successful answers are remebered in in st.session_state. 
 # Failed requests are NOT remembered, so the app tries again next time.
 
 def get_rate_cached(currency_code):
