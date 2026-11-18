@@ -6,7 +6,7 @@
 
 | Time | Section | On screen | Key points to say | Speaker |
 |------|---------|-----------|-------------------|---------|
-| 0:00–0:25 | **Problem and target group** | Home / Problem | Students do not know what an exchange semester really costs; information is scattered. Our app gives a personal estimate per city. | Person 3 |
+| 0:00–0:25 | **Problem and target group** | Home / Problem, chaotic voices overlapping | Students do not know what an exchange semester really costs; information is scattered. Our app gives a personal estimate per city. | Person 3 |
 | 0:25–0:55 | **Data and technology** | Home: world map and "Where does the data come from?" | SQLite database with three tables, read with SQL. Three APIs: HTTP request → JSON → DataFrame. Say honestly which data is real, placeholder or simulated. | Person 2 |
 | 0:55–1:45 | **Demo: Cost calculator** | Filter by study level, choose a university, change housing and lifestyle, enter a budget | Costs per month and for the stay, range, local currency (live rate), inflation adjustment, budget check, cost breakdown charts. | Person 1 |
 | 1:45–2:10 | **Demo: City comparison** | Compare three cities | The app names the cheapest city and shows where the difference comes from. | Person 1 |
