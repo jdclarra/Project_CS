@@ -308,7 +308,7 @@ if page == "Home / Problem":
 
     st.subheader("Where you can go")
         # Add the coordinates of the city to every university
-        uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
+    uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
 
         # Declaration of AI Assistance: the world map (merge, groupby with a named aggregation,
         # scatter_map with custom_data and the HTML hover template) was generated with Claude.
