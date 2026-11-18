@@ -129,7 +129,6 @@ def create_tables(cursor):
             university TEXT PRIMARY KEY,
             city TEXT,
             country TEXT,
-            portal_location TEXT,
             reports_in_portal INTEGER,
             last_report_year TEXT,
             study_level TEXT,
@@ -173,10 +172,10 @@ def insert_cities(cursor, cities):
 def insert_universities(cursor, universities):
     for index, row in universities.iterrows():
         cursor.execute(
-            """INSERT INTO universities (university, city, country, portal_location,
+            """INSERT INTO universities (university, city, country,
                                          reports_in_portal, last_report_year, study_level)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (row["university"], row["city"], row["country"], none_if_missing(row["portal_location"]),
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (row["university"], row["city"], row["country"],
              int(none_if_missing(row["reports_in_portal"]) or 0), row["last_report_year"],
              none_if_missing(row["study_level"])),
         )
