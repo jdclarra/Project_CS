@@ -495,7 +495,7 @@ elif page == "Cost calculator":
             f"(monthly costs plus or minus {UNCERTAINTY:.0%}, because this is an estimate)."
         )
 
-        # --- Local currency (currency.py, Frankfurter API) ---
+        # Local currency (currency.py, Frankfurter API)
         rates, rate_source = get_rate_cached(city["currency"])
         if rates is None:
             st.info("The exchange rate is not available right now - amounts are shown in CHF only.")
@@ -507,7 +507,7 @@ elif page == "Cost calculator":
                 f"(1 CHF = {rate} {city['currency']}, {rate_source})."
             )
 
-        # --- Budget check ---
+        # Budget check
         check = result["budget_check"]
         if check is not None:
             if check["status"] == "enough":
@@ -518,7 +518,7 @@ elif page == "Cost calculator":
                 st.error(f"Your budget is about CHF {-check['difference']:,} too low. "
                          f"It covers roughly {check['months_covered']} months.")
 
-        # --- Machine-learning estimate (ml_model.py) ---
+        # Machine-learning estimate (ml_model.py)
         st.subheader("Second opinion: our machine-learning model")
         if trained is None:
             st.info("There is not enough training data yet to train the model.")
@@ -533,7 +533,7 @@ elif page == "Cost calculator":
                 f"{number_of_simulated_rows} of these reports are simulated. See 'About the model'."
             )
 
-    # --- Breakdown below ---
+    # Breakdown below
     st.subheader("Cost breakdown")
 
     table = result["table"]
@@ -733,7 +733,7 @@ elif page == "Weather":
     city = db.load_city(city_name)
     st.caption("Partner universities in this city: " + "; ".join(db.load_universities_in_city(city_name)))
 
-    # --- Climate (Open-Meteo API) ---
+    # Climate (Open-Meteo API)
     st.header("Typical weather during your stay")
     with st.spinner("Loading weather data from Open-Meteo ..."):
         climate = get_climate_cached(city)
