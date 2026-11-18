@@ -28,9 +28,7 @@ from datetime import date
 
 import pandas as pd
 
-# ---------------------------------------------------------------------------
 # Settings (agreed with the team - change them here, in one place)
-# ---------------------------------------------------------------------------
 
 # Which database column holds the rent for each housing type
 HOUSING_COLUMNS = {
@@ -79,9 +77,7 @@ PRICE_COLUMNS = [
     "transport_pass",         # monthly public transport pass
 ]
 
-# ---------------------------------------------------------------------------
 # Helper functions
-# ---------------------------------------------------------------------------
 def value_or_zero(city, column):
     """Return the value of one column, or 0 if it is missing (None / NaN)."""
     value = city.get(column)
@@ -115,9 +111,7 @@ def months_between(start_date, end_date):
     return round(number_of_days / DAYS_PER_MONTH, 1)
 
 
-# ---------------------------------------------------------------------------
 # Step 1: monthly costs
-# ---------------------------------------------------------------------------
 def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0):
     """Monthly costs in CHF, per category. Returns a dictionary.
 
@@ -157,9 +151,7 @@ def calculate_monthly_costs(city, housing_type, lifestyle, trips_per_month=0):
     return monthly_costs
 
 
-# ---------------------------------------------------------------------------
 # Step 2: totals and range
-# ---------------------------------------------------------------------------
 def calculate_totals(monthly_costs, months):
     """Add everything up. Returns a dictionary with the key numbers."""
     monthly_total = sum(monthly_costs.values())
@@ -174,9 +166,7 @@ def calculate_totals(monthly_costs, months):
     }
 
 
-# ---------------------------------------------------------------------------
 # Step 3: compare with the user's budget
-# ---------------------------------------------------------------------------
 def compare_with_budget(totals, budget):
     """Compare the estimate with the money the user has (CHF).
 
@@ -206,9 +196,7 @@ def compare_with_budget(totals, budget):
     }
 
 
-# ---------------------------------------------------------------------------
 # Table for the charts in the app
-# ---------------------------------------------------------------------------
 def costs_to_table(monthly_costs, months):
     """Put all costs into one DataFrame - this is the format for the charts.
 
@@ -224,9 +212,7 @@ def costs_to_table(monthly_costs, months):
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
 # Everything in one call - the main function for the app
-# ---------------------------------------------------------------------------
 def estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_month=0, budget=None):
     """Run steps 1-3 and return all results in one dictionary.
 
