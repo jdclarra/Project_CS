@@ -460,7 +460,7 @@ elif page == "Cost calculator":
 
         show_price_source(city)
 
-        # --- Rule-based estimate (calculation.py) ---
+        # Rule-based estimate (calculation.py)
         result = estimate_exchange_costs(
             city, housing_type, lifestyle, months,
             trips_per_month=trips_per_month, budget=budget,
