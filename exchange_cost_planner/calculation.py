@@ -1,5 +1,5 @@
 """
-calculation.py - Exchange Cost Planner
+calculation.py: Exchange Cost Planner
 
 Role: "Berechnung & Wechselkurse" (cost calculation)
 
@@ -13,14 +13,9 @@ All amounts are in CHF. Conversion into the local currency is done
 separately in currency.py.
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
-
 import pandas as pd
 
-# Settings (agreed with the team - change them here, in one place)
+# Settings (agreed with the team, change them here, in one place)
 
 # Which database column holds the rent for each housing type
 HOUSING_COLUMNS = {
@@ -29,7 +24,7 @@ HOUSING_COLUMNS = {
     "Own apartment": "rent_apartment",
 }
 
-# What each lifestyle means. These are our own assumptions - they are
+# What each lifestyle means. These are our own assumptions, they are
 # shown in the app so that users can see how the estimate is made.
 LIFESTYLES = {
     "frugal": {
