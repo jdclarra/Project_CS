@@ -318,41 +318,41 @@ if page == "Home / Problem":
         )
 
         # Text for the hover box: all partner universities of the city, one per line
-        university_lists = []
-        for city_name in per_city["city"]:
-            names = sorted(uni_map[uni_map["city"] == city_name]["university"])
-            text = ""
-            for name in names:
-                text = text + "<br>• " + name
-            university_lists.append(text)
-        per_city["university_list"] = university_lists
+    university_lists = []
+    for city_name in per_city["city"]:
+        names = sorted(uni_map[uni_map["city"] == city_name]["university"])
+        text = ""
+        for name in names:
+            text = text + "<br>• " + name
+        university_lists.append(text)
+    per_city["university_list"] = university_lists
 
-        fig_world = px.scatter_map(
-            per_city,
-            lat="latitude",
-            lon="longitude",
-            size="universities",
-            size_max=25,
-            hover_name="city",
-            custom_data=["country", "universities", "university_list"],
-            color_discrete_sequence=["#176B53"],
-            zoom=0.6,
-            height=450,
-            map_style="carto-positron",
+    fig_world = px.scatter_map(
+        per_city,
+        lat="latitude",
+        lon="longitude",
+        size="universities",
+        size_max=25,
+        hover_name="city",
+        custom_data=["country", "universities", "university_list"],
+        color_discrete_sequence=["#176B53"],
+        zoom=0.6,
+        height=450,
+        map_style="carto-positron",
+    )
+    fig_world.update_traces(
+        hovertemplate=(
+            "<b>%{hovertext}</b><br>"
+            "%{customdata[0]}<br><br>"
+            "<b>Partner universities (%{customdata[1]}):</b>"
+            "%{customdata[2]}"
+            "<extra></extra>"
         )
-        fig_world.update_traces(
-            hovertemplate=(
-                "<b>%{hovertext}</b><br>"
-                "%{customdata[0]}<br><br>"
-                "<b>Partner universities (%{customdata[1]}):</b>"
-                "%{customdata[2]}"
-                "<extra></extra>"
-            )
-        )
-        fig_world.update_layout(
-            hoverlabel={"bgcolor": "white", "font_size": 12, "font_color": "#20362B", "align": "left"},
-            margin={"l": 0, "r": 0, "t": 0, "b": 0},
-        )
+    )
+    fig_world.update_layout(
+        hoverlabel={"bgcolor": "white", "font_size": 12, "font_color": "#20362B", "align": "left"},
+        margin={"l": 0, "r": 0, "t": 0, "b": 0},
+    )
 
     st.header("Where does the data come from?")
     col1, col2 = st.columns(2)
