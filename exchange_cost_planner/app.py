@@ -69,8 +69,9 @@ DATE_FORMAT = "DD/MM/YYYY"
 
 
 # Helper functions:
-# Streamlit runs this whole script again after every click. 
-# Declaration of AI Assistance: To avoid asking an API every time, successful answers are remebered in in st.session_state. 
+# Streamlit runs this whole script again after every click.
+# Declaration of AI Assistance: the caching pattern with st.session_state was generated with Claude.
+# To avoid asking an API every time, successful answers are remembered in st.session_state.
 # Failed requests are NOT remembered, so the app tries again next time.
 
 def get_rate_cached(currency_code):
@@ -106,6 +107,8 @@ def get_inflation_cached(iso3):
     return factor
 
 
+# Declaration of AI Assistance: number_of_reports and kaggle_gap_columns were generated with Claude.
+# They read information out of the source text in cities.csv by cutting the text with split().
 def number_of_reports(city):
     """Number of HSG experience reports behind the prices of a city, 0 if none.
 
@@ -137,6 +140,8 @@ def kaggle_gap_columns(city):
     return columns
 
 
+# Declaration of AI Assistance: the inflation adjustment (which prices are from 2022 and get
+# multiplied with the IMF factor) was designed and written with Claude.
 def load_city_current(city_name):
     """Load a city and adjust prices from 2022 (Kaggle) to today with IMF inflation.
 
@@ -160,6 +165,8 @@ def load_city_current(city_name):
     return city
 
 
+# Declaration of AI Assistance: generated with Claude. The loop compares (year, month) pairs,
+# so that a stay over New Year (e.g. September to February) keeps the right order.
 def months_of_stay(start_date, end_date):
     """List of the month numbers of the stay in the right order, e.g. [2, 3, 4, 5, 6]."""
     months = []
@@ -304,6 +311,8 @@ if page == "Home / Problem":
         # Add the coordinates of the city to every university
         uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
 
+        # Declaration of AI Assistance: the world map (merge, groupby with a named aggregation,
+        # scatter_map with custom_data and the HTML hover template) was generated with Claude.
         # One row per city with the number of partner universities
         per_city = uni_map.groupby(["city", "country", "latitude", "longitude"], as_index=False).agg(
             universities=("university", "count")
@@ -545,6 +554,8 @@ elif page == "Cost calculator":
                 color="category",
                 color_discrete_map=CATEGORY_COLORS,
             )
+            # Declaration of AI Assistance: the styling of the donut (white borders, total in the middle
+            # as an annotation) was generated with Claude.
             fig_donut.update_traces(textposition="inside", textinfo="percent",
                                     marker={"line": {"color": "white", "width": 2}})
             fig_donut.update_layout(
@@ -574,6 +585,8 @@ elif page == "Cost calculator":
 
     st.subheader("How your money develops over the stay")
     st.caption("Purpose: see when you would run out of budget.")
+    # Declaration of AI Assistance: the budget timeline (month steps with math.ceil, area chart and
+    # budget line with add_hline) was generated with Claude.
     # Months 0, 1, 2, ... and the exact end of the stay (e.g. 4.4)
     month_steps = list(range(0, math.ceil(months))) + [months]
     spent = []
@@ -650,6 +663,8 @@ elif page == "City comparison":
         city_table["city"] = name
         category_tables.append(city_table)
 
+    # Declaration of AI Assistance: stacking the category tables of all cities with pd.concat
+    # for the stacked bar chart was generated with Claude.
     summary_table = pd.DataFrame(summary_rows).sort_values("total_chf")
     all_categories = pd.concat(category_tables)  # stack the tables of all cities
 
@@ -727,6 +742,8 @@ elif page == "Weather":
         st.warning("The weather service could not be reached. Please try again later.")
     else:
         # Keep only the months of the stay, in the order of the stay (e.g. Sep, Oct, Nov, Dec, Jan)
+        # Declaration of AI Assistance: filtering and sorting the climate data in the order of the stay
+        # was generated with Claude.
         stay_months = months_of_stay(start_date, end_date)
         stay_climate = climate[climate["month"].isin(stay_months)].copy()
         stay_climate["order"] = [stay_months.index(month) for month in stay_climate["month"]]
@@ -744,6 +761,8 @@ elif page == "Weather":
             st.markdown("#### Temperature & rainfall")
             st.caption("Explore the typical weather during your stay.")
 
+            # Declaration of AI Assistance: the chart with two y-axes (make_subplots, go.Bar, go.Scatter,
+            # secondary_y) was generated with Claude.
             # One chart with two y-axes: rain as bars (left), temperature as a line (right)
             fig_climate = make_subplots(specs=[[{"secondary_y": True}]])
             fig_climate.add_trace(
@@ -823,6 +842,7 @@ elif page == "About the model":
                 labels={"actual_cost": "Reported cost (CHF)", "predicted_cost": "Predicted cost (CHF)"},
                 color_discrete_sequence=["#176B53"],
             )
+            # Declaration of AI Assistance: the diagonal reference line (add_shape) was generated with Claude.
             # Diagonal line: on this line the prediction is exactly right
             highest = test_results["actual_cost"].max()
             fig_test.add_shape(type="line", x0=0, y0=0, x1=highest, y1=highest,
@@ -850,6 +870,8 @@ elif page == "About the model":
     if trained["model_name"] == "Linear regression":
         st.subheader("What the model learned")
         st.caption("Coefficient = change of the predicted monthly cost (CHF) when the input goes up by 1.")
+        # Declaration of AI Assistance: reading the learned coefficients of the linear regression
+        # (model.coef_) was generated with Claude.
         coefficients = pd.DataFrame({
             "input": trained["feature_columns"],
             "coefficient": trained["model"].coef_.round(2),
