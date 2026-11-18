@@ -8,8 +8,8 @@ textColor = "#273D31"
 
 font = "sans-serif"
 
-baseRadius = "0.2rem"
-buttonRadius = "0.2rem"
+baseRadius = "0.67rem"
+buttonRadius = "0.67rem"
 
 borderColor = "#D4DED3"
 showWidgetBorder = true
