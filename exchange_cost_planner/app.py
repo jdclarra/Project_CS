@@ -284,7 +284,7 @@ if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
 # PAGE 1: Home / Problem:
 
 if page == "Home / Problem":
-    st.title("Exchange Cost Planner")
+    st.title("REST WEG")
     st.subheader("How much money do I really need for my exchange semester?")
 
     st.markdown(
