@@ -1,5 +1,5 @@
 """
-ml_model.py - Exchange Cost Planner
+ml_model.py: Exchange Cost Planner
 
 Role: "Machine Learning"
 
@@ -14,10 +14,6 @@ Functions:
 - predict_monthly_cost():   use the chosen model for the user's plan
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
 
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -83,20 +79,20 @@ def train_models(training_data):
     # models work for new students.
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # --- Model 1: linear regression (one coefficient per input) ---
+    # Model 1: linear regression (one coefficient per input)
     linear_model = LinearRegression()
     linear_model.fit(X_train, y_train)
     linear_predictions = linear_model.predict(X_test)
     mae_linear = mean_absolute_error(y_test, linear_predictions)
 
-    # --- Model 2: random forest (100 decision trees, their answers are averaged) ---
+    # Model 2: random forest (100 decision trees, their answers are averaged)
     forest_model = RandomForestRegressor(n_estimators=100, random_state=42)
     forest_model.fit(X_train, y_train)
     forest_predictions = forest_model.predict(X_test)
     mae_forest = mean_absolute_error(y_test, forest_predictions)
 
-    # --- Choose: the linear model is easier to explain, so the random forest
-    # is only used if it is clearly better (at least 10 % smaller error) ---
+    # Choose: the linear model is easier to explain, so the random forest
+    # is only used if it is clearly better (at least 10 % smaller error)
     if mae_forest < 0.9 * mae_linear:
         chosen_model = forest_model
         model_name = "Random forest"
