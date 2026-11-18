@@ -1,5 +1,5 @@
 """
-create_database.py - Exchange Cost Planner
+create_database.py: Exchange Cost Planner
 
 Role: "Daten & Datenbank"
 
@@ -16,7 +16,7 @@ It reads three CSV files and stores them in database/exchange_costs.db:
 
 The old database file is deleted first, so every run starts from scratch.
 
-IMPORTANT - data honesty:
+IMPORTANT: data honesty:
 - Prices in data/cities.csv come from two sources (all amounts in CHF):
   * HSG experience reports 2023-2026 (price_base_year = 2026, median of all reports).
     Gaps in these cities were filled with Kaggle prices where possible.
