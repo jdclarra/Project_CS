@@ -41,7 +41,7 @@ def check(description, actual, expected):
         raise SystemExit(1)
 
 
-# --- Monthly costs, moderate lifestyle, shared flat, 1 trip ---
+# Monthly costs, moderate lifestyle, shared flat, 1 trip
 # Restaurants: 2 meals/week x 4.33 weeks x 10 = 86.6 ; going out: 4 x 20 = 80 -> 166.6 -> 167
 monthly = calculate_monthly_costs(TEST_CITY, "Shared flat room", "moderate", trips_per_month=1)
 check("rent shared flat", monthly["Rent"], 800)
@@ -50,54 +50,54 @@ check("restaurants + going out", monthly["Restaurants / going out"], 167)
 check("public transport", monthly["Public transport"], 50)
 check("travel 1 trip x 150", monthly["Leisure / travel"], 150)
 
-# --- Lifestyle changes the result ---
+# Lifestyle changes the result
 frugal = calculate_monthly_costs(TEST_CITY, "Shared flat room", "frugal")
 check("groceries frugal (300 x 0.85 = 255)", frugal["Groceries"], 255)
 comfortable = calculate_monthly_costs(TEST_CITY, "Own apartment", "comfortable")
 check("rent own apartment", comfortable["Rent"], 1400)
 check("comfortable costs more than frugal", sum(comfortable.values()) > sum(frugal.values()), True)
 
-# --- Totals: monthly 800 + 300 + 167 + 50 + 150 = 1467 ; 5 months = 7335 ---
+# Totals: monthly 800 + 300 + 167 + 50 + 150 = 1467 ; 5 months = 7335
 totals = calculate_totals(monthly, 5)
 check("monthly total", totals["monthly_total"], 1467)
 check("total = 1467 x 5", totals["total"], 7335)
 check("minimum = 7335 x 0.85 = 6234.75", totals["total_min"], 6235)
 check("maximum = 7335 x 1.15 = 8435.25", totals["total_max"], 8435)
 
-# --- Budget comparison ---
+# Budget comparison
 check("budget 9000 is enough", compare_with_budget(totals, 9000)["status"], "enough")
 check("budget 8000 is tight", compare_with_budget(totals, 8000)["status"], "tight")
 check("budget 5000 is not enough", compare_with_budget(totals, 5000)["status"], "not enough")
 check("budget 5000 lasts 5000 / 1467 = 3.4 months", compare_with_budget(totals, 5000)["months_covered"], 3.4)
 
-# --- Table for the charts: one row per category ---
+# Table for the charts: one row per category
 table = costs_to_table(monthly, 5)
 check("table has 5 rows", len(table), 5)
 check("table total equals total", int(table["chf_total"].sum()), 7335)
 
-# --- Dates ---
+# Dates
 check("15 Feb to 30 Jun 2027 = 135 days / 30.44 = 4.4 months", months_between(date(2027, 2, 15), date(2027, 6, 30)), 4.4)
 check("end before start = 0 months", months_between(date(2027, 6, 30), date(2027, 2, 15)), 0)
 
-# --- Missing data ---
+# Missing data
 incomplete_city = dict(TEST_CITY)
 incomplete_city["transport_pass"] = None
 check("missing value is found", find_missing_values(incomplete_city), ["transport_pass"])
 check("missing value counts as 0", calculate_monthly_costs(incomplete_city, "Student dormitory", "frugal")["Public transport"], 0)
 
-# --- Everything in one call ---
+# Everything in one call
 result = estimate_exchange_costs(TEST_CITY, "Shared flat room", "moderate", 5, trips_per_month=1, budget=8000)
 check("main function gives the same total", result["total"], 7335)
 check("main function includes budget check", result["budget_check"]["status"], "tight")
 
-# --- Wrong input ---
+# Wrong input
 try:
     calculate_monthly_costs(TEST_CITY, "Castle", "moderate")
     check("unknown housing type raises an error", False, True)
 except ValueError:
     check("unknown housing type raises an error", True, True)
 
-# --- Currency conversion (no internet needed) ---
+# Currency conversion (no internet needed)
 check("1000 CHF x 1.07 = 1070", convert_from_chf(1000, 1.07), 1070)
 
 print()
