@@ -20,11 +20,6 @@ Pages (chosen in the sidebar):
 5. About the model
 """
 
-# AI assistance:
-# Initial implementation developed with assistance from Claude.
-# Students reviewed, tested, adapted and must document the exact use
-# according to HSG course requirements.
-
 import math
 from datetime import date
 
@@ -41,6 +36,8 @@ from currency import convert_from_chf, get_exchange_rates
 from external_data import get_inflation_factor, get_monthly_climate
 from ml_model import predict_monthly_cost, train_models
 
+
+# Chart Colors:
 px.defaults.template = "plotly_white"
 
 CATEGORY_COLORS = {
