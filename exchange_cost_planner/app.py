@@ -339,7 +339,7 @@ if page == "Home / Problem":
             color_discrete_sequence=["#176B53"],
             zoom=0.6,
             height=450,
-            map_style="carto-positron",
+            map_style="carto-darkmatter",
         )
         fig_world.update_traces(
             hovertemplate=(
