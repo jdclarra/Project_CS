@@ -11,12 +11,6 @@ estimate for the exchange semester:
 
 All amounts are in CHF. Conversion into the local currency is done
 separately in currency.py.
-
-Example:
-
-    from calculation import estimate_exchange_costs
-    result = estimate_exchange_costs(city, "Shared flat room", "moderate", months=5)
-    print(result["total"])
 """
 
 # AI assistance:
