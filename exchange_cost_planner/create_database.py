@@ -62,9 +62,7 @@ CITY_COLUMNS = [
 ]
 
 
-# ---------------------------------------------------------------------------
 # Simulated training data (only used until we have real survey answers)
-# ---------------------------------------------------------------------------
 def simulate_experiences(cities):
     """Create fictional "experience reports" of former exchange students.
 
@@ -105,9 +103,7 @@ def simulate_experiences(cities):
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
 # Building the database
-# ---------------------------------------------------------------------------
 def create_tables(cursor):
     cursor.execute("""
         CREATE TABLE cities (
@@ -169,7 +165,7 @@ def none_if_missing(value):
 
 
 def insert_cities(cursor, cities):
-    placeholders = ", ".join(["?"] * len(CITY_COLUMNS))  # "?, ?, ?, ..." - one per column
+    placeholders = ", ".join(["?"] * len(CITY_COLUMNS))  # "?, ?, ?, ...", one per column
     for index, row in cities.iterrows():
         values = [none_if_missing(row[column]) for column in CITY_COLUMNS]
         cursor.execute(
@@ -202,7 +198,7 @@ def insert_experiences(cursor, experiences):
 
 
 if __name__ == "__main__":
-    # --- Load the city data ---
+    # Load the city data
     cities = pd.read_csv(CITIES_CSV)
     print("Loaded", len(cities), "cities from data/cities.csv")
 
@@ -214,13 +210,13 @@ if __name__ == "__main__":
     number_of_kaggle_cities = int((cities["price_base_year"] == 2022).sum())
     print(number_of_kaggle_cities, "cities have Kaggle prices (2022, inflation-adjusted in the app).")
 
-    # --- Load the partner universities ---
+    # Load the partner universities
     universities = pd.read_csv(UNIVERSITIES_CSV)
     # Data cleaning: every university must belong to a city we know
     universities = universities[universities["city"].isin(list(cities["city"]))]
     print("Loaded", len(universities), "universities from data/universities.csv")
 
-    # --- Load (or simulate) the experience data ---
+    # Load (or simulate) the experience data
     if os.path.exists(EXPERIENCES_CSV):
         experiences = pd.read_csv(EXPERIENCES_CSV)
         print("Loaded", len(experiences), "experience rows from data/experiences.csv")
@@ -234,7 +230,7 @@ if __name__ == "__main__":
     experiences = experiences[experiences["city"].isin(known_cities)]
     experiences = experiences[experiences["monthly_cost_chf"] > 0]
 
-    # --- Write everything into SQLite ---
+    # Write everything into SQLite
     # Delete the old database file, so all tables are built again from the CSV files
     os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
     if os.path.exists(DATABASE_PATH):
