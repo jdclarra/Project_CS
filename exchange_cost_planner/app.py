@@ -313,7 +313,7 @@ if page == "Home / Problem":
         # Declaration of AI Assistance: the world map (merge, groupby with a named aggregation,
         # scatter_map with custom_data and the HTML hover template) was generated with Claude.
         # One row per city with the number of partner universities
-        per_city = uni_map.groupby(["city", "country", "latitude", "longitude"], as_index=False).agg(
+    per_city = uni_map.groupby(["city", "country", "latitude", "longitude"], as_index=False).agg(
             universities=("university", "count")
         )
 
