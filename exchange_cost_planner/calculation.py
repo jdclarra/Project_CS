@@ -24,8 +24,6 @@ Example:
 # Students reviewed, tested, adapted and must document the exact use
 # according to HSG course requirements.
 
-from datetime import date
-
 import pandas as pd
 
 # Settings (agreed with the team - change them here, in one place)
@@ -238,19 +236,3 @@ def estimate_exchange_costs(city, housing_type, lifestyle, months, trips_per_mon
         result["budget_check"] = compare_with_budget(totals, budget)
 
     return result
-
-
-# Run "python calculation.py" to see a quick example in the terminal
-if __name__ == "__main__":
-    example_city = {
-        "rent_shared_room": 800, "rent_dorm": 600, "rent_apartment": 1400,
-        "groceries_month": 300, "restaurant_meal": 15, "evening_out": 30,
-        "transport_pass": 50,
-    }
-    example = estimate_exchange_costs(example_city, "Shared flat room", "moderate",
-                                      months=months_between(date(2027, 2, 15), date(2027, 6, 30)),
-                                      trips_per_month=1, budget=8000)
-    print("Months:", example["months"])
-    print("Monthly costs:", example["monthly_costs"])
-    print("Total: CHF", example["total"], f"(range {example['total_min']} - {example['total_max']})")
-    print("Budget check:", example["budget_check"])
