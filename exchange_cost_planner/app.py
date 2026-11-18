@@ -307,7 +307,6 @@ if page == "Home / Problem":
     )
 
     st.subheader("Where you can go")
-    with st.container(border=True):
         # Add the coordinates of the city to every university
         uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
 
@@ -354,7 +353,6 @@ if page == "Home / Problem":
             hoverlabel={"bgcolor": "white", "font_size": 12, "font_color": "#20362B", "align": "left"},
             margin={"l": 0, "r": 0, "t": 0, "b": 0},
         )
-        st.plotly_chart(fig_world, width="stretch")
 
     st.header("Where does the data come from?")
     col1, col2 = st.columns(2)
