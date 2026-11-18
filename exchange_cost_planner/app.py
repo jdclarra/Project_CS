@@ -349,10 +349,18 @@ if page == "Home / Problem":
             "<extra></extra>"
         )
     )
+    
     fig_world.update_layout(
-        hoverlabel={"bgcolor": "white", "font_size": 12, "font_color": "#20362B", "align": "left"},
-        margin={"l": 0, "r": 0, "t": 0, "b": 0},
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+            font_color="#20362B",
+            align="left"
+        ),
+        margin=dict(l=0, r=0, t=0, b=0)
     )
+
+    st.plotly_chart(fig_world, width="stretch")
 
     st.header("Where does the data come from?")
     col1, col2 = st.columns(2)
