@@ -122,9 +122,3 @@ def convert_from_chf(amount_chf, rate):
     Example: convert_from_chf(1000, 1.07) -> 1070 (EUR)
     """
     return round(amount_chf * rate)
-
-
-# Run "python currency.py" to test the API in the terminal
-if __name__ == "__main__":
-    rates, source = get_exchange_rates(["EUR", "USD"])
-    print("Example rates:", rates, "-", source)
