@@ -55,7 +55,7 @@ def create_features(data):
         features[column] = data[column]
     features["trips_per_month"] = data["trips_per_month"]
 
-    # Data cleaning: missing prices count as 0, so the model can still calculate
+    # Safety net: missing prices count as 0 (normally already removed in database.py)
     features = features.astype(float).fillna(0)
 
     # Text columns -> 0/1 columns ("one-hot encoding"),
