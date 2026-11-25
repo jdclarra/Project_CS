@@ -3,18 +3,34 @@
 A Streamlit web app for the group project in *Fundamentals and Methods of Computer Science for Business
 Studies* (University of St. Gallen, HSG).
 
-## 4. Data sources and what is real
+## 4. Data sources
 
-| Data | Where | Status |
-|------|-------|--------|
-| Partner universities (`data/universities.csv` → table `universities`) | HSG Mobility-Online portal and the HSG list of partner universities | **Real**: 222 entries in 134 cities and 53 countries. The column `study_level` (Bachelor / Master / Both) comes from the HSG list of partner universities; it is empty for 24 entries that offer no regular Bachelor or Master exchange there |
-| Cities and prices (`data/cities.csv` → table `cities`) | Kaggle "Global Cost of Living" (Numbeo, Dec 2022), HSG experience reports | Cities, countries, currencies are real. **102 cities** have prices from the Kaggle dataset (2022); the app adjusts them for inflation with the IMF API. **15 cities** have **mostly PLACEHOLDER prices** (some single values come from HSG experience reports). **17 cities** have no complete prices yet. The app warns about this on every page that uses them. |
-| Reported monthly costs (`data/experiences.csv` → table `experiences`) | survey + HSG experience reports | **300 SIMULATED rows** (created by `create_database.py` from our cost calculator plus random noise, `source = "simulated"`) + **13 real rows** from HSG experience reports (`source = "experience report"`, numbers only) |
-| Exchange rates | Frankfurter API (European Central Bank) | real, live |
-| Climate | Open-Meteo archive API | real, live (average of the last 3 complete years) |
-| Inflation since 2022 | IMF DataMapper API | real, live |
+### Data in the repository
 
-Details, dates and licence notes: see [DATA_SOURCES.md](DATA_SOURCES.md).
+- **Partner universities** (`data/universities.csv` → table `universities`)
+  Source: HSG Mobility-Online portal and the HSG list of partner universities.
+
+- **Cities and prices** (`data/cities.csv` → table `cities`)
+  Source: Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022) and HSG experience reports.
+
+- **Reported monthly costs** (`data/experiences.csv` → table `experiences`)
+  Source: our survey and HSG experience reports.
+
+### Live APIs
+
+We use three free APIs. None of them needs an API key.
+
+- **Frankfurter** (exchange rates CHF → local currency)
+  Link: https://api.frankfurter.dev/v1/latest
+  The rates are the reference rates of the European Central Bank. The last rates are saved in `data/last_rates.json` as a fallback if the API is not reachable.
+
+- **Open-Meteo Archive** (daily temperature and precipitation of the last 3 complete years)
+  Link: https://archive-api.open-meteo.com/v1/archive
+  Free for non-commercial use. Attribution: Open-Meteo.com
+
+- **IMF DataMapper** (yearly consumer price inflation per country, 2023 to 2026)
+  Link: https://www.imf.org/external/datamapper/api/v1/PCPIPCH/<ISO3>
+  `<ISO3>` is the three-letter country code (e.g. `CHE` for Switzerland). We use the inflation factor to bring the Kaggle prices from 2022 to today.
 
 ## 5. Machine learning
 
