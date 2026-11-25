@@ -1,7 +1,4 @@
 """
-create_database.py: Exchange Cost Planner
-
-Role: "Daten & Datenbank"
 
 Run this script to build the SQLite database used by the app:
 
