@@ -13,7 +13,7 @@ A Streamlit web app to estimate the costs of an exchange.
   Source: Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022) and HSG experience reports.
 
 - **Reported monthly costs** (`data/experiences.csv` → table `experiences`)
-  Source: our survey and HSG experience reports.
+  Source: HSG experience reports.
 
 ### Live APIs
 
@@ -73,8 +73,8 @@ exchange_cost_planner/
 ├── data/last_rates.json   # last exchange rates, used when the Frankfurter API cannot be reached
 ├── database/exchange_costs.db
 ├── requirements.txt
-├── README.md             
-└── CONTRIBUTIONS.md       # contribution matrix
+└── README.md             
+ 
  
 ```
 
