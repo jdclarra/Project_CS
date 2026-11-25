@@ -794,11 +794,7 @@ elif page == "About":
 
     st.markdown(
             """
-            **The problem.** Students who plan an exchange semester often do not know how much money they
-            realistically need. Living costs differ a lot between cities, and the information is scattered
-            across experience reports, forums and cost-comparison websites. A budget that is too tight, or a
-            scholarship or part-time job that is misjudged, can spoil the semester.
-    
+                
             **Who is it for?** Students (first of all at HSG) who choose between several partner universities
             or plan the budget for a destination that is already fixed.
     
@@ -807,7 +803,7 @@ elif page == "About":
                month and for the whole stay, by category, in CHF and in the local currency.
             2. **City comparison** - put two or three cities side by side.
             3. **Weather** - the typical weather during your months abroad.
-            4. **About the model** - how our machine-learning model works and how good it is.
+            4. **About** - what the app does and how our machine-learning model works and how good it is.
             """
         )
 
