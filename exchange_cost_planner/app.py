@@ -13,11 +13,11 @@ connects the modules of the other roles:
 Start with:   streamlit run app.py
 
 Pages (chosen in the sidebar):
-1. Home / Problem
+1. Home
 2. Cost calculator
 3. City comparison
 4. Weather
-5. About the model
+5. About
 """
 
 import math
@@ -270,7 +270,7 @@ report_table = pd.DataFrame(report_rows)
 st.sidebar.title("Exchange Cost Planner")
 page = st.sidebar.radio(
     "Go to",
-    ["Home / Problem", "Cost calculator", "City comparison", "Weather", "About the model"],
+    ["Home", "Cost calculator", "City comparison", "Weather", "About"],
 )
 
 if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
@@ -281,28 +281,10 @@ if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
 
 
 
-# PAGE 1: Home / Problem:
+# PAGE 1: Home:
 
-if page == "Home / Problem":
+if page == "Home":
     st.title("How much money do I really need for my exchange semester?")
-    st.markdown(
-        """
-        **The problem.** Students who plan an exchange semester often do not know how much money they
-        realistically need. Living costs differ a lot between cities, and the information is scattered
-        across experience reports, forums and cost-comparison websites. A budget that is too tight, or a
-        scholarship or part-time job that is misjudged, can spoil the semester.
-
-        **Who is it for?** Students (first of all at HSG) who choose between several partner universities
-        or plan the budget for a destination that is already fixed.
-
-        **What the app does**
-        1. **Cost calculator** - choose a city, your dates, housing and lifestyle and get the costs per
-           month and for the whole stay, by category, in CHF and in the local currency.
-        2. **City comparison** - put two or three cities side by side.
-        3. **Weather** - the typical weather during your months abroad.
-        4. **About the model** - how our machine-learning model works and how good it is.
-        """
-    )
 
     st.subheader("Where you can go")
         # Add the coordinates of the city to every university
@@ -801,14 +783,33 @@ elif page == "Weather":
             st.plotly_chart(fig_climate, width="stretch")
 
 
-# PAGE 5: About the model:
+# PAGE 5: About:
 
-elif page == "About the model":
-    st.title("About the model")
+elif page == "About":
+    st.title("About")
 
     if trained is None:
         st.info("There is not enough training data yet to train the model.")
         st.stop()
+
+     st.markdown(
+            """
+            **The problem.** Students who plan an exchange semester often do not know how much money they
+            realistically need. Living costs differ a lot between cities, and the information is scattered
+            across experience reports, forums and cost-comparison websites. A budget that is too tight, or a
+            scholarship or part-time job that is misjudged, can spoil the semester.
+    
+            **Who is it for?** Students (first of all at HSG) who choose between several partner universities
+            or plan the budget for a destination that is already fixed.
+    
+            **What the app does**
+            1. **Cost calculator** - choose a city, your dates, housing and lifestyle and get the costs per
+               month and for the whole stay, by category, in CHF and in the local currency.
+            2. **City comparison** - put two or three cities side by side.
+            3. **Weather** - the typical weather during your months abroad.
+            4. **About the model** - how our machine-learning model works and how good it is.
+            """
+        )
 
     st.markdown(
         f"""
