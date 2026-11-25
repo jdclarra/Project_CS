@@ -156,7 +156,7 @@ def load_city_current(city_name):
         old_columns = kaggle_gap_columns(city)
 
     if len(old_columns) > 0:
-        factor = get_inflation_cached(city["iso3"])
+        factor = get_inflation_cached("USA")
         if factor is not None:
             city["inflation_factor"] = factor
             for column in old_columns:
@@ -200,7 +200,7 @@ def show_price_source(city):
             if city["inflation_factor"] == 1.0:
                 inflation_text = "not adjusted for inflation, because the IMF API could not be reached"
             else:
-                inflation_text = f"adjusted by +{city['inflation_factor'] - 1:.0%} for inflation"
+                inflation_text = f"adjusted by +{city['inflation_factor'] - 1:.0%} for US inflation"
             st.info(
                 "No report mentions these prices, so they come from the Kaggle dataset (2022, "
                 + inflation_text + "): " + ", ".join(gap_names) + "."
@@ -215,7 +215,8 @@ def show_price_source(city):
         else:
             st.info(
                 f"Prices for **{city['city']}** come from the Kaggle 'Global Cost of Living' dataset (2022) "
-                f"and were adjusted by **+{city['inflation_factor'] - 1:.0%}** for inflation (IMF data)."
+                f"and were adjusted by **+{city['inflation_factor'] - 1:.0%}** for US inflation since 2022 "
+                "(IMF data), because the Kaggle prices are in US dollars."
             )
         if "Gaps filled from HSG experience reports" in str(city["source"]):
             st.caption("Prices that were missing in the Kaggle dataset were filled with values from HSG experience reports.")
