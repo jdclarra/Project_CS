@@ -3,15 +3,6 @@
 A Streamlit web app for the group project in *Fundamentals and Methods of Computer Science for Business
 Studies* (University of St. Gallen, HSG).
 
-## 1. Problem statement
-
-Students who plan an exchange semester often do not know how much money they realistically need. Living
-costs differ a lot between cities, and the information is scattered across experience reports, forums
-and cost-comparison websites. Missing and hard-to-compare cost information leads to poor planning: a
-budget that is too tight, or a scholarship or part-time job that is misjudged.
-
-The Exchange Cost Planner gives a **personal cost estimate for the whole stay** in a chosen city, broken
-down by category, and also shows the typical weather during the semester.
 
 ## 2. Target group
 
