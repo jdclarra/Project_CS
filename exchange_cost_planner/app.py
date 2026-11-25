@@ -791,7 +791,7 @@ elif page == "About":
     if trained is None:
         st.info("There is not enough training data yet to train the model.")
         st.stop()
-
+    st.subheader("About the app")
     st.markdown(
             """
                 
@@ -806,7 +806,31 @@ elif page == "About":
             4. **About** - what the app does and how our machine-learning model works and how good it is.
             """
         )
+    
+    st.subheader("About the data")
+    col1, col2 = st. columns(2)
+    with col1:
+        st.markdown(
+            f"""
+            **SQLite database** (`database/exchange_costs.db`)
+            - **Universities**: {len(all_universities)} HSG partner universities and their city
+            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
+              (rent, groceries, restaurants, transport)
+            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
+            """
+        )
+    with col2:
+        st.markdown(
+            """
+            **Online APIs** (free, no API key)
+            - **Frankfurter** - current exchange rates (European Central Bank)
+            - **Open-Meteo** - weather of the last three years for the climate chart
+            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
+            """
+        )
 
+
+    st.subheader("About the model")
     st.markdown(
         f"""
         - **What it predicts:** the total living cost of one exchange student per month, in CHF.
