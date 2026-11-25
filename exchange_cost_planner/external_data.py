@@ -1,6 +1,4 @@
 """
-external_data.py: Exchange Cost Planner
-
 Data that we load live from two free online APIs (no API key needed):
 
 1. Open-Meteo archive API   -> climate during the exchange semester
