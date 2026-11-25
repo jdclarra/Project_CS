@@ -1,9 +1,5 @@
 """
-ml_model.py: Exchange Cost Planner
-
-Role: "Machine Learning"
-
-We train our OWN model that predicts the monthly cost (CHF) of an exchange
+We train our model that predicts the monthly cost (CHF) of an exchange
 student. The training data are the reported monthly costs of former
 exchange students (table experiences), combined with
 the price data of their city.
