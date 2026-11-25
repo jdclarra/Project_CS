@@ -1,5 +1,4 @@
 """
-Exchange Cost Planner
 
 Gets current exchange rates from the free Frankfurter API
 (https://frankfurter.dev, rates of the European Central Bank, no API key)
