@@ -3,22 +3,6 @@
 A Streamlit web app for the group project in *Fundamentals and Methods of Computer Science for Business
 Studies* (University of St. Gallen, HSG).
 
-
-## 2. Target group
-
-Students (first of all at HSG) who choose between several partner universities or plan their budget for
-a destination that is already fixed.
-
-## 3. Features
-
-| Page | What the user can do |
-|------|----------------------|
-| **Home / Problem** | Read the problem, see all partner universities on a world map and where the data comes from |
-| **Cost calculator** | Filter the partner universities by study level (Bachelor / Master), choose a university, dates, housing, lifestyle, weekend trips and an optional budget → costs per month, total, realistic range, local currency, budget check, estimate of our ML model, charts and a cost table |
-| **City comparison** | Compare 2 or 3 cities with the same plan → cheapest city, total-cost chart, costs per category, table |
-| **Weather** | Typical temperature and rain for the months of the stay |
-| **About the model** | What the model predicts, training data, error of both models, charts, limitations |
-
 ## 4. Data sources and what is real
 
 | Data | Where | Status |
