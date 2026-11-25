@@ -470,7 +470,7 @@ elif page == "Cost calculator":
                 f"(1 CHF = {rate} {city['currency']}, {rate_source})."
             )
 
-     # Budget check (compared with the total for the whole stay)
+        # Budget check (compared with the total for the whole stay)
         check = result["budget_check"]
         if check is not None:
             st.caption(f"Your budget: CHF {total_budget / months:,.0f} per month = "
@@ -495,7 +495,7 @@ elif page == "Cost calculator":
             st.caption(
                 f"The model ({trained['model_name']}) was trained on {trained['number_of_rows']} reported monthly "
                 f"costs and is off by about CHF {trained['mae']:,.0f} per month on average. "
-                f"{number_of_simulated_rows} of these reports are simulated. See 'About the model'."
+                f"{number_of_simulated_rows} of these reports are simulated. See 'About'."
             )
 
     # Breakdown below
