@@ -77,3 +77,11 @@ exchange_cost_planner/
 └── CONTRIBUTIONS.md       # contribution matrix
  
 ```
+
+## Team members
+
+Marco Maciocia
+Timo Benz
+Lavinia Oberer
+Clara Rogenmoser
+Anne-Sophie Rösner
