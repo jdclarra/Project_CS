@@ -757,9 +757,6 @@ elif page == "Weather":
 elif page == "About":
     st.title("About")
 
-    if trained is None:
-        st.info("There is not enough training data yet to train the model.")
-        st.stop()
     st.subheader("About the app")
     st.markdown(
             """
@@ -806,7 +803,9 @@ elif page == "About":
             "training rows are **simulated** and will be replaced by real answers of former exchange students. "
             "All results are estimates, not guarantees."
         )
-
+    if trained is None:
+        st.info("There is not enough training data yet to train the model.")
+        st.stop()
     st.subheader("About the model")
     st.markdown(
         f"""
