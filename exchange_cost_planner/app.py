@@ -792,7 +792,7 @@ elif page == "About":
         st.info("There is not enough training data yet to train the model.")
         st.stop()
 
-     st.markdown(
+    st.markdown(
             """
             **The problem.** Students who plan an exchange semester often do not know how much money they
             realistically need. Living costs differ a lot between cities, and the information is scattered
