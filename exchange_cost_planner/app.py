@@ -445,10 +445,18 @@ elif page == "Cost calculator":
         housing_type = st.selectbox("Housing", HOUSING_TYPES)
         lifestyle = st.radio("Lifestyle", LIFESTYLE_NAMES, index=1, horizontal=True)
         trips_per_month = st.slider("Weekend trips per month", 0, 4, 1)
-        budget = st.number_input("My budget in CHF (optional)", min_value=0, max_value=100000, value=0, step=500)
+        budget_type = st.radio("My budget is ...", ["for the whole stay", "per month"], horizontal=True)
+        budget = st.number_input(f"My budget in CHF ({budget_type}, optional)",
+                                 min_value=0, max_value=100000, value=0, step=100)
 
     city = load_city_current(city_name)
     months = months_between(start_date, end_date)
+    # A monthly budget is converted to a budget for the whole stay, 
+    # because the calculation compares the budget with the total costs.
+    if budget_type == "per month":
+        total_budget = budget * months
+    else:
+        total_budget = budget
 
     with right:
         if months == 0:
@@ -476,7 +484,7 @@ elif page == "Cost calculator":
         # Rule-based estimate (calculation.py)
         result = estimate_exchange_costs(
             city, housing_type, lifestyle, months,
-            trips_per_month=trips_per_month, budget=budget,
+            trips_per_month=trips_per_month, budget=total_budget,
         )
 
         if len(result["missing_values"]) > 0:
@@ -511,15 +519,17 @@ elif page == "Cost calculator":
                 f"(1 CHF = {rate} {city['currency']}, {rate_source})."
             )
 
-        # Budget check
+     # Budget check (compared with the total for the whole stay)
         check = result["budget_check"]
         if check is not None:
+            st.caption(f"Your budget: CHF {total_budget / months:,.0f} per month = "
+                       f"CHF {total_budget:,.0f} for the whole stay ({months} months).")
             if check["status"] == "enough":
-                st.success(f"Your budget is enough: about CHF {check['difference']:,} are left over.")
+                st.success(f"Your budget is enough: about CHF {check['difference']:,} are left over for the whole stay.")
             elif check["status"] == "tight":
                 st.warning("Your budget is tight: it lies inside the uncertainty range of the estimate.")
             else:
-                st.error(f"Your budget is about CHF {-check['difference']:,} too low. "
+                st.error(f"Your budget is about CHF {-check['difference']:,} too low for the whole stay. "
                          f"It covers roughly {check['months_covered']} months.")
 
         # Machine-learning estimate (ml_model.py)
@@ -599,9 +609,9 @@ elif page == "Cost calculator":
     timeline = pd.DataFrame({"month": month_steps, "spent": spent})
     fig_timeline = px.area(timeline, x="month", y="spent", color_discrete_sequence=["#00802F"],
                            labels={"month": "Month of stay", "spent": "Spent so far (CHF)"})
-    if budget > 0:
-        fig_timeline.add_hline(y=budget, line_dash="dash", line_color="#D62828",
-                               annotation_text=f"Your budget: CHF {budget:,}")
+    if total_budget > 0:
+        fig_timeline.add_hline(y=total_budget, line_dash="dash", line_color="#D62828",
+                               annotation_text=f"Your budget: CHF {total_budget:,.0f}")
     st.plotly_chart(fig_timeline, width="stretch")
 
     st.dataframe(table, hide_index=True)
