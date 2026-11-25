@@ -80,8 +80,8 @@ exchange_cost_planner/
 
 ## Team members
 
-Marco Maciocia
-Timo Benz
-Lavinia Oberer
-Clara Rogenmoser
-Anne-Sophie Rösner
+- Marco Maciocia
+- Timo Benz
+- Lavinia Oberer
+- Clara Rogenmoser
+- Anne-Sophie Rösner
