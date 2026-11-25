@@ -132,7 +132,7 @@ def load_training_data():
 
 
 def count_training_rows_by_source():
-    """How many training rows come from which source (e.g. simulated / survey)."""
+    """How many training rows come from which source."""
     return run_query("""
         SELECT source, COUNT(*) AS number_of_rows
         FROM experiences
