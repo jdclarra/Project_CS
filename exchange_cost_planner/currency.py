@@ -79,7 +79,7 @@ def get_exchange_rates(currencies):
 
     try:
         response = requests.get(
-            API_URL + "/latest",
+            API_URL,
             params={"base": "CHF", "symbols": ",".join(other_currencies)},
             timeout=5,
         )
