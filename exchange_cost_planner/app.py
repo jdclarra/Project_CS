@@ -342,37 +342,6 @@ if page == "Home":
 
     st.plotly_chart(fig_world, width="stretch")
 
-    st.header("Where does the data come from?")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(
-            f"""
-            **SQLite database** (`database/exchange_costs.db`)
-            - **Universities**: {len(all_universities)} HSG partner universities and their city
-            - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
-              (rent, groceries, restaurants, transport)
-            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
-            """
-        )
-    with col2:
-        st.markdown(
-            """
-            **Online APIs** (free, no API key)
-            - **Frankfurter** - current exchange rates (European Central Bank)
-            - **Open-Meteo** - weather of the last three years for the climate chart
-            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
-            """
-        )
-
-    st.warning(
-        f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
-        f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
-        f"The prices of {len(report_table)} cities come from HSG experience reports, all others from the "
-        f"Kaggle dataset (2022, adjusted for inflation). {number_of_simulated_rows} of {len(training_data)} "
-        "training rows are **simulated** and will be replaced by real answers of former exchange students. "
-        "All results are estimates, not guarantees."
-    )
-
     st.subheader("Partner universities in the database")
     st.caption("Source: public HSG exchange portal (programme 'Exchange partner university'). "
                "The last columns show how many experience reports the portal lists and from which year the newest is.")
@@ -803,12 +772,12 @@ elif page == "About":
                month and for the whole stay, by category, in CHF and in the local currency.
             2. **City comparison** - put two or three cities side by side.
             3. **Weather** - the typical weather during your months abroad.
-            4. **About** - what the app does and how our machine-learning model works and how good it is.
+            4. **About** - what the app does, where does the data come from and how our machine-learning model works
             """
         )
     
     st.subheader("About the data")
-    col1, col2 = st. columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         st.markdown(
             f"""
@@ -828,7 +797,15 @@ elif page == "About":
             - **IMF Datamapper** - inflation since 2022 used to update database prices to today
             """
         )
-
+        
+    st.warning(
+            f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
+            f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
+            f"The prices of {len(report_table)} cities come from HSG experience reports, all others from the "
+            f"Kaggle dataset (2022, adjusted for inflation). {number_of_simulated_rows} of {len(training_data)} "
+            "training rows are **simulated** and will be replaced by real answers of former exchange students. "
+            "All results are estimates, not guarantees."
+        )
 
     st.subheader("About the model")
     st.markdown(
