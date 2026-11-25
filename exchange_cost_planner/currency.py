@@ -1,7 +1,4 @@
 """
-currency.py: Exchange Cost Planner
-
-Role: "Berechnung & Wechselkurse" (exchange rates)
 
 Gets current exchange rates from the free Frankfurter API
 (https://frankfurter.dev, rates of the European Central Bank, no API key)
@@ -11,12 +8,6 @@ If the API cannot be reached, we use the last rates that were saved in
 data/last_rates.json, so the app keeps working (with a note that the
 rates are not live).
 
-Example:
-
-    from currency import get_exchange_rates, convert_from_chf
-    rates, source = get_exchange_rates(["EUR"])
-    if rates is not None:
-        print(convert_from_chf(1000, rates["EUR"]), "EUR")
 """
 
 
@@ -25,7 +16,7 @@ import os
 
 import requests
 
-API_URL = "https://api.frankfurter.dev/v1"
+API_URL = "https://api.frankfurter.dev/v1/latest"
 
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 SAVED_RATES_PATH = os.path.join(PROJECT_FOLDER, "data", "last_rates.json")
@@ -79,7 +70,7 @@ def get_exchange_rates(currencies):
 
     try:
         response = requests.get(
-            API_URL + "/latest",
+            API_URL,
             params={"base": "CHF", "symbols": ",".join(other_currencies)},
             timeout=5,
         )

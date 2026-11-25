@@ -1,14 +1,13 @@
 """
-check_calculation.py: Exchange Cost Planner
+-->not to be sent to assessment!!
 
-Simple checks for calculation.py and currency.py ("Berechnungen prüfen").
+Simple checks for calculation.py and currency.py.
 Every expected number below was calculated BY HAND, so if a check fails,
 either the code or our hand calculation is wrong.
 
 Run:   python check_calculation.py
 Works without internet.
 """
-
 
 from datetime import date
 
