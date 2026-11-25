@@ -21,8 +21,7 @@ IMPORTANT: data honesty:
     adjusted for inflation in the app (IMF API).
 - Where neither source has a price, the field is empty ("NO DATA" in the column "source").
 - If data/experiences.csv does not exist, this script creates a SIMULATED
-  file, clearly labelled with source = "simulated". Replace it with real
-  survey answers as soon as we have them.
+  file, clearly labelled with source = "simulated". 
 """
 
 
@@ -55,7 +54,7 @@ CITY_COLUMNS = [
 ]
 
 
-# Simulated training data (only used until we have real survey answers)
+# Simulated training data 
 def simulate_experiences(cities):
     """Create fictional "experience reports" of former exchange students.
 
