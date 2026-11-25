@@ -25,7 +25,7 @@ import os
 
 import requests
 
-API_URL = "https://api.frankfurter.dev/v1"
+API_URL = "https://api.frankfurter.dev/v1/latest"
 
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 SAVED_RATES_PATH = os.path.join(PROJECT_FOLDER, "data", "last_rates.json")
