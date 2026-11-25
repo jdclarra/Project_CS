@@ -1,10 +1,5 @@
 """
-database.py: Exchange Cost Planner
-
-Role: "Daten & Datenbank"
-
-All SQL queries of the app are in this file. The other modules never talk
-to SQLite directly - they call these functions and get pandas objects back.
+All SQL queries of the app are in this file. The other modules never use SQLite directly - they call these functions and get pandas objects back.
 
 Tables (created by create_database.py):
 - cities         one row per city, cost data in CHF
