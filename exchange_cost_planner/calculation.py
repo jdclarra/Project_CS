@@ -1,8 +1,4 @@
 """
-calculation.py: Exchange Cost Planner
-
-Role: "Berechnung & Wechselkurse" (cost calculation)
-
 Turns the city data (from the database) and the user's inputs into a cost
 estimate for the exchange semester:
 - monthly costs per category (rent, groceries, restaurants, ...)
