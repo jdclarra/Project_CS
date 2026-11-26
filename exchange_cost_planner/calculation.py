@@ -83,6 +83,8 @@ def find_missing_values(city):
     return missing
 
 
+# Declaration of AI Assistance: calculating with datetime.date objects ((end - start).days) is not
+# part of our course and was written with Claude.
 def months_between(start_date, end_date):
     """Length of the stay in months (with decimals), e.g. 4.5 months.
 

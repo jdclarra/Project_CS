@@ -10,17 +10,19 @@ a placeholder or simulated. **Keep it up to date whenever data is replaced.**
 | Partner universities | `data/universities.csv` → `universities` | **Real**: 222 entries in 134 cities (HSG Mobility-Online portal, 2026-11-16, later extended by the team) | Check once a year |
 | Study level of the partner universities | column `study_level` in `data/universities.csv` | **Real**: taken from the HSG list of partner universities (Bachelor / Master columns), 2026-11-17 | Check once a year |
 | Cities (country, currency, coordinates) | `data/cities.csv` → `cities` | **Real** for 134 cities; coordinates are approximate city centres | – |
-| City prices | `data/cities.csv` → `cities` | **23 cities** have prices from **226 HSG experience reports** 2023 to 2026 (`source` starts with `HSG experience reports`, `price_base_year = 2026`). **103 cities** have prices from the Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, `price_base_year = 2022`); 3 of them have gaps filled from the reports. **16 cities** have no complete prices | Research the missing prices |
+| City prices | `data/cities.csv` → `cities` | **23 cities** have prices from **226 HSG experience reports** 2023 to 2026 (`source` starts with `HSG experience reports`, `price_base_year = 2026`); 14 of them are complete, gaps were filled from Kaggle. **106 cities** have prices from the Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, `price_base_year = 2022`); 104 of them are complete, 3 have gaps filled from the reports. **5 cities** have no data at all (`NO DATA`). In total **118 cities** have complete prices, **16** do not | Research the missing prices |
 
 **Prices from HSG experience reports (2026-11-17):** for each price the team took the **median** of the
 values stated in the reports. The `source` text says how many reports were used in total (`n=… reports`)
-and per price, which prices are still estimates (`STILL PLACEHOLDER (estimate, not researched): …`) and
-whether there are fewer than 3 reports (`LOW DATA (n<3)`). The app reads the number of reports and the
-list of estimates from this text, so please keep this format when you add cities.
-| Reported monthly costs | `data/experiences.csv` → `experiences` | **300 simulated rows** (`source = "simulated"`) + **13 real rows** (`source = "experience report"`) | Add survey answers and more reports |
+and per price (e.g. `rent_dorm n=18`), which prices were filled from Kaggle
+(`Gaps filled from Kaggle (…, NOT inflation-adjusted): …`) and whether there are fewer than 3 reports
+(`LOW DATA (n<3)`). The app reads the total number of reports, the number of reports per price and the
+list of Kaggle gaps from this text, so please keep this format when you add cities. In all 14 complete
+report cities at least one price is based on only one or two reports; the app warns about these prices.
+| Reported monthly costs | `data/experiences.csv` → `experiences` | **300 simulated rows** (`source = "simulated"`) + **13 real rows** (`source = "experience report"`) | Add the monthly costs from the experience reports |
 | Exchange rates | Frankfurter API | Real, live | – |
 | Climate | Open-Meteo archive API | Real, live | – |
-| Inflation since 2022 | IMF DataMapper API | Real, live; used to bring the Kaggle prices to today | – |
+| US inflation since 2022 | IMF DataMapper API | Real, live; used to bring the Kaggle prices (in US dollars) to today | – |
 
 **Study level (`study_level`):** `Both`, `Bachelor` or `Master`, taken from the Bachelor and Master columns
 of the HSG list of partner universities. The column is empty for 24 entries: 18 of them only offer
@@ -73,35 +75,36 @@ One row per city. **All amounts in CHF.** Columns:
 |--------|---------|
 | `city`, `country` | city and country |
 | `currency` | local currency (ISO code), only used for display |
-| `iso3` | three-letter country code for the IMF inflation API (e.g. `ESP`) |
+| `iso3` | three-letter country code. Not used by the app any more (the app uses the US inflation for all Kaggle prices), so it is not copied into the database |
 | `latitude`, `longitude` | position of the city (for the map and the weather) |
 | `rent_shared_room`, `rent_dorm`, `rent_apartment` | rent per month |
 | `groceries_month` | groceries for one person per month |
 | `restaurant_meal` | one meal in an inexpensive restaurant |
 | `evening_out` | one evening out (drinks, cinema …) |
 | `transport_pass` | monthly public transport pass |
-| `price_base_year` | `2022` for Kaggle prices (the app adjusts them for inflation), `2026` for team values |
-| `source` | where the prices come from. Starts with `PLACEHOLDER` until researched |
+| `price_base_year` | `2022` for Kaggle prices (the app adjusts them for US inflation), `2026` for prices from HSG experience reports |
+| `source` | where the prices come from (Kaggle, HSG experience reports with the number of reports, or `NO DATA`) |
 | `as_of_date` | date of the data |
 | `leisure_month`, `utilities_month`, `kaggle_data_quality` | extra Kaggle values. They stay in the CSV, but the app does not use them, so they are not copied into the database |
 
-**Current status (2026-11-16):**
+**Current status (2026-11-26):**
 
 - **City, country, currency – real.** The currency follows from the country. Not every currency is
   offered by the Frankfurter API; for those the app shows CHF only.
 - **Coordinates – approximate city-centre coordinates**, entered by hand (the portal has no
   coordinates). They are only used for the map and the climate.
-- **102 cities have prices from the Kaggle dataset** (Numbeo, Dec 2022, converted from USD to CHF).
-  `price_base_year = 2022`; the app multiplies them with the inflation of the country since 2022 (IMF API).
-- **17 cities have no complete prices** (price cells empty). We did not invent numbers for them. In the
-  app these cities work on the weather page, but the cost calculator says that no estimate is possible
-  and the comparison only offers cities with prices.
-- **15 cities have prices, mostly placeholders.** Only the values listed in the `source` column of each
-  row come from a source: numbers stated in HSG experience reports of the academic years 2024/2025 and
-  2025/2026 (see below). All other prices are rough guesses. This is why the `source` text of **every**
-  row still starts with `PLACEHOLDER`, and the app keeps showing its warning.
+- **106 cities have prices from the Kaggle dataset** (Numbeo, Dec 2022, converted from USD to CHF).
+  `price_base_year = 2022`. The app multiplies them with the **US inflation** since 2022 (IMF API),
+  because the Kaggle prices are in US dollars. The inflation of the country itself would be wrong: in
+  countries with very high inflation (e.g. Argentina, Venezuela) the local currency loses value at the
+  same time, so prices in dollars rise much less.
+- **23 cities have prices from HSG experience reports** (see the overview above).
+- **16 cities have no complete prices** (5 of them no data at all). We did not invent numbers for them.
+  In the app these cities work on the weather page, but the cost calculator says that no estimate is
+  possible (and shows the prices that are known) and the comparison only offers cities with prices.
+- There are **no placeholder prices** any more.
 
-**Prices taken from HSG experience reports** (4 most recent reports per university were read, 60 in
+**Older version, kept for reference: prices taken from HSG experience reports** (4 most recent reports per university were read, 60 in
 total, of which 54 are different documents; `n` = number of reports that state the value; with several
 values we use the median; ranges are replaced by their midpoint):
 
@@ -197,8 +200,6 @@ dominated by simulated data.
 `experience report` rows first and add them back afterwards.
 
 **How to replace them with real data:**
-- **Survey** among former exchange students (anonymous): city, housing, lifestyle, trips per month, real
-  monthly cost without flights. Set `source` to `survey`.
 - **HSG experience reports** (public): extract only numbers (e.g. the stated monthly cost and housing
   type). Do not copy text and do not store names. Set `source` to `experience report`.
 - Simply add the rows to the CSV (or delete the simulated rows) and run `python create_database.py`.
@@ -209,7 +210,7 @@ dominated by simulated data.
 |-----|----------|-----|-----|-------|
 | Frankfurter | exchange rates CHF → local currency | `https://api.frankfurter.dev/v1/latest` | none | reference rates of the European Central Bank; the last rates are saved in `data/last_rates.json` as a fallback |
 | Open-Meteo archive | daily temperature and precipitation of the last 3 complete years | `https://archive-api.open-meteo.com/v1/archive` | none | free for non-commercial use; attribution: Open-Meteo.com |
-| IMF DataMapper | yearly consumer price inflation per country (2023 to 2026) | `https://www.imf.org/external/datamapper/api/v1/PCPIPCH/<ISO3>` | none | the factor is used to bring the Kaggle prices from 2022 to today |
+| IMF DataMapper | yearly consumer price inflation of the USA (2023 to 2026) | `https://www.imf.org/external/datamapper/api/v1/PCPIPCH/USA` | none | the factor is used to bring the Kaggle prices (in US dollars) from 2022 to today |
 
 **Live test on 2026-11-16** (from a cloud development environment):
 

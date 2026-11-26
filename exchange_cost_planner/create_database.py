@@ -18,7 +18,7 @@ IMPORTANT: data honesty:
   * HSG experience reports 2023-2026 (price_base_year = 2026, median of all reports).
     Gaps in these cities were filled with Kaggle prices where possible.
   * The Kaggle "Global Cost of Living" dataset (Numbeo, Dec 2022, price_base_year = 2022),
-    adjusted for inflation in the app (IMF API).
+    adjusted in the app with the US inflation since 2022 (IMF API), because they are in US dollars.
 - Where neither source has a price, the field is empty ("NO DATA" in the column "source").
 - If data/experiences.csv does not exist, this script creates a SIMULATED
   file, clearly labelled with source = "simulated". 
@@ -33,6 +33,8 @@ import pandas as pd
 
 from calculation import HOUSING_COLUMNS, LIFESTYLES, PRICE_COLUMNS, calculate_monthly_costs
 
+# Declaration of AI Assistance: file paths and deleting / creating files with the os module are not
+# part of our course and were written with Claude.
 # Build paths relative to THIS file, so the script works from any folder
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(PROJECT_FOLDER, "database", "exchange_costs.db")
@@ -44,10 +46,10 @@ NUMBER_OF_SIMULATED_ROWS = 300
 
 # All columns of the table "cities", in the same order as in CREATE TABLE below.
 # If you add a column, add it here AND in CREATE TABLE.
-# (cities.csv has a few more columns, e.g. leisure_month. The app does not use them,
+# (cities.csv has a few more columns, e.g. iso3 or leisure_month. The app does not use them,
 # so they are not copied into the database.)
 CITY_COLUMNS = [
-    "city", "country", "iso3", "currency", "latitude", "longitude",
+    "city", "country", "currency", "latitude", "longitude",
     "rent_shared_room", "rent_dorm", "rent_apartment",
     "groceries_month", "restaurant_meal", "evening_out", "transport_pass",
     "price_base_year", "source", "as_of_date",
@@ -63,6 +65,8 @@ def simulate_experiences(cities):
     calculator and add random noise, because real people never spend
     exactly what a formula says.
     """
+    # Declaration of AI Assistance: the random number generator of numpy (default_rng, integers, normal)
+    # was used as suggested by Claude.
     # Fixed seed -> every team member gets exactly the same simulated data
     rng = np.random.default_rng(seed=2026)
 
@@ -101,7 +105,6 @@ def create_tables(cursor):
         CREATE TABLE cities (
             city TEXT PRIMARY KEY,
             country TEXT,
-            iso3 TEXT,                    -- country code for the IMF inflation API (e.g. ESP)
             currency TEXT,
             latitude REAL,
             longitude REAL,
@@ -112,7 +115,7 @@ def create_tables(cursor):
             restaurant_meal REAL,
             evening_out REAL,
             transport_pass REAL,
-            price_base_year INTEGER,      -- 2022 = Kaggle prices (adjusted for inflation in the app)
+            price_base_year INTEGER,      -- 2022 = Kaggle prices (adjusted for US inflation in the app)
             source TEXT,
             as_of_date TEXT
         )
@@ -146,6 +149,8 @@ def create_tables(cursor):
     """)
 
 
+# Declaration of AI Assistance: converting numpy numbers for SQLite (isinstance, np.generic, .item())
+# was written with Claude.
 def none_if_missing(value):
     """Empty CSV cells are NaN in pandas. SQLite should store them as NULL (None)."""
     if pd.isna(value):
@@ -156,6 +161,8 @@ def none_if_missing(value):
 
 
 def insert_cities(cursor, cities):
+    # Declaration of AI Assistance: building the INSERT statement with one "?" per column was
+    # written with Claude.
     placeholders = ", ".join(["?"] * len(CITY_COLUMNS))  # "?, ?, ?, ...", one per column
     for index, row in cities.iterrows():
         values = [none_if_missing(row[column]) for column in CITY_COLUMNS]
@@ -188,6 +195,8 @@ def insert_experiences(cursor, experiences):
         )
 
 
+# Declaration of AI Assistance: if __name__ == "__main__" (code that only runs when the file is
+# started directly) is not part of our course and was suggested by Claude.
 if __name__ == "__main__":
     # Load the city data
     cities = pd.read_csv(CITIES_CSV)
@@ -198,7 +207,7 @@ if __name__ == "__main__":
     print(no_prices, "cities have no prices at all (NO DATA).")
     print(incomplete, "cities have some prices, but not all.")
     number_of_kaggle_cities = int((cities["price_base_year"] == 2022).sum())
-    print(number_of_kaggle_cities, "cities have Kaggle prices (2022, inflation-adjusted in the app).")
+    print(number_of_kaggle_cities, "cities have Kaggle prices (2022, adjusted for US inflation in the app).")
     number_of_report_cities = int((cities["price_base_year"] == 2026).sum())
     print(number_of_report_cities, "cities have prices from HSG experience reports.")
 

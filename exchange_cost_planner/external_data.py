@@ -2,12 +2,15 @@
 Data that we load live from two free online APIs (no API key needed):
 
 1. Open-Meteo archive API   -> climate during the exchange semester
-2. IMF DataMapper API       -> inflation since 2022, to update the Kaggle prices
+2. IMF DataMapper API       -> US inflation since 2022, to update the Kaggle prices (in US dollars)
 
 Both functions return None if the request fails (no internet, server
 down, timeout). The app then shows a warning instead of crashing.
 """
 
+# Declaration of AI Assistance: date.today() (Python datetime) and the .dt.month accessor of pandas
+# are not part of our course (pd.to_datetime is); they were written with Claude.
+# The error handling with try / except and the timeout of the requests were also written with Claude.
 from datetime import date
 
 import pandas as pd
@@ -79,6 +82,8 @@ def get_monthly_climate(latitude, longitude):
     return climate
 
 # 2. Inflation (IMF DataMapper) 
+# Declaration of AI Assistance: get_inflation_factor (IMF API, multiplying the yearly inflation
+# rates into one factor) was written with Claude.
 def get_inflation_factor(iso3):
     """How much consumer prices rose from Dec 2022 to 2026 (IMF DataMapper API, no key).
     Returns e.g. 1.12 for +12 %, or None if the API cannot be reached."""

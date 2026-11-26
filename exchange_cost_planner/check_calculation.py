@@ -9,6 +9,8 @@ Run:   python check_calculation.py
 Works without internet.
 """
 
+# Declaration of AI Assistance: datetime.date, "global", "raise SystemExit" and try / except are
+# not part of our course; this check script was written with Claude.
 from datetime import date
 
 from calculation import (calculate_monthly_costs, calculate_totals, compare_with_budget, costs_to_table,

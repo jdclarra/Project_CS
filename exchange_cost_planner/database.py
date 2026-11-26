@@ -15,6 +15,8 @@ import pandas as pd
 
 from calculation import PRICE_COLUMNS
 
+# Declaration of AI Assistance: building file paths with the os module is not part of our course
+# and was written with Claude.
 # Build the path relative to THIS file, so it works from any folder
 PROJECT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(PROJECT_FOLDER, "database", "exchange_costs.db")
@@ -25,6 +27,9 @@ def database_exists():
     return os.path.exists(DATABASE_PATH)
 
 
+# Declaration of AI Assistance: in our course SQL is run with pd.read_sql on an existing connection.
+# Opening the connection with sqlite3.connect and passing values as parameters ("?") instead of
+# writing them into the SQL text was written with Claude.
 def run_query(sql, parameters=()):
     """Run a SELECT statement and return the result as a DataFrame."""
     connection = sqlite3.connect(DATABASE_PATH)

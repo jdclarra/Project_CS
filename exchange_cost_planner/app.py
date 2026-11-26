@@ -12,6 +12,16 @@ connects the modules of the other roles:
 
 Start with:   streamlit run app.py
 
+Declaration of AI Assistance (whole file):
+- The Streamlit page elements (st.title, st.columns, st.selectbox, st.metric, ...) follow the
+  examples of the Streamlit documentation.
+- All charts are made with Plotly (plotly.express and plotly.graph_objects). Plotly is not part of
+  our course (we learned Matplotlib and Seaborn), so the chart code was written with Claude.
+- Number formats in f-strings, e.g. {:,} (thousands separator) and {:.0%} (percent), were suggested
+  by Claude.
+- datetime.date (start and end of the stay) is not part of our course; its use was suggested by Claude.
+- Further places that go beyond our course are marked with "Declaration of AI Assistance" below.
+
 Pages (chosen in the sidebar):
 1. Home
 2. Cost calculator
@@ -122,6 +132,25 @@ def number_of_reports(city):
     return int(text_after.split(" ")[0])    # "13" -> 13
 
 
+def reports_for_price(city, column):
+    """Number of reports behind ONE price of a report city, or None if the text does not say it.
+
+    The source text contains e.g. "rent_shared_room n=1; rent_dorm n=18" -> 1 for rent_shared_room.
+    """
+    source = str(city["source"])
+    key = column + " n="
+    if key not in source:
+        return None
+    text_after = source.split(key)[1]   # e.g. "1; rent_dorm n=18; ..."
+    number = ""
+    for character in text_after:        # take the digits at the start of the text
+        if character.isdigit():
+            number = number + character
+        else:
+            break
+    return int(number)
+
+
 def kaggle_gap_columns(city):
     """Price columns of a report city that were filled with Kaggle prices from 2022.
 
@@ -141,9 +170,9 @@ def kaggle_gap_columns(city):
 
 
 # Declaration of AI Assistance: the inflation adjustment (which prices are from 2022 and get
-# multiplied with the IMF factor) was designed and written with Claude.
+# multiplied with the US inflation factor from the IMF) was designed and written with Claude.
 def load_city_current(city_name):
-    """Load a city and adjust prices from 2022 (Kaggle) to today with IMF inflation.
+    """Load a city and adjust prices from 2022 (Kaggle) to today with the US inflation (IMF data).
 
     Kaggle city: all prices are from 2022.
     Report city: the prices from the reports are recent, only the gaps filled from Kaggle are from 2022.
@@ -191,6 +220,18 @@ def show_price_source(city):
         )
         if reports < 3:
             st.warning(f"There are only {reports} report(s) for this city, so the prices are not very reliable.")
+
+        # Single prices that only one or two reports mention are uncertain
+        weak_prices = []
+        for column in PRICE_COLUMNS:
+            price_reports = reports_for_price(city, column)
+            if price_reports is not None and price_reports < 3:
+                weak_prices.append(f"{PRICE_LABELS[column]}: CHF {city[column]:,.0f} from {price_reports} report(s)")
+        if len(weak_prices) > 0:
+            st.warning(
+                "These prices are based on only one or two reports and may be far off: "
+                + "; ".join(weak_prices) + "."
+            )
 
         # Prices that no report mentions were filled with Kaggle prices from 2022
         gap_names = []
@@ -266,6 +307,12 @@ for index, row in all_cities.iterrows():
         report_rows.append({"city": row["city"], "reports": number_of_reports(row)})
 report_table = pd.DataFrame(report_rows)
 
+# How many of the cities with complete prices use prices from experience reports
+number_of_report_cities_with_prices = 0
+for report_row in report_rows:
+    if report_row["city"] in city_names_with_prices:
+        number_of_report_cities_with_prices = number_of_report_cities_with_prices + 1
+
 # Sidebar navigation:
 
 st.sidebar.title("Exchange Cost Planner")
@@ -288,17 +335,19 @@ if page == "Home":
     st.title("How much money do I really need for my exchange semester?")
 
     st.subheader("Where you can go")
-        # Add the coordinates of the city to every university
+    # Declaration of AI Assistance: pd.merge and groupby are part of our course. The named
+    # aggregation (universities=("university", "count")) and the Plotly map with custom_data and the
+    # HTML hover template were generated with Claude.
+
+    # Add the coordinates of the city to every university (pd.merge)
     uni_map = all_universities.merge(all_cities[["city", "latitude", "longitude"]], on="city")
 
-        # Declaration of AI Assistance: the world map (merge, groupby with a named aggregation,
-        # scatter_map with custom_data and the HTML hover template) was generated with Claude.
-        # One row per city with the number of partner universities
+    # One row per city with the number of partner universities
     per_city = uni_map.groupby(["city", "country", "latitude", "longitude"], as_index=False).agg(
-            universities=("university", "count")
-        )
+        universities=("university", "count")
+    )
 
-        # Text for the hover box: all partner universities of the city, one per line
+    # Text for the hover box: all partner universities of the city, one per line
     university_lists = []
     for city_name in per_city["city"]:
         names = sorted(uni_map[uni_map["city"] == city_name]["university"])
@@ -308,6 +357,7 @@ if page == "Home":
         university_lists.append(text)
     per_city["university_list"] = university_lists
 
+    # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
     fig_world = px.scatter_map(
         per_city,
         lat="latitude",
@@ -351,6 +401,7 @@ if page == "Home":
     with st.container(border=True):
         # Chart purpose: see where most partner universities are
         per_country = db.count_universities_per_country().head(15)
+        # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
         figure = px.bar(
             per_country,
             x="country",
@@ -512,6 +563,7 @@ elif page == "Cost calculator":
         with st.container(border=True):
             st.markdown("#### Cost distribution")
             st.caption("See which categories make up most of your budget.")
+            # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
             fig_donut = px.pie(
                 chart_table,
                 names="category",
@@ -537,6 +589,7 @@ elif page == "Cost calculator":
         with st.container(border=True):
             st.markdown("#### Costs by category")
             st.caption("See how much each category costs over your stay.")
+            # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
             fig_bar = px.bar(
                 chart_table.sort_values("chf_total"),
                 x="chf_total",
@@ -629,8 +682,6 @@ elif page == "City comparison":
         city_table["city"] = name
         category_tables.append(city_table)
 
-    # Declaration of AI Assistance: stacking the category tables of all cities with pd.concat
-    # for the stacked bar chart was generated with Claude.
     summary_table = pd.DataFrame(summary_rows).sort_values("total_chf")
     all_categories = pd.concat(category_tables)  # stack the tables of all cities
 
@@ -645,6 +696,7 @@ elif page == "City comparison":
     with st.container(border=True):
         st.markdown("#### Total cost comparison")
         st.caption("Compare your estimated total costs across cities.")
+        # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
         fig_total = px.bar(
             summary_table,
             x="city",
@@ -663,6 +715,7 @@ elif page == "City comparison":
     with st.container(border=True):
         st.markdown("#### Cost structure by city")
         st.caption("See where the differences between cities come from.")
+        # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
         fig_categories = px.bar(
             all_categories[all_categories["chf_total"] > 0],
             x="chf_total",
@@ -792,18 +845,19 @@ elif page == "About":
             **Online APIs** (free, no API key)
             - **Frankfurter** - current exchange rates (European Central Bank)
             - **Open-Meteo** - weather of the last three years for the climate chart
-            - **IMF Datamapper** - inflation since 2022 used to update database prices to today
+            - **IMF Datamapper** - US inflation since 2022, used to bring the Kaggle prices (in US dollars) to today
             """
         )
         
     st.warning(
-            f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
-            f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
-            f"The prices of {len(report_table)} cities come from HSG experience reports, all others from the "
-            f"Kaggle dataset (2022, adjusted for inflation). {number_of_simulated_rows} of {len(training_data)} "
-            "training rows are **simulated** and will be replaced by real answers of former exchange students. "
-            "All results are estimates, not guarantees."
-        )
+        f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
+        f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
+        f"Of the {len(city_names_with_prices)} cities with prices, {number_of_report_cities_with_prices} use prices "
+        f"from HSG experience reports and {len(city_names_with_prices) - number_of_report_cities_with_prices} "
+        "use the Kaggle dataset (2022, adjusted for US inflation). Some report prices are based on only one or "
+        f"two reports. {number_of_simulated_rows} of {len(training_data)} training rows are **simulated** and "
+        "will be replaced by real costs from experience reports. All results are estimates, not guarantees."
+    )
     if trained is None:
         st.info("There is not enough training data yet to train the model.")
         st.stop()
@@ -825,8 +879,9 @@ elif page == "About":
     if number_of_simulated_rows > 0:
         st.warning(
             f"{number_of_simulated_rows} of the {trained['number_of_rows']} training rows are **simulated** "
-            "(created by `create_database.py` from our cost calculator plus random noise). Until they are "
-            "replaced by real survey answers, the model mostly re-learns our own calculator."
+            "(created by `create_database.py` from our cost calculator plus random noise, with the prices that "
+            "were in the database at that time). Until they are replaced by real costs from experience reports, "
+            "the model mostly re-learns our own calculator."
         )
 
     st.subheader("How good is it?")
@@ -847,6 +902,7 @@ elif page == "About":
             st.markdown("#### Predicted vs. actual costs")
             st.caption("Points closer to the diagonal indicate better predictions.")
             test_results = trained["test_results"]
+            # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
             fig_test = px.scatter(
                 test_results,
                 x="actual_cost",
@@ -867,6 +923,7 @@ elif page == "About":
             st.markdown("#### Reported costs by city")
             st.caption("Average monthly costs based on training data.")
             reported = db.average_reported_cost_per_city()
+            # Declaration of AI Assistance: Plotly chart, written with Claude (see note at the top).
             fig_reported = px.bar(
                 reported.sort_values("average_monthly_cost_chf"),
                 x="average_monthly_cost_chf",
@@ -897,7 +954,10 @@ elif page == "About":
     st.markdown(
         """
         - The model can only be as good as its data. With simulated or very few reports it is not reliable.
-        - It knows nothing about things that are not in the data, e.g. the exact neighbourhood, inflation,
+        - It knows nothing about things that are not in the data, e.g. the exact neighbourhood,
           exchange-rate changes or personal habits.
+        - Kaggle prices from 2022 are updated with the US inflation, because they are in US dollars.
+          Countries that became more or less expensive in dollars since 2022 are not updated exactly.
+        - Some prices from experience reports are based on only one or two reports.
         """
     )

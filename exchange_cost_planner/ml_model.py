@@ -12,6 +12,10 @@ Functions:
 
 
 import pandas as pd
+# Declaration of AI Assistance: the random forest (RandomForestRegressor) and the mean absolute
+# error (mean_absolute_error) are not part of our course. In the course, regression is done with
+# statsmodels; LinearRegression from scikit-learn is used here with fit / predict like the KNN
+# classifier from the course. These parts were written with Claude.
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
@@ -50,6 +54,8 @@ def create_features(data):
     # Safety net: missing prices count as 0 (normally already removed in database.py)
     features = features.astype(float).fillna(0)
 
+    # Declaration of AI Assistance: pd.get_dummies and pd.concat are part of our course; putting the
+    # tables side by side with pd.concat(axis=1) and dtype=int were suggested by Claude.
     # Text columns -> 0/1 columns ("one-hot encoding"),
     # e.g. lifestyle_frugal = 1 if the person lives frugally, otherwise 0
     dummies = pd.get_dummies(data[["lifestyle", "housing_type"]], dtype=int)
@@ -135,6 +141,7 @@ def predict_monthly_cost(trained, city, housing_type, lifestyle, trips_per_month
 
     features = create_features(plan_table)
 
+    # Declaration of AI Assistance: reindex (to get exactly the training columns) was written with Claude.
     # For one row, get_dummies only creates the columns for ITS values
     # (e.g. only lifestyle_frugal). reindex adds the other training columns
     # filled with 0, so the columns match exactly what the model learned.

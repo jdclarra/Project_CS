@@ -11,6 +11,8 @@ rates are not live).
 """
 
 
+# Declaration of AI Assistance: reading and writing a JSON file (json, os, "with open(...)") is not
+# part of our course. The file handling in save_rates and load_saved_rates was written with Claude.
 import json
 import os
 
@@ -44,6 +46,8 @@ def load_saved_rates():
 
 
 # API requests
+# Declaration of AI Assistance: requests.get with params and .json() is part of our course.
+# The timeout, raise_for_status and the error handling with try / except were written with Claude.
 def get_exchange_rates(currencies):
     """Get today's value of 1 CHF in each of the given currencies.
 
