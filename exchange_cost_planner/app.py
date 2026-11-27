@@ -300,6 +300,11 @@ trained = train_models(training_data)  # None if there is not enough data
 number_of_simulated_rows = int((training_data["source"] == "simulated").sum())
 number_of_cities_without_prices = len(all_cities) - len(city_names_with_prices)
 
+# Number of HSG experience reports (2024/2025 and 2025/2026) we read to find the monthly costs
+NUMBER_OF_REPORTS_READ = 1304
+# 123 of them state a total monthly cost (data/experiences.csv); we can only use those from cities with prices
+NUMBER_OF_REPORTS_WITH_COSTS = 123
+
 # Cities with prices from HSG experience reports (for the chart on the home page)
 report_rows = []
 for index, row in all_cities.iterrows():
@@ -840,7 +845,8 @@ elif page == "About":
             - **Universities**: {len(all_universities)} HSG partner universities and their city
             - **Cities**: {len(all_cities)} cities; {len(city_names_with_prices)} of them have prices so far
               (rent, groceries, restaurants, transport)
-            - **Experiences**: {len(training_data)} reported monthly costs - the training data of our model
+            - **Experiences**: {len(training_data)} reported monthly costs from {training_data["city"].nunique()} cities,
+              taken from {NUMBER_OF_REPORTS_READ:,} HSG experience reports: the training data of our model
             """
         )
     with col2:
@@ -856,11 +862,15 @@ elif page == "About":
     st.warning(
         f"**Data honesty.** The list of partner universities is real (HSG exchange portal). "
         f"{number_of_cities_without_prices} of {len(all_cities)} cities have **no complete prices yet**. "
-        f"Of the {len(city_names_with_prices)} cities with prices, {number_of_report_cities_with_prices} use prices "
-        f"from HSG experience reports and {len(city_names_with_prices) - number_of_report_cities_with_prices} "
-        "use the Kaggle dataset (2022, adjusted for US inflation). Some report prices are based on only one or "
-        f"two reports. The machine-learning model is trained on {len(training_data)} monthly costs from HSG "
-        "experience reports; many of them are budgets the authors recommend, not exact records of spending. "
+        f"The single prices (rent, groceries, restaurants, transport) of {len(report_table)} cities come from HSG "
+        f"experience reports; {number_of_report_cities_with_prices} of them are complete. The other "
+        f"{len(city_names_with_prices) - number_of_report_cities_with_prices} cities with complete prices use the "
+        "Kaggle dataset (2022, adjusted for US inflation). Some report prices are based on only one or two reports. "
+        f"For the machine-learning model we read all {NUMBER_OF_REPORTS_READ:,} HSG experience reports of 2024/2025 "
+        f"and 2025/2026; {NUMBER_OF_REPORTS_WITH_COSTS} of them state a total monthly cost. "
+        f"The model uses the {len(training_data)} of them that are from one of the "
+        f"{training_data['city'].nunique()} cities with complete prices. Many of these are budgets the authors recommend, not exact "
+        "records of spending. "
         "All results are estimates, not guarantees."
     )
     if trained is None:
@@ -873,8 +883,8 @@ elif page == "About":
         - **Inputs:** prices of the city (rent for the chosen housing, groceries, restaurant meal, evening out,
           transport pass) and the personal plan (housing type, lifestyle, weekend trips per month).
           Text inputs are turned into 0/1 columns (one-hot encoding).
-        - **Training data:** {trained['number_of_rows']} monthly costs reported by former exchange students,
-          loaded from our database. 80 % are used for training, 20 % are kept aside for testing.
+        - **Training data:** {trained['number_of_rows']} monthly costs reported by former exchange students
+          (taken from {NUMBER_OF_REPORTS_READ:,} HSG experience reports), loaded from our database. 80 % are used for training, 20 % are kept aside for testing.
         - **Two models compared:** a linear regression and a random forest (100 decision trees).
           We use the one with the smaller error; if they are similar we keep the linear regression because it
           is easier to explain. **Chosen: {trained['model_name']}.**
