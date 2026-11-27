@@ -19,7 +19,7 @@ and per price (e.g. `rent_dorm n=18`), which prices were filled from Kaggle
 (`LOW DATA (n<3)`). The app reads the total number of reports, the number of reports per price and the
 list of Kaggle gaps from this text, so please keep this format when you add cities. In all 14 complete
 report cities at least one price is based on only one or two reports; the app warns about these prices.
-| Reported monthly costs | `data/experiences.csv` → `experiences` | **300 simulated rows** (`source = "simulated"`) + **13 real rows** (`source = "experience report"`) | Add the monthly costs from the experience reports |
+| Reported monthly costs | `data/experiences.csv` → `experiences` (raw data: `data/experience_reports_raw.csv`) | **123 real rows** from HSG experience reports 2024/2025 and 2025/2026 (`source = "experience report"`), no simulated rows | Add reports of new academic years |
 | Exchange rates | Frankfurter API | Real, live | – |
 | Climate | Open-Meteo archive API | Real, live | – |
 | US inflation since 2022 | IMF DataMapper API | Real, live; used to bring the Kaggle prices (in US dollars) to today | – |
@@ -168,41 +168,37 @@ Columns: `city, housing_type, lifestyle, trips_per_month, monthly_cost_chf, sour
 - `lifestyle` must be one of: `frugal`, `moderate`, `comfortable`
 - `city` must exist in `data/cities.csv`
 
-**Current status: 300 simulated rows + 13 real rows.**
+**Current status (2026-11-26): 123 real rows, no simulated rows.**
 
-*Simulated (`source = "simulated"`).* If the file does not exist, `create_database.py` creates 300
-fictional rows: random city, housing, lifestyle and trips; the monthly cost is the result of our own
-calculator (`calculation.py`) multiplied by random noise of about ±12 % (fixed random seed 2026, so
-everyone gets the same file). They were created again on 2026-11-16 after `cities.csv` changed. The app
-shows how many training rows are simulated.
+*Source.* All 1,304 experience reports of the academic years 2024/2025 and 2025/2026 in the HSG
+Mobility-Online portal were opened (with the help of Claude in Chrome, see `AI_USAGE.md`). 123 reports
+state usable monthly costs; about 1,181 were skipped, mostly because they give no monthly costs, only the
+rent, or are duplicates. About 15 PDFs had no readable text. The extracted numbers are kept in
+`data/experience_reports_raw.csv` (university, place, year, housing type, amount in the original currency,
+what the amount includes, and a remark). No names and no text from the reports are stored.
 
-*Real (`source = "experience report"`).* 13 rows from the same 60 HSG experience reports (2024/2025 and
-2025/2026). Rules we used:
+*Conversion to `experiences.csv`:*
 
-- Only **numbers** were taken: city, housing type and the stated monthly cost. No text was copied and
-  no names are stored. The downloaded reports are not part of this repository.
-- A row was only created if a report states a **total monthly cost including rent** (or rent plus the
-  monthly cost without rent) **and** the housing type is clear. Some of these numbers are the budget
-  the author recommends, not an exact record of spending.
-- Not used: totals that include the flights to the country or are mainly travel, totals without a
-  clear housing type, and reports that only state the rent. Identical reports uploaded by two students
-  count once.
-- Ranges are replaced by their midpoint, foreign currencies converted with the rates above, result
-  rounded to CHF 10.
-- **Assumptions, because the reports do not state them:** `lifestyle` is always `moderate`;
-  `trips_per_month` is `1`, or `0` if the report says the amount is "excluding travel".
+- The university is assigned to its city with `data/universities.csv` (Universidad Adolfo Ibañez → Santiago).
+- Amounts are converted to CHF with approximate rates of mid-November 2026 and rounded to CHF 10:
+  1 EUR = 0.913, 1 USD = 0.8224, 1 GBP = 1.094, 1 CAD = 0.583, 1 SGD = 0.641, 1 CNY = 0.122 CHF.
+- `lifestyle` is always `moderate`, because the reports do not say it.
+- `trips_per_month` is `0` if the amount clearly excludes travel, otherwise `1`.
+- `source` is `experience report`. The 300 simulated rows and the 13 older real rows (from the same
+  reports) were removed.
 
-Rows per city: Paris 2, Rotterdam 2, and one each for Copenhagen, Barcelona, Milan, London, Singapore,
-Hong Kong, Tokyo, Sydney and Austin. With 13 real rows against 300 simulated ones, the model is still
-dominated by simulated data.
+*Things to know:*
 
-**Careful:** if you delete `data/experiences.csv` to create the simulated rows again, copy the
-`experience report` rows first and add them back afterwards.
+- Many amounts are **budgets the authors recommend** or **ranges** (the midpoint is used), not exact
+  spending. Some are sums of single items. The column `remark` in the raw file says this for every row.
+- 6 rows are from cities without complete prices (Kingston, Hanover, Lund, Columbia) and are not used for
+  training, so the model learns from **117 rows in 48 cities**.
+- Result (2026-11-26): linear regression MAE ≈ CHF 345 per month, random forest ≈ CHF 350. Guessing the
+  average for everyone would be off by about CHF 420. On average the reported costs are about CHF 300 per
+  month higher than our calculator.
 
-**How to replace them with real data:**
-- **HSG experience reports** (public): extract only numbers (e.g. the stated monthly cost and housing
-  type). Do not copy text and do not store names. Set `source` to `experience report`.
-- Simply add the rows to the CSV (or delete the simulated rows) and run `python create_database.py`.
+*If `data/experiences.csv` is deleted,* `create_database.py` creates 300 simulated rows again
+(calculator plus random noise). Do not delete it.
 
 ## 3. Live APIs
 

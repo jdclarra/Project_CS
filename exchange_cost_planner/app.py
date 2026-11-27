@@ -322,10 +322,10 @@ page = st.sidebar.radio(
 )
 
 if number_of_cities_without_prices > 0 or number_of_simulated_rows > 0:
-    st.sidebar.warning(
-        f"**Data status:** {number_of_cities_without_prices} of {len(all_cities)} cities have no complete prices. "
-        f"{number_of_simulated_rows} of {len(training_data)} training rows are simulated."
-    )
+    status_text = f"**Data status:** {number_of_cities_without_prices} of {len(all_cities)} cities have no complete prices."
+    if number_of_simulated_rows > 0:
+        status_text = status_text + f" {number_of_simulated_rows} of {len(training_data)} training rows are simulated."
+    st.sidebar.warning(status_text)
 
 
 
@@ -540,14 +540,17 @@ elif page == "Cost calculator":
         if trained is None:
             st.info("There is not enough training data yet to train the model.")
         else:
-            ml_monthly = predict_monthly_cost(trained, city, housing_type, lifestyle, trips_per_month)
+            # The model learned from the prices as they are stored in the database (without the inflation
+            # adjustment), so it also gets these prices for the prediction.
+            ml_monthly = predict_monthly_cost(trained, db.load_city(city_name), housing_type, lifestyle,
+                                              trips_per_month)
             col1, col2 = st.columns(2)
             col1.metric("Calculator (prices x quantities)", f"CHF {result['monthly_total']:,} / month")
             col2.metric("Model (learned from reported costs)", f"CHF {ml_monthly:,} / month")
             st.caption(
-                f"The model ({trained['model_name']}) was trained on {trained['number_of_rows']} reported monthly "
-                f"costs and is off by about CHF {trained['mae']:,.0f} per month on average. "
-                f"{number_of_simulated_rows} of these reports are simulated. See 'About'."
+                f"The model ({trained['model_name']}) was trained on {trained['number_of_rows']} monthly costs from "
+                f"HSG experience reports and is off by about CHF {trained['mae']:,.0f} per month on average. "
+                "See 'About'."
             )
 
     # Breakdown below
@@ -675,7 +678,8 @@ elif page == "City comparison":
             "hsg_reports": number_of_reports(city),
         }
         if trained is not None:
-            summary["ml_model_per_month_chf"] = predict_monthly_cost(trained, city, housing_type, lifestyle, trips_per_month)
+            summary["ml_model_per_month_chf"] = predict_monthly_cost(trained, db.load_city(name), housing_type,
+                                                                     lifestyle, trips_per_month)
         summary_rows.append(summary)
 
         city_table = result["table"].copy()
@@ -855,8 +859,9 @@ elif page == "About":
         f"Of the {len(city_names_with_prices)} cities with prices, {number_of_report_cities_with_prices} use prices "
         f"from HSG experience reports and {len(city_names_with_prices) - number_of_report_cities_with_prices} "
         "use the Kaggle dataset (2022, adjusted for US inflation). Some report prices are based on only one or "
-        f"two reports. {number_of_simulated_rows} of {len(training_data)} training rows are **simulated** and "
-        "will be replaced by real costs from experience reports. All results are estimates, not guarantees."
+        f"two reports. The machine-learning model is trained on {len(training_data)} monthly costs from HSG "
+        "experience reports; many of them are budgets the authors recommend, not exact records of spending. "
+        "All results are estimates, not guarantees."
     )
     if trained is None:
         st.info("There is not enough training data yet to train the model.")
@@ -886,13 +891,18 @@ elif page == "About":
 
     st.subheader("How good is it?")
     col1, col2 = st.columns(2)
+    # A simple comparison value: the error if we always guessed the average reported cost
+    average_cost = training_data["monthly_cost_chf"].mean()
+    error_of_average_guess = (training_data["monthly_cost_chf"] - average_cost).abs().mean()
+
     col1.metric("MAE linear regression", f"CHF {trained['mae_linear']:,.0f}")
     col2.metric("MAE random forest", f"CHF {trained['mae_forest']:,.0f}")
     st.write(
         "**MAE** means *mean absolute error*: for every test student we take the difference between the "
         "predicted and the real monthly cost, ignore the sign, and average these differences. "
         f"An MAE of CHF {trained['mae']:,.0f} means the model is off by about that much per month on average. "
-        f"The average reported cost is CHF {training_data['monthly_cost_chf'].mean():,.0f} per month."
+        f"The average reported cost is CHF {average_cost:,.0f} per month. For comparison: if we simply guessed "
+        f"this average for every student, we would be off by about CHF {error_of_average_guess:,.0f} per month."
     )
 
     chart_left, chart_right = st.columns(2, gap="medium")
@@ -953,7 +963,11 @@ elif page == "About":
     st.subheader("Limitations")
     st.markdown(
         """
-        - The model can only be as good as its data. With simulated or very few reports it is not reliable.
+        - The model can only be as good as its data. About 120 reports are still few, and many of them state a
+          budget or a range, not exact spending.
+        - The reports do not say how frugal or comfortable the authors lived, so all of them count as
+          "moderate". The model therefore cannot learn the effect of the lifestyle; only the calculator uses it.
+        - Reports from cities without complete prices cannot be used for training.
         - It knows nothing about things that are not in the data, e.g. the exact neighbourhood,
           exchange-rate changes or personal habits.
         - Kaggle prices from 2022 are updated with the US inflation, because they are in US dollars.
