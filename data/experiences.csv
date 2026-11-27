@@ -1,0 +1,124 @@
+city,housing_type,lifestyle,trips_per_month,monthly_cost_chf,source
+Buenos Aires,Shared flat room,moderate,1,1030,experience report
+Buenos Aires,Shared flat room,moderate,1,2000,experience report
+Buenos Aires,Own apartment,moderate,1,1000,experience report
+Buenos Aires,Shared flat room,moderate,1,1750,experience report
+Melbourne,Student dormitory,moderate,0,1370,experience report
+Vienna,Shared flat room,moderate,1,1500,experience report
+Vienna,Shared flat room,moderate,1,910,experience report
+Vienna,Student dormitory,moderate,1,1020,experience report
+Vienna,Own apartment,moderate,1,1190,experience report
+Vienna,Shared flat room,moderate,1,920,experience report
+Vienna,Shared flat room,moderate,1,880,experience report
+São Paulo,Student dormitory,moderate,0,1650,experience report
+São Paulo,Student dormitory,moderate,1,950,experience report
+São Paulo,Student dormitory,moderate,0,1750,experience report
+Montreal,Student dormitory,moderate,1,960,experience report
+Kingston (Ontario),Shared flat room,moderate,1,2000,experience report
+Kingston (Ontario),Shared flat room,moderate,1,2000,experience report
+London (Ontario),Student dormitory,moderate,1,1750,experience report
+London (Ontario),Student dormitory,moderate,0,1600,experience report
+London (Ontario),Shared flat room,moderate,0,1020,experience report
+London (Ontario),Student dormitory,moderate,1,2000,experience report
+Shenzhen,Student dormitory,moderate,1,300,experience report
+Shanghai,Student dormitory,moderate,0,1230,experience report
+Shanghai,Student dormitory,moderate,0,890,experience report
+Shanghai,Own apartment,moderate,1,1750,experience report
+Shanghai,Own apartment,moderate,0,1000,experience report
+Hong Kong,Own apartment,moderate,1,2050,experience report
+Hong Kong,Shared flat room,moderate,1,1500,experience report
+Medellín,Shared flat room,moderate,1,780,experience report
+Bogotá,Own apartment,moderate,1,1300,experience report
+Copenhagen,Student dormitory,moderate,1,1340,experience report
+Copenhagen,Student dormitory,moderate,1,2250,experience report
+Mikkeli,Student dormitory,moderate,0,780,experience report
+Mikkeli,Own apartment,moderate,1,1370,experience report
+Helsinki,Shared flat room,moderate,1,530,experience report
+Paris,Student dormitory,moderate,1,2280,experience report
+Nice,Own apartment,moderate,1,1120,experience report
+Paris,Shared flat room,moderate,1,1510,experience report
+Lyon,Own apartment,moderate,1,1030,experience report
+Reims,Shared flat room,moderate,1,1000,experience report
+Berlin,Student dormitory,moderate,1,3200,experience report
+Bologna,Shared flat room,moderate,1,2000,experience report
+Bologna,Shared flat room,moderate,1,1830,experience report
+Bologna,Own apartment,moderate,1,2200,experience report
+Rome,Shared flat room,moderate,1,1420,experience report
+Rome,Shared flat room,moderate,1,1500,experience report
+Milan,Shared flat room,moderate,0,1370,experience report
+Milan,Student dormitory,moderate,1,1510,experience report
+Tokyo,Student dormitory,moderate,1,1000,experience report
+Tokyo,Student dormitory,moderate,1,1500,experience report
+Tokyo,Shared flat room,moderate,1,1750,experience report
+Tokyo,Student dormitory,moderate,0,1280,experience report
+Tokyo,Student dormitory,moderate,0,900,experience report
+Monterrey,Shared flat room,moderate,1,1800,experience report
+Monterrey,Shared flat room,moderate,1,2000,experience report
+Maastricht,Own apartment,moderate,1,2190,experience report
+Maastricht,Own apartment,moderate,0,1050,experience report
+Oslo,Own apartment,moderate,1,2100,experience report
+Oslo,Student dormitory,moderate,1,1750,experience report
+Oslo,Own apartment,moderate,1,1750,experience report
+Oslo,Student dormitory,moderate,1,1750,experience report
+Bergen,Student dormitory,moderate,1,1250,experience report
+Bergen,Own apartment,moderate,1,1000,experience report
+Bergen,Shared flat room,moderate,1,1230,experience report
+Lisbon,Student dormitory,moderate,1,1550,experience report
+Singapore,Student dormitory,moderate,0,910,experience report
+Singapore,Shared flat room,moderate,0,1920,experience report
+Singapore,Shared flat room,moderate,1,1310,experience report
+Singapore,Shared flat room,moderate,0,1650,experience report
+Singapore,Shared flat room,moderate,0,1700,experience report
+Singapore,Shared flat room,moderate,0,2000,experience report
+Singapore,Shared flat room,moderate,1,2000,experience report
+Singapore,Shared flat room,moderate,1,2000,experience report
+Singapore,Shared flat room,moderate,0,1500,experience report
+Singapore,Shared flat room,moderate,1,1920,experience report
+Singapore,Shared flat room,moderate,1,1710,experience report
+Singapore,Shared flat room,moderate,0,2400,experience report
+Seoul,Shared flat room,moderate,1,1750,experience report
+Seoul,Student dormitory,moderate,1,1250,experience report
+Madrid,Shared flat room,moderate,1,1460,experience report
+Gothenburg,Student dormitory,moderate,1,1300,experience report
+Lund,Shared flat room,moderate,0,1000,experience report
+Taipei,Shared flat room,moderate,0,700,experience report
+Taipei,Student dormitory,moderate,0,800,experience report
+Taipei,Shared flat room,moderate,0,830,experience report
+Taipei,Shared flat room,moderate,1,1350,experience report
+Edinburgh,Shared flat room,moderate,1,1750,experience report
+London,Shared flat room,moderate,1,2950,experience report
+Manchester,Student dormitory,moderate,0,1960,experience report
+Columbia (South Carolina),Student dormitory,moderate,0,1440,experience report
+Atlanta,Student dormitory,moderate,1,1850,experience report
+Atlanta,Student dormitory,moderate,0,2380,experience report
+Austin,Shared flat room,moderate,1,1640,experience report
+Austin,Shared flat room,moderate,1,1850,experience report
+Santiago,Shared flat room,moderate,0,730,experience report
+Beijing,Student dormitory,moderate,0,950,experience report
+Barcelona,Shared flat room,moderate,1,1460,experience report
+Barcelona,Shared flat room,moderate,1,1830,experience report
+Barcelona,Shared flat room,moderate,1,2280,experience report
+Paris,Shared flat room,moderate,1,1550,experience report
+Paris,Student dormitory,moderate,1,1370,experience report
+Vienna,Student dormitory,moderate,1,1640,experience report
+São Paulo,Student dormitory,moderate,1,1400,experience report
+Shenzhen,Student dormitory,moderate,1,880,experience report
+Beijing,Student dormitory,moderate,1,800,experience report
+Beijing,Student dormitory,moderate,1,1500,experience report
+Beijing,Student dormitory,moderate,1,1000,experience report
+Beijing,Student dormitory,moderate,1,1100,experience report
+Paris,Own apartment,moderate,1,2460,experience report
+Mexico City,Shared flat room,moderate,0,1150,experience report
+Mexico City,Own apartment,moderate,1,1400,experience report
+Mexico City,Shared flat room,moderate,1,2000,experience report
+Hanover (New Hampshire),Student dormitory,moderate,1,2190,experience report
+Hanover (New Hampshire),Shared flat room,moderate,0,1850,experience report
+Ithaca,Shared flat room,moderate,0,1440,experience report
+Ithaca,Shared flat room,moderate,1,1730,experience report
+Toronto,Shared flat room,moderate,0,1370,experience report
+Toronto,Shared flat room,moderate,1,1830,experience report
+Bangalore,Student dormitory,moderate,1,380,experience report
+Los Angeles,Shared flat room,moderate,1,2380,experience report
+Istanbul,Own apartment,moderate,1,660,experience report
+London,Shared flat room,moderate,1,2190,experience report
+Stockholm,Shared flat room,moderate,1,2000,experience report
